@@ -1,0 +1,56 @@
+# 워크플로우 이름 — GitHub Actions 탭에서 이 이름으로 표시됨
+name: CI
+
+# 언제 실행할지 설정
+on:
+  push:
+    branches: [main, master, develop] # 이 브랜치에 push 시 실행
+  pull_request:
+    branches: [main, master]          # 이 브랜치로 PR 생성 시 실행
+
+jobs:
+  ci:
+    # GitHub이 제공하는 Ubuntu 서버에서 실행
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드를 GitHub Actions 서버에 내려받기
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Node.js 버전 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'npm' # npm 캐시 활용해서 설치 속도 향상
+
+      # 3. 패키지 설치
+      # npm ci는 npm install보다 엄격하고 빠름
+      # package-lock.json 기준으로 정확히 설치
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. TypeScript 타입 체크
+      # --noEmit: 실제 파일 생성 없이 타입 오류만 체크
+      - name: Type check
+        run: npx tsc --noEmit
+
+      # 5. ESLint 코드 검사
+      # 코드 스타일, 잠재적 오류 검사
+      - name: Lint
+        run: npm run lint
+
+      # 6. Jest 테스트 실행
+      # --passWithNoTests: 테스트 파일 없어도 통과 (초반엔 테스트 없으니까)
+      - name: Test
+        run: npm test -- --passWithNoTests
+
+      # 7. Next.js 빌드
+      # 실제 배포 전 빌드 오류 미리 확인
+      - name: Build
+        run: npm run build
+        env:
+          # 빌드 시 필요한 환경변수 — GitHub Secrets에서 가져옴
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

@@ -39,11 +39,8 @@ jobs:
       # 5. ESLint 코드 검사
       # 코드 스타일, 잠재적 오류 검사
       - name: Lint
-        run: npm run lint -- --no-cache
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-
+        run: npm run lint
+        
       # 6. Jest 테스트 실행
       # --passWithNoTests: 테스트 파일 없어도 통과 (초반엔 테스트 없으니까)
       - name: Test

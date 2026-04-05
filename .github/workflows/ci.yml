@@ -39,7 +39,7 @@ jobs:
       # 5. ESLint 코드 검사
       # 코드 스타일, 잠재적 오류 검사
       - name: Lint
-        run: npm run lint
+        run: npx eslint src --ext .ts,.tsx
         
       # 6. Jest 테스트 실행
       # --passWithNoTests: 테스트 파일 없어도 통과 (초반엔 테스트 없으니까)

@@ -16,13 +16,13 @@ jobs:
     steps:
       # 1. 코드를 GitHub Actions 서버에 내려받기
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # 2. Node.js 버전 설정
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '23'
+          node-version: '20'
           cache: 'npm' # npm 캐시 활용해서 설치 속도 향상
 
       # 3. 패키지 설치

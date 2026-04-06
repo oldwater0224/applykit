@@ -1,13 +1,20 @@
 'use server'
 
+// 인증 관련 서버 액션
+// 회원가입, 로그인, 로그아웃 처리
+
 import { createClient } from '@/src/lib/supabase/server'
+import { supabaseAdmin } from '@/src/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 
 interface AuthState {
   error: string
 }
 
-export async function signUp(prevState: AuthState, formData: FormData): Promise<AuthState> {
+export async function signUp(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const supabase = await createClient()
 
   const email = formData.get('email') as string
@@ -23,6 +30,7 @@ export async function signUp(prevState: AuthState, formData: FormData): Promise<
     return { error: '비밀번호는 6자 이상이어야 합니다.' }
   }
 
+  // 1. Supabase Auth 회원가입
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -39,9 +47,15 @@ export async function signUp(prevState: AuthState, formData: FormData): Promise<
     return { error: '회원가입에 실패했습니다.' }
   }
 
-  const { data: org, error: orgError } = await supabase
+  // 2. 기관 생성 — Admin 클라이언트 사용
+  // signUp 직후에는 세션이 없어서 RLS를 통과 못함
+  // supabaseAdmin은 RLS를 우회해서 직접 insert 가능
+  const { data: org, error: orgError } = await supabaseAdmin
     .from('organizations')
-    .insert({ name: orgName })
+    .insert({
+      name: orgName,
+      owner_id: authData.user.id, // RLS 정책에서 owner_id를 체크하므로 반드시 필요
+    })
     .select()
     .single()
 
@@ -49,13 +63,14 @@ export async function signUp(prevState: AuthState, formData: FormData): Promise<
     return { error: '기관 생성에 실패했습니다: ' + orgError.message }
   }
 
-  const { error: memberError } = await supabase
+  // 3. 기관 멤버 등록 — Admin 클라이언트 사용
+  // 회원가입한 유저를 해당 기관의 admin으로 등록
+  const { error: memberError } = await supabaseAdmin
     .from('org_members')
     .insert({
       org_id: org.id,
       user_id: authData.user.id,
       role: 'admin',
-      email: email,
     })
 
   if (memberError) {
@@ -65,7 +80,10 @@ export async function signUp(prevState: AuthState, formData: FormData): Promise<
   redirect('/dashboard')
 }
 
-export async function signIn(prevState: AuthState, formData: FormData): Promise<AuthState> {
+export async function signIn(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const supabase = await createClient()
 
   const email = formData.get('email') as string

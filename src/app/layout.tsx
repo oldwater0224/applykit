@@ -6,6 +6,7 @@ import QueryProvider from "../providers/query-provider";
 export const metadata: Metadata = {
   title: "ApplyKit",
   description: "스타트업 지원사업 통합 관리 플랫폼",
+  
 };
 
 export default function RootLayout({
@@ -15,6 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className="h-full">
+      
       <body className="h-full">
         <QueryProvider>{children}</QueryProvider>
       </body>

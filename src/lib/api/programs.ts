@@ -1,7 +1,6 @@
 import { CreateProgramData, Program, UpdateProgramData } from "@/src/types/program";
 import { createClient } from "../supabase/client";
 
-// 프로그램 목록 조회
 export async function getPrograms(orgId: string): Promise<Program[]> {
   const supabase = createClient();
 
@@ -15,7 +14,6 @@ export async function getPrograms(orgId: string): Promise<Program[]> {
   return data || [];
 }
 
-// 프로그램 단일 조회 (추가)
 export async function getProgram(id: string): Promise<Program> {
   const supabase = createClient();
 
@@ -29,7 +27,6 @@ export async function getProgram(id: string): Promise<Program> {
   return data;
 }
 
-// 프로그램 생성 (함수명 수정)
 export async function createProgram(orgId: string, programData: CreateProgramData): Promise<Program> {
   const supabase = createClient();
 
@@ -37,8 +34,10 @@ export async function createProgram(orgId: string, programData: CreateProgramDat
     .from('programs')
     .insert({
       org_id: orgId,
-      ...programData,
+      title: programData.title,
+      description: programData.description,
       status: programData.status || 'draft',
+      deadline: programData.deadline,
     })
     .select()
     .single();
@@ -47,7 +46,6 @@ export async function createProgram(orgId: string, programData: CreateProgramDat
   return data;
 }
 
-// 프로그램 수정 (타입 수정)
 export async function updateProgram({ id, ...updateData }: UpdateProgramData): Promise<Program> {
   const supabase = createClient();
 
@@ -62,7 +60,6 @@ export async function updateProgram({ id, ...updateData }: UpdateProgramData): P
   return data;
 }
 
-// 프로그램 삭제
 export async function deleteProgram(id: string): Promise<void> {
   const supabase = createClient();
 

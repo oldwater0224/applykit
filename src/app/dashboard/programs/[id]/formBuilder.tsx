@@ -2,7 +2,7 @@
 
 import { useFormBuilderStore } from "@/src/stores/formbuilderstore";
 import { FormField, FieldType, FIELD_TYPE_LABELS } from "@/src/types/form";
-import {  useId } from "react";
+import { useId } from "react";
 
 export function FormBuilder() {
   const {
@@ -30,6 +30,7 @@ export function FormBuilder() {
           : undefined,
     };
     addField(newField);
+    selectField(newField.id); // 추가 직후에 자동으로 선택
   }
 
   function handleMoveUp(index: number) {
@@ -67,7 +68,8 @@ export function FormBuilder() {
           ))
         )}
       </div>
-
+      {/* 선택된 필드 편집 */}
+      {selectedFieldId && <FieldEditor fieldId={selectedFieldId} />}
       {/* 필드 추가 버튼들 */}
       <div className="bg-white rounded-lg shadow p-4">
         <p className="text-sm font-medium text-gray-700 mb-3">필드 추가</p>
@@ -83,9 +85,6 @@ export function FormBuilder() {
           ))}
         </div>
       </div>
-
-      {/* 선택된 필드 편집 */}
-      {selectedFieldId && <FieldEditor fieldId={selectedFieldId} />}
     </div>
   );
 }

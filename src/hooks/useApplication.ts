@@ -63,7 +63,8 @@ export function useMyApplications() {
             id,
             title,
             deadline,
-            organization
+            org_id,
+            form_schema
           )
           `,
         )
@@ -94,7 +95,8 @@ export function useApplication(id: string | undefined) {
             id,
             title,
             deadline,
-            organization
+            org_id,
+            form_schema
           )
           `,
         )

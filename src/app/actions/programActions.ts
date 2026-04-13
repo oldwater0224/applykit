@@ -50,14 +50,17 @@ export async function getPrograms(
  * 특정 프로그램 단건 조회
  * - 프로그램 상세, 폼 빌더, 지원서 작성 페이지 공통 사용
  */
+
 export async function getProgram(
   id: string
 ): Promise<ActionResult<Program>> {
   const supabase = await createClient();
 
+  // organizations 중첩 조회 - 기관명 표시용
+  // 한 줄로 쓰는 이유: Supabase PostgREST 파서가 공백/개행에 민감함
   const { data, error } = await supabase
     .from('programs')
-    .select('*')
+    .select('*,organizations(id,name)')
     .eq('id', id)
     .single();
 

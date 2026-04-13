@@ -1,6 +1,9 @@
 // 지원서 상태값 - DB의 status 컬럼(text)을 타입으로 좁혀서 관리
 // draft: 작성 중(임시저장), submitted: 제출 완료, reviewing: 검토 중,
 // accepted: 합격, rejected: 불합격
+
+import { FormSchema } from "./form";
+
 // union 타입으로 좁혀두면 switch/if 분기 시 누락 케이스를 컴파일 타임에 잡음
 export type ApplicationStatus =
   | "draft"
@@ -58,7 +61,8 @@ export interface ApplicationWithProgram extends Application {
     id: string;
     title: string;
     deadline: string | null;
-    organization: string | null;
+    org_id: string | null;
+    form_schema : FormSchema |null;
   } | null;
 }
 

@@ -169,7 +169,8 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
 
   if (!field) return null;
 
-  const hasOptions = ["select", "radio", "checkbox"].includes(field.type);
+  const hasOptions = ['select', 'radio', 'checkbox'].includes(field.type);
+  const isFileField = field.type === 'file'; // ← 추가
 
   return (
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
@@ -189,7 +190,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
         <label className="block text-sm text-gray-600 mb-1">플레이스홀더</label>
         <input
           type="text"
-          value={field.placeholder || ""}
+          value={field.placeholder || ''}
           onChange={(e) =>
             updateField(fieldId, { placeholder: e.target.value })
           }
@@ -215,6 +216,49 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
           options={field.options || []}
           onChange={(options) => updateField(fieldId, { options })}
         />
+      )}
+
+      {/* ↓ 파일 필드 전용 설정 추가 */}
+      {isFileField && (
+        <>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">
+              허용 파일 형식
+            </label>
+            <input
+              type="text"
+              value={field.accept || ''}
+              onChange={(e) =>
+                updateField(fieldId, { accept: e.target.value })
+              }
+              placeholder=".pdf,.doc,.docx"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              쉼표로 구분 (예: .pdf,.jpg,.png)
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">
+              최대 파일 크기 (MB)
+            </label>
+            <input
+              type="number"
+              value={field.maxFileSize ?? ''}
+              onChange={(e) =>
+                updateField(fieldId, {
+                  maxFileSize: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
+              placeholder="10"
+              min={1}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </>
       )}
     </div>
   );

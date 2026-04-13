@@ -3,27 +3,30 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/src/lib/supabase/server';
 import type {
-  Program,
-  CreateProgramData,
-  UpdateProgramData,
-} from '@/src/types/program';
+  CreateApplicationInput,
+  UpdateApplicationInput,
+  ApplicationStatus,
+} from '@/src/types/applications';
 
-// applicationAction.ts와 동일한 응답 패턴
-// 디스크리미네이티드 유니온으로 호출부에서 타입 좁히기 가능
+// Server Action의 공통 응답 타입
+// 디스크리미네이티드 유니온으로 success 플래그에 따라 타입이 좁혀짐
+// 호출부에서 if (result.success)면 data 접근, else면 error 접근이 타입 안전
 type ActionResult<T = null> =
   | { success: true; data: T }
   | { success: false; error: string };
 
 /**
- * 특정 조직의 프로그램 목록 조회
- * - 운영기관 대시보드에서 "내 프로그램 목록" 용도
+ * 지원서 생성 (임시저장 포함)
+ * - is_complete=false면 임시저장, true면 즉시 제출
+ * - user_id는 반드시 서버에서 auth로 주입 (클라이언트 값 신뢰 X)
+ * - 같은 프로그램에 중복 지원 방지
  */
-export async function getPrograms(
-  orgId: string
-): Promise<ActionResult<Program[]>> {
+export async function createApplication(
+  input: CreateApplicationInput
+): Promise<ActionResult<{ id: string }>> {
   const supabase = await createClient();
 
-  // 로그인 확인 - Server Action은 RLS가 막지만 명시적 체크로 에러 메시지 개선
+  // 1. 인증 확인 - 로그인하지 않은 사용자는 생성 불가
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -32,96 +35,64 @@ export async function getPrograms(
     return { success: false, error: '로그인이 필요합니다.' };
   }
 
-  const { data, error } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('org_id', orgId)
-    .order('created_at', { ascending: false });
+  // 2. 중복 지원 방지 - 같은 프로그램에 이미 지원서가 있으면 차단
+  // (임시저장 중인 것도 포함. 기존 것을 수정해야 함)
+  // 주의: 앱 레벨 체크라 동시 요청 race condition 가능 -
+  // 나중에 DB에 UNIQUE(program_id, user_id) 제약 추가 권장
+  const { data: existing } = await supabase
+    .from('applications')
+    .select('id')
+    .eq('program_id', input.program_id)
+    .eq('user_id', user.id)
+    .maybeSingle();
 
-  if (error) {
-    console.error('[getPrograms]', error);
-    return { success: false, error: '프로그램 목록 조회에 실패했습니다.' };
+  if (existing) {
+    return {
+      success: false,
+      error: '이미 해당 공고에 작성 중인 지원서가 있습니다.',
+    };
   }
 
-  return { success: true, data: data || [] };
-}
-
-/**
- * 특정 프로그램 단건 조회
- * - 프로그램 상세, 폼 빌더, 지원서 작성 페이지 공통 사용
- */
-export async function getProgram(
-  id: string
-): Promise<ActionResult<Program>> {
-  const supabase = await createClient();
-
+  // 3. 실제 insert
+  // is_complete=true면 submitted_at과 status를 원자적으로 함께 세팅
+  // 임시저장이면 status=draft, submitted_at=null 유지
+  const isSubmitting = input.is_complete === true;
   const { data, error } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    console.error('[getProgram]', error);
-    return { success: false, error: '프로그램을 찾을 수 없습니다.' };
-  }
-
-  return { success: true, data };
-}
-
-/**
- * 프로그램 생성
- * - form_schema는 선택적. 보통 생성 직후엔 비어있고
- *   이후 폼 빌더에서 별도 저장하는 흐름
- */
-export async function createProgram(
-  orgId: string,
-  programData: CreateProgramData
-): Promise<ActionResult<Program>> {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
-  }
-
-  // jsonb 컬럼은 undefined를 보내면 Supabase가 혼동할 수 있으므로
-  // 명시적으로 null 처리
-  const { data, error } = await supabase
-    .from('programs')
+    .from('applications')
     .insert({
-      org_id: orgId,
-      title: programData.title,
-      description: programData.description,
-      status: programData.status || 'draft',
-      slug: programData.slug,
-      deadline: programData.deadline,
-      form_schema: programData.form_schema ?? null,
+      program_id: input.program_id,
+      user_id: user.id,
+      form_data: input.form_data,
+      is_complete: isSubmitting,
+      status: isSubmitting ? 'submitted' : 'draft',
+      submitted_at: isSubmitting ? new Date().toISOString() : null,
     })
-    .select()
+    .select('id')
     .single();
 
   if (error) {
-    console.error('[createProgram]', error);
-    return { success: false, error: '프로그램 생성에 실패했습니다.' };
+    // DB 에러는 사용자에게 그대로 노출하지 않고 일반 메시지로 변환
+    // 실제 에러는 서버 로그에만 남김 (디버깅용)
+    console.error('[createApplication]', error);
+    return { success: false, error: '지원서 생성에 실패했습니다.' };
   }
 
-  revalidatePath('/dashboard/programs');
+  // 4. 캐시 무효화 - 목록 페이지와 프로그램 상세 페이지 모두 갱신 필요
+  revalidatePath('/applications');
+  revalidatePath(`/programs/${input.program_id}`);
 
-  return { success: true, data };
+  return { success: true, data: { id: data.id } };
 }
 
 /**
- * 프로그램 수정
- * - 폼 빌더의 "폼 저장"도 이 함수로 form_schema만 업데이트
- * - partial update: 전달된 필드만 반영, undefined는 제거
+ * 지원서 수정 (임시저장/최종 제출 모두 처리)
+ * - 본인 지원서만 수정 가능 (RLS + 앱 레벨 이중 체크)
+ * - 이미 제출된(is_complete=true) 지원서는 수정 불가
  */
-export async function updateProgram(
-  updateData: UpdateProgramData
-): Promise<ActionResult<Program>> {
+export async function updateApplication(
+  id: string,
+  input: UpdateApplicationInput
+): Promise<ActionResult> {
   const supabase = await createClient();
 
   const {
@@ -132,42 +103,82 @@ export async function updateProgram(
     return { success: false, error: '로그인이 필요합니다.' };
   }
 
-  // id는 WHERE 조건용이라 update 페이로드에서 분리
-  const { id, ...fields } = updateData;
-
-  // undefined 필드 제거 - Supabase에 undefined를 넘기면 동작이 예측 불가능
-  // (null은 "값을 지워라"는 의도이므로 보존)
-  const payload: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(fields)) {
-    if (value !== undefined) {
-      payload[key] = value;
-    }
-  }
-
-  const { data, error } = await supabase
-    .from('programs')
-    .update(payload)
+  // 기존 지원서 조회 - 소유권/상태 확인용
+  // program_id는 revalidatePath에서 필요해서 함께 가져옴
+  const { data: existing, error: fetchError } = await supabase
+    .from('applications')
+    .select('id, user_id, is_complete, program_id')
     .eq('id', id)
-    .select()
     .single();
 
-  if (error) {
-    console.error('[updateProgram]', error);
-    return { success: false, error: '프로그램 수정에 실패했습니다.' };
+  if (fetchError || !existing) {
+    return { success: false, error: '지원서를 찾을 수 없습니다.' };
   }
 
-  revalidatePath('/dashboard/programs');
-  revalidatePath(`/dashboard/programs/${id}`);
+  // 소유권 검증 - 다른 사용자의 지원서 수정 차단
+  // RLS가 이미 막지만, 앱 레벨에서도 체크해서 친절한 에러 메시지 제공
+  if (existing.user_id !== user.id) {
+    return { success: false, error: '수정 권한이 없습니다.' };
+  }
 
-  return { success: true, data };
+  // 제출 완료된 지원서는 수정 금지
+  // (비즈니스 요구사항에 따라 변경 가능 - 현재는 엄격하게 차단)
+  if (existing.is_complete) {
+    return { success: false, error: '제출된 지원서는 수정할 수 없습니다.' };
+  }
+
+  // 업데이트 페이로드 구성
+  // 전달된 필드만 반영하는 partial update 패턴
+  const updatePayload: {
+    form_data?: UpdateApplicationInput['form_data'];
+    is_complete?: boolean;
+    status?: ApplicationStatus;
+    submitted_at?: string;
+  } = {};
+
+  if (input.form_data !== undefined) {
+    updatePayload.form_data = input.form_data;
+  }
+
+  if (input.is_complete === true) {
+    // 제출 처리 - 상태 전환과 제출 시각 기록을 원자적으로 묶음
+    updatePayload.is_complete = true;
+    updatePayload.status = 'submitted';
+    updatePayload.submitted_at = new Date().toISOString();
+  } else if (input.is_complete === false) {
+    updatePayload.is_complete = false;
+  }
+
+  // status만 별도로 넘어온 경우 (예: 관리자 검토 상태 변경)
+  // is_complete 처리 뒤에 와야 위의 status 세팅을 덮어쓸 수 있음
+  if (input.status !== undefined && input.is_complete === undefined) {
+    updatePayload.status = input.status;
+  }
+
+  const { error } = await supabase
+    .from('applications')
+    .update(updatePayload)
+    .eq('id', id);
+
+  if (error) {
+    console.error('[updateApplication]', error);
+    return { success: false, error: '지원서 수정에 실패했습니다.' };
+  }
+
+  revalidatePath('/applications');
+  revalidatePath(`/applications/${id}`);
+  revalidatePath(`/programs/${existing.program_id}`);
+
+  return { success: true, data: null };
 }
 
 /**
- * 프로그램 삭제
- * - FK 제약에 따라 연관 applications도 영향받을 수 있음
- * - 추후 soft delete 고려
+ * 지원서 삭제
+ * - 본인 지원서만 삭제 가능
+ * - 제출된 지원서는 삭제 불가 (감사 추적 목적)
+ * - 필요시 soft delete(cancelled 상태)로 전환 고려
  */
-export async function deleteProgram(
+export async function deleteApplication(
   id: string
 ): Promise<ActionResult> {
   const supabase = await createClient();
@@ -180,17 +191,42 @@ export async function deleteProgram(
     return { success: false, error: '로그인이 필요합니다.' };
   }
 
+  // 삭제 전 소유권/상태 확인
+  const { data: existing, error: fetchError } = await supabase
+    .from('applications')
+    .select('id, user_id, is_complete, program_id')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !existing) {
+    return { success: false, error: '지원서를 찾을 수 없습니다.' };
+  }
+
+  if (existing.user_id !== user.id) {
+    return { success: false, error: '삭제 권한이 없습니다.' };
+  }
+
+  // 제출 완료된 지원서는 물리 삭제 금지
+  // 감사 추적을 위해 제출 이력은 보존해야 함
+  if (existing.is_complete) {
+    return {
+      success: false,
+      error: '제출된 지원서는 삭제할 수 없습니다.',
+    };
+  }
+
   const { error } = await supabase
-    .from('programs')
+    .from('applications')
     .delete()
     .eq('id', id);
 
   if (error) {
-    console.error('[deleteProgram]', error);
-    return { success: false, error: '프로그램 삭제에 실패했습니다.' };
+    console.error('[deleteApplication]', error);
+    return { success: false, error: '지원서 삭제에 실패했습니다.' };
   }
 
-  revalidatePath('/dashboard/programs');
+  revalidatePath('/applications');
+  revalidatePath(`/programs/${existing.program_id}`);
 
   return { success: true, data: null };
 }

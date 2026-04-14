@@ -100,8 +100,8 @@ export default async function DashboardPage() {
             />
             <DashboardCard
               title="공고 둘러보기"
-              description="준비 중입니다."
-              href="#"
+              description="공고 보기"
+              href="/programs"
             />
           </div>
         </section>

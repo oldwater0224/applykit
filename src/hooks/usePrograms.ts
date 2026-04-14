@@ -11,6 +11,7 @@ import {
   deleteProgram,
   getProgram,
   getPrograms,
+  getPublicPrograms,
   updateProgram,
 } from '@/src/app/actions/programActions';
 import { CreateProgramData, UpdateProgramData } from '../types/program';
@@ -20,6 +21,7 @@ export const programKeys = {
   all: ['programs'] as const,
   list: (orgId: string) => [...programKeys.all, 'list', orgId] as const,
   detail: (id: string) => [...programKeys.all, 'detail', id] as const,
+  public: () => [...programKeys.all, 'public'] as const,
 };
 
 // 프로그램 목록 조회
@@ -113,6 +115,23 @@ export function useDeleteProgram() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: programKeys.list(orgId!) });
+    },
+  });
+}
+/**
+ * 공개된 공고 목록 조회 (지원자용)
+ * - usePrograms(운영기관용, orgId 기반)과 구분
+ * - 이건 모든 기관의 공고를 가져옴
+ */
+export function usePublicPrograms() {
+  return useQuery({
+    queryKey: programKeys.public(),
+    queryFn: async () => {
+      const result = await getPublicPrograms();
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      return result.data;
     },
   });
 }

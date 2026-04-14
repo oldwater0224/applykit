@@ -197,3 +197,39 @@ export async function deleteProgram(
 
   return { success: true, data: null };
 }
+/**
+ * 공개된 공고 목록 조회 (지원자용)
+ * - status가 'closed'가 아닌 모든 프로그램
+ * - organizations 조인으로 기관명 함께 반환
+ * - 마감일 빠른 순 정렬 (마감 임박한 공고가 위로)
+ * - 로그인 불필요하지만 현재는 대시보드 안에서만 쓰므로 인증 체크 유지
+ */
+export async function getPublicPrograms(): Promise<ActionResult<Program[]>> {
+  const supabase = await createClient();
+
+  // 인증 체크 - 대시보드 내부 기능이라 유지
+  // 추후 비회원 공개 접근 필요 시 이 체크만 제거하면 됨
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: '로그인이 필요합니다.' };
+  }
+
+  // closed가 아닌 모든 공고 + 기관명
+  // deadline NULLS LAST - 마감일 없는 공고는 뒤로
+  // deadline 있는 것끼리는 오름차순 (가까운 것부터)
+  const { data, error } = await supabase
+    .from('programs')
+    .select('*,organizations(id,name)')
+    .neq('status', 'closed')
+    .order('deadline', { ascending: true, nullsFirst: false });
+
+  if (error) {
+    console.error('[getPublicPrograms]', error);
+    return { success: false, error: '공고 목록 조회에 실패했습니다.' };
+  }
+
+  return { success: true, data: data || [] };
+}

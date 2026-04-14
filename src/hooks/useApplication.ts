@@ -7,6 +7,7 @@ import {
   createApplication,
   updateApplication,
   deleteApplication,
+  getProgramApplications,
 } from "@/src/app/actions/applicationAction";
 import type {
   Application,
@@ -29,6 +30,10 @@ export const applicationKeys = {
   detail: (id: string) => [...applicationKeys.details(), id] as const,
   byProgram: (programId: string) =>
     [...applicationKeys.all, "by-program", programId] as const,
+  // ↓ 추가: 운영기관용 - 특정 프로그램의 모든 지원서
+  // byProgram(지원자용)과 다름 - 이건 모든 사용자의 지원서를 봄
+  programApplications: (programId: string) =>
+    [...applicationKeys.all, "program-applications", programId] as const,
 };
 
 /**
@@ -228,5 +233,24 @@ export function useDeleteApplication() {
       //  삭제는 빈도가 낮으므로 넓게 무효화하는 게 단순함)
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
     },
+  });
+}
+/**
+ * 특정 프로그램의 모든 지원서 조회 (운영기관용)
+ * - useMyApplicationByProgram(지원자용)과 구분 -
+ *   이건 본인 것 1건이 아니라 해당 프로그램의 전체 지원서 N건
+ * - Server Action에서 권한 검증 (org_members 멤버십)
+ */
+export function useProgramApplications(programId: string | undefined) {
+  return useQuery({
+    queryKey: applicationKeys.programApplications(programId ?? ""),
+    queryFn: async () => {
+      const result = await getProgramApplications(programId!);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      return result.data;
+    },
+    enabled: !!programId,
   });
 }

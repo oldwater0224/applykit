@@ -6,6 +6,7 @@ import type {
   CreateApplicationInput,
   UpdateApplicationInput,
   ApplicationStatus,
+  Application,
 } from '@/src/types/applications';
 
 // Server Action의 공통 응답 타입
@@ -229,4 +230,67 @@ export async function deleteApplication(
   revalidatePath(`/programs/${existing.program_id}`);
 
   return { success: true, data: null };
+}
+/**
+ * 특정 프로그램의 지원서 목록 조회 (운영기관용)
+ * - 운영기관이 자기 프로그램에 들어온 지원서를 모두 봄
+ * - 본인 프로그램(같은 org_id)인지 검증 후 조회
+ * - 지원자 정보(이메일, 이름)도 함께 가져와야 하지만,
+ *   auth.users는 직접 join 불가 - 일단 user_id만 반환하고 표시 단계에서 처리
+ */
+export async function getProgramApplications(
+  programId: string
+): Promise<ActionResult<Application[]>> {
+  const supabase = await createClient();
+
+  // 1. 인증 확인
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: '로그인이 필요합니다.' };
+  }
+
+  // 2. 프로그램 소유권 확인 - 운영기관이 자기 프로그램인지
+  // - programs.org_id를 가져와서 현재 사용자의 org_members와 비교
+  // - 다른 기관 프로그램의 지원서를 보려는 시도 차단
+  const { data: program, error: programError } = await supabase
+    .from('programs')
+    .select('id, org_id')
+    .eq('id', programId)
+    .single();
+
+  if (programError || !program) {
+    return { success: false, error: '프로그램을 찾을 수 없습니다.' };
+  }
+
+  // 현재 사용자가 해당 org에 속해 있는지 확인
+  // org_members 테이블에 (user_id, org_id) 조합이 있어야 함
+  const { data: membership } = await supabase
+    .from('org_members')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('org_id', program.org_id)
+    .maybeSingle();
+
+  if (!membership) {
+    return { success: false, error: '권한이 없습니다.' };
+  }
+
+  // 3. 지원서 목록 조회
+  // - 모든 지원서 (draft + submitted 모두) - 미완성 건수 표시 위해
+  // - 최신 순 정렬
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*')
+    .eq('program_id', programId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[getProgramApplications]', error);
+    return { success: false, error: '지원서 목록 조회에 실패했습니다.' };
+  }
+
+  return { success: true, data: data || [] };
 }

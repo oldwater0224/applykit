@@ -57,7 +57,7 @@ export async function getProgram(
   const supabase = await createClient();
 
   // organizations 중첩 조회 - 기관명 표시용
-  // 한 줄로 쓰는 이유: Supabase PostgREST 파서가 공백/개행에 민감함
+  
   const { data, error } = await supabase
     .from('programs')
     .select('*,organizations(id,name)')

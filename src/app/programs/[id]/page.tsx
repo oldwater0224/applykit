@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useProgram } from '@/src/hooks/usePrograms';
-import { useMyApplicationByProgram } from '@/src/hooks/useApplication';
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useProgram } from "@/src/hooks/usePrograms";
+import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
 
 export default function ProgramPublicDetailPage() {
   const params = useParams();
@@ -44,16 +44,14 @@ export default function ProgramPublicDetailPage() {
   const now = new Date();
   const deadline = program.deadline ? new Date(program.deadline) : null;
   const isDeadlinePassed = deadline !== null && deadline < now;
-  const isPublished = program.status !== 'closed';
+  const isPublished = program.status !== "closed";
   const canApply = isPublished && !isDeadlinePassed;
 
   // D-day 계산
   // ceil로 올림 - 오늘 마감이면 D-0, 내일 마감이면 D-1
   const daysRemaining =
     deadline !== null
-      ? Math.ceil(
-          (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-        )
+      ? Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       : null;
 
   // 폼 스키마 유무 - 양식이 없으면 지원 불가
@@ -77,18 +75,17 @@ export default function ProgramPublicDetailPage() {
         <div className="bg-white rounded-lg shadow p-8">
           {/* 상태 뱃지 */}
           <div className="flex items-center gap-2 mb-4">
-            {isPublished ? (
+            {isDeadlinePassed ? (
+              <span className="px-2 py-0.5 text-xs border border-red-300 text-red-700 bg-red-50 rounded-full">
+                접수 마감
+              </span>
+            ) : isPublished ? (
               <span className="px-2 py-0.5 text-xs border border-green-300 text-green-700 bg-green-50 rounded-full">
                 접수 중
               </span>
             ) : (
               <span className="px-2 py-0.5 text-xs border border-gray-300 text-gray-600 bg-gray-50 rounded-full">
                 마감
-              </span>
-            )}
-            {isDeadlinePassed && (
-              <span className="px-2 py-0.5 text-xs border border-red-300 text-red-700 bg-red-50 rounded-full">
-                기간 만료
               </span>
             )}
           </div>
@@ -106,7 +103,7 @@ export default function ProgramPublicDetailPage() {
           {deadline && (
             <div className="mt-4 flex items-center gap-3 text-sm">
               <span className="text-gray-500">접수 마감:</span>
-              <span>{deadline.toLocaleDateString('ko-KR')}</span>
+              <span>{deadline.toLocaleDateString("ko-KR")}</span>
               {daysRemaining !== null &&
                 daysRemaining >= 0 &&
                 !isDeadlinePassed && (
@@ -162,10 +159,7 @@ function ApplyButton({
   hasFormSchema: boolean;
   isDeadlinePassed: boolean;
   isPublished: boolean;
-  existingApplication:
-    | { id: string; is_complete: boolean }
-    | null
-    | undefined;
+  existingApplication: { id: string; is_complete: boolean } | null | undefined;
   onApply: () => void;
 }) {
   // 1. 제출 완료 - 가장 높은 우선순위
@@ -190,9 +184,7 @@ function ApplyButton({
   if (existingApplication && !existingApplication.is_complete) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-amber-700">
-          작성 중인 지원서가 있습니다.
-        </p>
+        <p className="text-sm text-amber-700">작성 중인 지원서가 있습니다.</p>
         <button
           onClick={onApply}
           className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"

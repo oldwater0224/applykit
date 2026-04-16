@@ -123,7 +123,7 @@ export default function ProgramPublicDetailPage() {
               <h2 className="text-sm font-medium text-gray-700 mb-2">
                 공고 내용
               </h2>
-              <p className="text-sm whitespace-pre-wrap break-words">
+              <p className="text-sm whitespace-pre-wrap wrap-break-word">
                 {program.description}
               </p>
             </div>

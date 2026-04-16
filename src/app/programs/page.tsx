@@ -92,7 +92,7 @@ function ProgramCard({ program }: { program: Program }) {
           )}
           {isDeadlinePassed ? (
             <span className="px-2 py-0.5 text-xs border border-red-300 text-red-700 bg-red-50 rounded-full">
-              기간 만료
+              접수 마감
             </span>
           ) : daysRemaining !== null && daysRemaining <= 7 ? (
             // 1주일 이내 마감 - 강조 표시로 시선 유도

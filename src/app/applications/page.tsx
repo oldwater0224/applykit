@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useMyApplications } from '@/src/hooks/useApplication';
 import {
   APPLICATION_STATUS_LABEL,
+  APPLICATION_STATUS_STYLE,
   ApplicationWithProgram,
 } from '@/src/types/applications';
 
@@ -85,16 +86,7 @@ function ApplicationCard({
     );
   }
 
-  // 상태별 뱃지 스타일 - 시각적으로 상태를 구분
-  // 컨벤션상 bg-gray 회피가 원칙이지만 status 뱃지는 예외적으로
-  // 배경색으로 구분해야 정보 전달이 명확해서 색상 차별화 유지
-  const statusStyle = {
-    draft: 'border-amber-300 text-amber-700 bg-amber-50',
-    submitted: 'border-blue-300 text-blue-700 bg-blue-50',
-    reviewing: 'border-purple-300 text-purple-700 bg-purple-50',
-    accepted: 'border-green-300 text-green-700 bg-green-50',
-    rejected: 'border-red-300 text-red-700 bg-red-50',
-  }[application.status];
+  
 
   function handleClick() {
     if (!application.is_complete) {
@@ -132,7 +124,7 @@ function ApplicationCard({
         <div className="flex flex-col items-end gap-2 shrink-0">
           {/* 상태 뱃지 */}
           <span
-            className={`px-2 py-0.5 text-xs border rounded-full ${statusStyle}`}
+            className={`px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
           >
             {APPLICATION_STATUS_LABEL[application.status]}
           </span>

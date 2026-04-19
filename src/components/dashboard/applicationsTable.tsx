@@ -3,6 +3,7 @@
 import {
   Application,
   APPLICATION_STATUS_LABEL,
+  APPLICATION_STATUS_STYLE,
 } from '@/src/types/applications';
 
 interface ApplicationsTableProps {
@@ -65,15 +66,8 @@ export function ApplicationsTable({ applications }: ApplicationsTableProps) {
  * - 상태별 뱃지 색상은 목록 페이지와 동일하게 통일
  */
 function ApplicationRow({ application }: { application: Application }) {
-  // 상태 뱃지 스타일 - /applications 목록 페이지와 동일 매핑
-  // 추후 공통 컴포넌트로 분리 고려 (StatusBadge)
-  const statusStyle = {
-    draft: 'border-amber-300 text-amber-700 bg-amber-50',
-    submitted: 'border-blue-300 text-blue-700 bg-blue-50',
-    reviewing: 'border-purple-300 text-purple-700 bg-purple-50',
-    accepted: 'border-green-300 text-green-700 bg-green-50',
-    rejected: 'border-red-300 text-red-700 bg-red-50',
-  }[application.status];
+  
+  
 
   // user_id의 앞 8자리만 표시 - UUID 첫 세그먼트
   // 운영기관이 식별할 수 있는 최소한의 정보
@@ -84,7 +78,7 @@ function ApplicationRow({ application }: { application: Application }) {
       <td className="px-4 py-3 font-mono text-xs">지원자 #{userIdShort}</td>
       <td className="px-4 py-3">
         <span
-          className={`inline-block px-2 py-0.5 text-xs border rounded-full ${statusStyle}`}
+          className={`inline-block px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
         >
           {APPLICATION_STATUS_LABEL[application.status]}
         </span>

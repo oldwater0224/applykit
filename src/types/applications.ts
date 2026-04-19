@@ -1,16 +1,15 @@
+
 // 지원서 상태값 - DB의 status 컬럼(text)을 타입으로 좁혀서 관리
-// draft: 작성 중(임시저장), submitted: 제출 완료, reviewing: 검토 중,
-// accepted: 합격, rejected: 불합격
+// draft: 작성 중(파일 업로드 시 자동 생성되는 내부 상태)
+// submitted: 제출 완료
+// passed: 합격 (심사 결과 합격)
+// failed: 불합격 (심사 결과 불합격)
+// (reviewing은 MVP에서 제거 - 심사는 review_results 테이블에서 독립 관리)
 
 import { FormSchema } from "./form";
 
 // union 타입으로 좁혀두면 switch/if 분기 시 누락 케이스를 컴파일 타임에 잡음
-export type ApplicationStatus =
-  | "draft"
-  | "submitted"
-  | "reviewing"
-  | "accepted"
-  | "rejected";
+export type ApplicationStatus = "draft" | "submitted" | "passed" | "failed";
 
 // form_data(jsonb)에 들어가는 실제 구조
 // key는 form.ts에서 정의한 FormField의 id,
@@ -62,7 +61,7 @@ export interface ApplicationWithProgram extends Application {
     title: string;
     deadline: string | null;
     org_id: string | null;
-    form_schema : FormSchema |null;
+    form_schema: FormSchema | null;
   } | null;
 }
 
@@ -72,7 +71,15 @@ export interface ApplicationWithProgram extends Application {
 export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   draft: "작성 중",
   submitted: "제출 완료",
-  reviewing: "검토 중",
-  accepted: "합격",
-  rejected: "불합격",
+  passed : "합격",
+  failed : "불합격",
+} as const;
+// 상태별 뱃지 스타일 - UI 전역에서 공통으로 사용
+// 컨벤션상 bg-gray-*/text-gray-*는 금지 - border만 gray 허용
+// as const로 모든 상태 누락 시 컴파일 에러 유도
+export const APPLICATION_STATUS_STYLE: Record<ApplicationStatus, string> = {
+  draft: "bg-amber-50 text-amber-700 border-amber-200",
+  submitted: "bg-blue-50 text-blue-700 border-blue-200",
+  passed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  failed: "bg-rose-50 text-rose-700 border-rose-200",
 } as const;

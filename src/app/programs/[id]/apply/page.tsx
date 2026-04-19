@@ -206,25 +206,7 @@ export default function ApplyPage() {
     return newErrors;
   }
 
-  async function handleSaveDraft() {
-    try {
-      if (currentApplicationId) {
-        await updateMutation.mutateAsync({
-          id: currentApplicationId,
-          input: { form_data: formData, is_complete: false },
-        });
-      } else {
-        const created = await createMutation.mutateAsync({
-          program_id: programId,
-          form_data: formData,
-          is_complete: false,
-        });
-        setCurrentApplicationId(created.id);
-      }
-    } catch (err) {
-      console.error("[handleSaveDraft]", err);
-    }
-  }
+  
 
   async function handleSubmit() {
     const validationErrors = validate();
@@ -367,13 +349,7 @@ export default function ApplyPage() {
         )}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={handleSaveDraft}
-            disabled={isPending}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPending ? "저장 중..." : "임시저장"}
-          </button>
+          
           <button
             onClick={handleSubmit}
             disabled={isPending}

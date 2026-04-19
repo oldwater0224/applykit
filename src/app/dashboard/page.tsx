@@ -71,22 +71,13 @@ export default async function DashboardPage() {
 
         <section className="mb-8">
           <h2 className="text-sm font-medium text-gray-500 mb-3">운영</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <DashboardCard
               title="공고 관리"
-              description="채용 공고를 생성하고 관리합니다."
+              description="공고를 생성하고 지원서 접수·심사를 관리합니다."
               href="/dashboard/programs"
             />
-            <DashboardCard
-              title="지원서 관리"
-              description="접수된 지원서를 확인합니다."
-              href="/dashboard/applications"
-            />
-            <DashboardCard
-              title="평가 관리"
-              description="지원서 평가를 진행합니다."
-              href="/dashboard/reviews"
-            />
+            {/* 심사 아카이브 카드는 Day 9에 추가 */}
           </div>
         </section>
 

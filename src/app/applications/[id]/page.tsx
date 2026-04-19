@@ -53,15 +53,7 @@ export default function ApplicationDetailPage() {
     );
   }
 
-  // 상태 뱃지 스타일 - 목록 페이지와 동일
-  // 별도 상수로 빼도 되지만 단순 매핑이라 인라인 유지
-  const statusStyle = {
-    draft: 'border-amber-300 text-amber-700 bg-amber-50',
-    submitted: 'border-blue-300 text-blue-700 bg-blue-50',
-    reviewing: 'border-purple-300 text-purple-700 bg-purple-50',
-    accepted: 'border-green-300 text-green-700 bg-green-50',
-    rejected: 'border-red-300 text-red-700 bg-red-50',
-  }[application.status];
+  
 
   // form_schema는 Program 타입에서 FormSchema | null
   // 여기서는 application.programs의 부분 조회 결과라 form_schema가 없음
@@ -90,7 +82,7 @@ export default function ApplicationDetailPage() {
               )}
             </div>
             <span
-              className={`px-3 py-1 text-sm border rounded-full shrink-0 ${statusStyle}`}
+              className={`px-3 py-1 text-sm border rounded-full shrink-0 `}
             >
               {APPLICATION_STATUS_LABEL[application.status]}
             </span>

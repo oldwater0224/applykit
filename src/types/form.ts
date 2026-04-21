@@ -22,6 +22,10 @@ export interface FormField {
   maxLength?: number      // text, textarea용
   accept?: string         // file용 (예: '.pdf,.doc')
   maxFileSize?: number    // file용 (MB 단위)
+  // 심사 아카이브 검색용 - review_results.company_name
+  // 운영기관 폼 빌더에서 테스트 필드 하나에 체크해서 지정
+  // text , textarea 에만 유효 적용
+  isCompanyName?: boolean;
 }
 
 // 전체 폼 스키마

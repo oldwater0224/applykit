@@ -103,6 +103,9 @@ export async function upsertChecklist(
   if (new Set(itemIds).size !== itemIds.length) {
     return { success: false, error: "체크리스트 항목 id가 중복됩니다." };
   }
+  if (input.items.some((i) => i.max_score > 100)) {
+    return { success: false, error: "한 항목의 배점은 100점 이하여야 합니다." };
+  }
 
   // 2. 권한 검증
   const auth = await verifyOrgMembership(input.program_id);

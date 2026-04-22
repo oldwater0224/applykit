@@ -71,6 +71,15 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
     if (passingScore > maxTotal) {
       return `합격 기준점(${passingScore})이 만점(${maxTotal})보다 큽니다.`;
     }
+    if (items.some((i) => i.max_score > 100)) {
+      return "한 항목의 배점은 100점 이하여야 합니다.";
+    }
+    if (passingScore < 0) {
+      return "합격 기준점은 0 이상이어야 합니다.";
+    }
+    if (passingScore > maxTotal) {
+      return `합격 기준점(${passingScore})이 만점(${maxTotal})보다 큽니다.`;
+    }
     return null;
   }
 
@@ -215,6 +224,7 @@ function ChecklistItemRow({
         <input
           type="number"
           min={1}
+          max={100}
           value={item.max_score}
           onChange={(e) => onChange({ max_score: Number(e.target.value) || 0 })}
           className="w-20 px-2 py-2 border rounded-md text-sm text-right"

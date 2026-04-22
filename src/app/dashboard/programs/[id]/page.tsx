@@ -10,14 +10,16 @@ import { FormPreview } from "./formPreview";
 import { useProgramApplications } from "@/src/hooks/useApplication";
 import { ApplicationStatsCards } from "@/src/components/dashboard/applicationStatsCards";
 import { ApplicationsTable } from "@/src/components/dashboard/applicationsTable";
+import { ChecklistEditor } from "@/src/components/review/checklistEditor";
 
 // 탭 식별자 - 타입으로 좁혀서 오타/잘못된 값 방지
-type TabId = "form" | "applications";
+type TabId = "form" | "applications" | "review";
 
 // 탭 메타데이터 - 추후 평가 탭 등 추가 시 여기에 한 줄만 더 넣으면 됨
 const TABS: { id: TabId; label: string }[] = [
   { id: "form", label: "양식 편집" },
   { id: "applications", label: "접수 현황" },
+  { id: "review", label: "심사" },
 ];
 
 export default function ProgramDetailPage() {
@@ -30,8 +32,9 @@ export default function ProgramDetailPage() {
   // - 잘못된 값이 오면 기본 탭(form)으로 폴백
   // - 새로고침해도 탭 위치 유지
   const tabParam = searchParams.get("tab");
-  const activeTab: TabId =
-    tabParam === "applications" ? "applications" : "form";
+  const activeTab: TabId = TABS.some((t) => t.id === tabParam)
+    ? (tabParam as TabId)
+    : "form";
 
   const { data: program, isLoading, error } = useProgram(programId);
   const updateProgram = useUpdateProgram();
@@ -169,6 +172,7 @@ export default function ProgramDetailPage() {
         {activeTab === "applications" && (
           <ApplicationsTab programId={programId} />
         )}
+        {activeTab === "review" && <ReviewTab programId={programId} />}
       </div>
     </div>
   );
@@ -213,6 +217,26 @@ function ApplicationsTab({ programId }: { programId: string }) {
         <h2 className="text-lg font-semibold mb-4">지원서 목록</h2>
         <ApplicationsTable applications={applications} />
       </div>
+    </div>
+  );
+}
+/**
+ * 심사 탭
+ * - MVP Day 5: 체크리스트 편집만
+ * - Day 7: 지원서별 평가 UI 추가 예정
+ * - Day 8: 심사 결과 목록 + 합격/불합격 필터 추가 예정
+ *
+ * 섹션을 나눈 이유: 체크리스트와 평가/결과는 독립적인 관심사
+ * - 체크리스트는 운영기관이 한 번 설정
+ * - 평가는 지원서별로 반복 작업
+ * 향후 Day 7~8에서 이 컴포넌트 안에 섹션을 순서대로 쌓아감
+ */
+function ReviewTab({ programId }: { programId: string }) {
+  return (
+    <div className="space-y-6">
+      <ChecklistEditor programId={programId} />
+      {/* Day 7에 여기 평가 UI 추가 */}
+      {/* Day 8에 여기 심사 결과 목록 추가 */}
     </div>
   );
 }

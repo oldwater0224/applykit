@@ -239,10 +239,13 @@ export async function getApplicationFiles(
  * 파일 다운로드용 signed URL 생성
  * - private 버킷이라 직접 URL 접근 불가 - 일회성 서명 URL 필요
  * - 1시간 유효 (3600초)
- * - 작성 페이지에서 "업로드한 파일 미리보기/다운로드" 용도
+ * - 권한 체크는 RLS에 위임:
+ *   - 지원자: 본인 파일만 조회 가능 (Users can view files ...)
+ *   - 운영기관: 자기 기관 프로그램의 모든 파일 조회 가능 (operator_files)
+ * - RLS가 row를 숨기므로 권한 없으면 "not found"로 자연스럽게 떨어짐
  */
 export async function getFileSignedUrl(
-  fileId: string
+  fileId: string,
 ): Promise<ActionResult<{ url: string }>> {
   const supabase = await createClient();
 
@@ -254,23 +257,16 @@ export async function getFileSignedUrl(
     return { success: false, error: '로그인이 필요합니다.' };
   }
 
-  // 파일 정보 + 소유권 확인
+  // storage_path만 필요 - 권한 체크는 RLS가 처리
+  // 권한 없으면 RLS가 row를 숨겨서 not found로 떨어짐
   const { data: fileRow, error: fetchError } = await supabase
     .from('application_files')
-    .select('storage_path, applications!inner(user_id)')
+    .select('storage_path')
     .eq('id', fileId)
     .single();
 
   if (fetchError || !fileRow) {
     return { success: false, error: '파일을 찾을 수 없습니다.' };
-  }
-
-  const application = Array.isArray(fileRow.applications)
-    ? fileRow.applications[0]
-    : fileRow.applications;
-
-  if (!application || application.user_id !== user.id) {
-    return { success: false, error: '권한이 없습니다.' };
   }
 
   // signed URL 생성 - 1시간 유효

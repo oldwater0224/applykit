@@ -7,6 +7,7 @@ import type {
   UpdateApplicationInput,
   ApplicationStatus,
   Application,
+  ApplicationWithProgram,
 } from '@/src/types/applications';
 
 // Server Action의 공통 응답 타입
@@ -293,4 +294,73 @@ export async function getProgramApplications(
   }
 
   return { success: true, data: data || [] };
+}
+/**
+ * 운영기관용 지원서 단건 조회 (상세 페이지)
+ * - 운영기관이 자기 프로그램의 지원서를 상세 조회
+ * - 권한 검증: applications.program_id가 자기 기관 프로그램인지
+ * - 프로그램 정보 조인 (form_schema 포함) - 양식 렌더링에 필요
+ *
+ * useApplication(지원자용)과 구분되는 이유:
+ * - 지원자 훅은 user_id 필터가 RLS에 의해 적용됨 (본인 것만 조회)
+ * - 운영기관은 남의 지원서를 봄 - 멤버십 체크 방식이 다름
+ * - 에러 메시지도 달라야 함 (운영기관에게 "권한 없음" 명시)
+ */
+export async function getApplicationForOperator(
+  applicationId: string,
+): Promise<ActionResult<ApplicationWithProgram>> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: '로그인이 필요합니다.' };
+  }
+
+  // 1. 지원서 + 프로그램 조인 조회
+  // form_schema 포함 - 양식 렌더링에 필수
+  const { data: application, error } = await supabase
+    .from('applications')
+    .select(
+      `
+      *,
+      programs (
+        id,
+        title,
+        deadline,
+        org_id,
+        form_schema
+      )
+      `,
+    )
+    .eq('id', applicationId)
+    .single();
+
+  if (error || !application) {
+    return { success: false, error: '지원서를 찾을 수 없습니다.' };
+  }
+
+  // 2. 프로그램 참조 확인 - programs가 null이면 삭제된 공고
+  const program = Array.isArray(application.programs)
+    ? application.programs[0]
+    : application.programs;
+
+  if (!program) {
+    return { success: false, error: '지원서가 속한 공고를 찾을 수 없습니다.' };
+  }
+
+  // 3. 운영기관 멤버십 검증 - 자기 기관 프로그램인지
+  const { data: membership } = await supabase
+    .from('org_members')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('org_id', program.org_id)
+    .maybeSingle();
+
+  if (!membership) {
+    return { success: false, error: '권한이 없습니다.' };
+  }
+
+  return { success: true, data: application as ApplicationWithProgram };
 }

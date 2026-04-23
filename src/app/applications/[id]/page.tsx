@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useApplication } from '@/src/hooks/useApplication';
 import { useApplicationFiles } from '@/src/hooks/useApplicationFiles';
 import { ApplicationReadOnlyView } from '@/src/components/application/applicationReadOnlyView';
-import { APPLICATION_STATUS_LABEL } from '@/src/types/applications';
+import { APPLICATION_STATUS_LABEL, APPLICATION_STATUS_STYLE } from '@/src/types/applications';
 import { FormSchema } from '@/src/types/form';
 
 export default function ApplicationDetailPage() {
@@ -55,10 +55,7 @@ export default function ApplicationDetailPage() {
 
   
 
-  // form_schema는 Program 타입에서 FormSchema | null
-  // 여기서는 application.programs의 부분 조회 결과라 form_schema가 없음
-  // -> useProgram으로 별도 조회가 필요하지만, 일단 빈 스키마로 폴백
-  // (개선 여지: useApplications의 select에 form_schema도 포함)
+  
   const schema: FormSchema = application.programs?.form_schema ?? { fields: [], version: 1 }
 
   return (
@@ -82,7 +79,7 @@ export default function ApplicationDetailPage() {
               )}
             </div>
             <span
-              className={`px-3 py-1 text-sm border rounded-full shrink-0 `}
+              className={`px-3 py-1 text-sm border rounded-full shrink-0 ${APPLICATION_STATUS_STYLE[application.status]}`}
             >
               {APPLICATION_STATUS_LABEL[application.status]}
             </span>

@@ -8,6 +8,7 @@ import {
   updateApplication,
   deleteApplication,
   getProgramApplications,
+  getApplicationForOperator
 } from "@/src/app/actions/applicationAction";
 import type {
   Application,
@@ -30,10 +31,14 @@ export const applicationKeys = {
   detail: (id: string) => [...applicationKeys.details(), id] as const,
   byProgram: (programId: string) =>
     [...applicationKeys.all, "by-program", programId] as const,
-  // ↓ 추가: 운영기관용 - 특정 프로그램의 모든 지원서
+  // 운영기관용 - 특정 프로그램의 모든 지원서
   // byProgram(지원자용)과 다름 - 이건 모든 사용자의 지원서를 봄
   programApplications: (programId: string) =>
     [...applicationKeys.all, "program-applications", programId] as const,
+  // 운영기관용 단건 상세 - 지원자용 detail(id)과 구분
+  // 같은 applicationId라도 권한 컨텍스트가 다르므로 별도 캐시 키
+  operatorDetail: (id: string) =>
+    [...applicationKeys.all, "operator-detail", id] as const,
 };
 
 /**
@@ -252,5 +257,23 @@ export function useProgramApplications(programId: string | undefined) {
       return result.data;
     },
     enabled: !!programId,
+  });
+}
+/**
+ * 운영기관용 지원서 단건 조회 (상세 페이지)
+ * - useApplication과 구분 - 권한 체크 방식이 다름
+ * - form_schema 포함 (양식 렌더링용)
+ */
+export function useOperatorApplication(applicationId: string | undefined) {
+  return useQuery({
+    queryKey: applicationKeys.operatorDetail(applicationId ?? ""),
+    queryFn: async () => {
+      const result = await getApplicationForOperator(applicationId!);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      return result.data;
+    },
+    enabled: !!applicationId,
   });
 }

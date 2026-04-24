@@ -11,6 +11,7 @@ import { useProgramApplications } from "@/src/hooks/useApplication";
 import { ApplicationStatsCards } from "@/src/components/dashboard/applicationStatsCards";
 import { ApplicationsTable } from "@/src/components/dashboard/applicationsTable";
 import { ChecklistEditor } from "@/src/components/review/checklistEditor";
+import { ReviewResultsList } from "@/src/components/review/reviewResultsList";
 
 // 탭 식별자 - 타입으로 좁혀서 오타/잘못된 값 방지
 type TabId = "form" | "applications" | "review";
@@ -235,8 +236,7 @@ function ReviewTab({ programId }: { programId: string }) {
   return (
     <div className="space-y-6">
       <ChecklistEditor programId={programId} />
-      {/* Day 7에 여기 평가 UI 추가 */}
-      {/* Day 8에 여기 심사 결과 목록 추가 */}
+      <ReviewResultsList programId={programId} />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   APPLICATION_STATUS_STYLE,
 } from "@/src/types/applications";
 import type { FormSchema } from "@/src/types/form";
+import { ReviewForm } from "@/src/components/review/reviewForm";
 
 /**
  * 운영기관용 지원서 상세 페이지
@@ -112,18 +113,8 @@ export default function OperatorApplicationDetailPage() {
           files={files}
         />
 
-        {/* 심사 영역 - Day 7에 평가 UI로 교체 */}
-        <section className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-2">심사</h2>
-          <p className="text-sm text-gray-500">
-            심사 기능은 준비 중입니다.
-          </p>
-          {/* Day 7: 여기에 체크리스트 기반 평가 UI 추가 */}
-          {/* - 체크리스트 항목별 점수 입력 */}
-          {/* - 코멘트 입력 */}
-          {/* - 심사 저장 버튼 */}
-          {/* - 이미 심사했으면 수정 폼 */}
-        </section>
+        {/* 심사 영역*/}
+        <ReviewForm programId={programId} applicationId={applicationId} />
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import {
 import type {
   ReviewChecklist,
   ReviewResult,
+  ReviewResultWithProgram,
   UpsertChecklistInput,
   CreateReviewInput,
   UpdateReviewInput,
@@ -119,7 +120,7 @@ export function useProgramReviews(programId: string | undefined) {
 export function useArchiveSearch(query: string) {
   return useQuery({
     queryKey: reviewKeys.archive(query),
-    queryFn: async (): Promise<ReviewResult[]> => {
+    queryFn: async (): Promise<ReviewResultWithProgram[]> => {
       const result = await searchArchive(query);
       if (!result.success) {
         throw new Error(result.error);

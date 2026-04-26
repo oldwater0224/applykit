@@ -10,6 +10,7 @@ import type {
   CreateReviewInput,
   UpdateReviewInput,
   ChecklistItem,
+  ReviewResultWithProgram,
 } from "@/src/types/review";
 import type { FormSchema } from "@/src/types/form";
 import type { ApplicationFormData } from "@/src/types/applications";
@@ -412,10 +413,11 @@ export async function getProgramReviews(
  * - trigram 인덱스(idx_review_results_company_name) 활용
  * - 운영기관 멤버는 자기 기관 프로그램의 결과만 (RLS)
  * - 빈 query면 전체 반환 (최신순), 임시 상한 100건
+ * - 프로그램 정보 조인 - 아카이브 화면에서 "어느 공고" 표시에 필요
  */
 export async function searchArchive(
   query: string,
-): Promise<ActionResult<ReviewResult[]>> {
+): Promise<ActionResult<ReviewResultWithProgram[]>> {
   const supabase = await createClient();
 
   const {
@@ -423,9 +425,18 @@ export async function searchArchive(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "로그인이 필요합니다." };
 
+  // programs 조인 - 아카이브는 여러 프로그램이 섞이므로 각 행의 공고명 필요
   let q = supabase
     .from("review_results")
-    .select("*")
+    .select(
+      `
+      *,
+      programs (
+        id,
+        title
+      )
+      `,
+    )
     .order("reviewed_at", { ascending: false })
     .limit(100); // 페이지네이션 도입 전 임시 상한
 
@@ -440,5 +451,5 @@ export async function searchArchive(
     console.error("[searchArchive]", error);
     return { success: false, error: "검색에 실패했습니다." };
   }
-  return { success: true, data: (data as ReviewResult[]) || [] };
+  return { success: true, data: (data as ReviewResultWithProgram[]) || [] };
 }

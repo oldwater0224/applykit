@@ -187,68 +187,71 @@ function ArchiveResults({
  * - 5컬럼: 회사명 | 공고 | 총점 | 판정 | 심사일
  * - programs가 null인 케이스 방어: 공고가 삭제된 경우 "(삭제된 공고)"
  * - tr 전체 링크 대신 각 td를 Link로 래핑 (HTML 스펙 준수)
+ *
+ * 셀 래핑은 헬퍼 함수(renderCell)로 분리 - 인라인 컴포넌트 정의를 피하기 위함
+ * (react/no-unstable-nested-components ESLint 룰 회피)
  */
 function ArchiveRow({ result }: { result: ReviewResultWithProgram }) {
   const program = result.programs;
   const href = program
     ? `/dashboard/programs/${program.id}/applications/${result.application_id}`
-    : "#"; // 공고 삭제된 경우 이동 불가
+    : null; // 공고 삭제된 경우 이동 불가
 
   const resultKey = result.is_passed ? "passed" : "failed";
   const linkCell = "block px-3 py-3 hover:bg-blue-50";
 
-  // 공고 삭제된 케이스는 링크 비활성화 - div로 렌더링
-  const Cell = ({
-    children,
-    className = "",
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) =>
-    program ? (
-      <Link href={href} className={`${linkCell} ${className}`}>
-        {children}
-      </Link>
-    ) : (
-      <div className={`${linkCell} ${className} cursor-not-allowed opacity-60`}>
+  // 셀 컨텐츠를 Link 또는 비활성 div로 래핑하는 헬퍼
+  // 컴포넌트가 아닌 함수라서 매 렌더 시 새 컴포넌트 타입이 생기지 않음
+  function renderCell(children: React.ReactNode, extraClass = "") {
+    if (href) {
+      return (
+        <Link href={href} className={`${linkCell} ${extraClass}`}>
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <div
+        className={`${linkCell} ${extraClass} cursor-not-allowed opacity-60`}
+      >
         {children}
       </div>
     );
+  }
 
   return (
     <tr className="border-b last:border-0">
       <td className="p-0">
-        <Cell>
-          {result.company_name ?? (
+        {renderCell(
+          result.company_name ?? (
             <span className="text-gray-400">(이름 없음)</span>
-          )}
-        </Cell>
+          ),
+        )}
       </td>
       <td className="p-0">
-        <Cell>
-          {program ? (
+        {renderCell(
+          program ? (
             program.title
           ) : (
             <span className="text-gray-400">(삭제된 공고)</span>
-          )}
-        </Cell>
+          ),
+        )}
       </td>
-      <td className="p-0 text-right">
-        <Cell>{result.total_score}점</Cell>
-      </td>
+      <td className="p-0 text-right">{renderCell(`${result.total_score}점`)}</td>
       <td className="p-0 text-center">
-        <Cell>
+        {renderCell(
           <span
             className={`inline-block px-2 py-0.5 text-xs border rounded-full ${REVIEW_RESULT_STYLE[resultKey]}`}
           >
             {REVIEW_RESULT_LABEL[resultKey]}
-          </span>
-        </Cell>
+          </span>,
+        )}
       </td>
       <td className="p-0 text-right">
-        <Cell className="text-xs">
-          {new Date(result.reviewed_at).toLocaleDateString("ko-KR")}
-        </Cell>
+        {renderCell(
+          new Date(result.reviewed_at).toLocaleDateString("ko-KR"),
+          "text-xs",
+        )}
       </td>
     </tr>
   );

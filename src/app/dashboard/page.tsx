@@ -77,7 +77,11 @@ export default async function DashboardPage() {
               description="공고를 생성하고 지원서 접수·심사를 관리합니다."
               href="/dashboard/programs"
             />
-            {/* 심사 아카이브 카드는 Day 9에 추가 */}
+            <DashboardCard
+              title="심사 아카이브"
+              description="과거 심사한 회사를 검색합니다."
+              href="/dashboard/archive"
+            />
           </div>
         </section>
 

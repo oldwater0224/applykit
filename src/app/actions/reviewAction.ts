@@ -453,3 +453,108 @@ export async function searchArchive(
   }
   return { success: true, data: (data as ReviewResultWithProgram[]) || [] };
 }
+/**
+ * 회사명 백필 - 기존 review_results 중 company_name이 NULL인 것을 갱신
+ *
+ * 사용 시점:
+ * - isCompanyName 플래그 도입 전에 심사된 데이터 보정
+ * - 폼 빌더에서 새로 회사명 필드를 지정한 후 과거 데이터에 적용
+ *
+ * 동작:
+ * - 운영기관 멤버의 자기 기관 프로그램의 결과만 처리
+ * - applications.form_data + programs.form_schema → extractCompanyName
+ * - 추출 가능한 것만 UPDATE (여전히 null이면 그대로)
+ *
+ * 결과: { processed, updated } - 처리한 row 수와 실제 갱신된 수
+ */
+export async function backfillCompanyNames(): Promise<
+  ActionResult<{ processed: number; updated: number }>
+> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "로그인이 필요합니다." };
+
+  // 1. 사용자가 속한 org들의 프로그램 id 조회
+  // RLS가 review_results를 자동 필터링하지만, 명시적으로 좁혀서 쿼리 단축
+  const { data: memberships, error: memErr } = await supabase
+    .from("org_members")
+    .select("org_id")
+    .eq("user_id", user.id);
+
+  if (memErr) {
+    console.error("[backfillCompanyNames] memberships", memErr);
+    return { success: false, error: "권한 확인에 실패했습니다." };
+  }
+  if (!memberships || memberships.length === 0) {
+    return { success: false, error: "소속 기관이 없습니다." };
+  }
+
+  // 2. company_name이 null인 review_results 조회 + 필요한 조인
+  // applications: form_data 필요
+  // programs: form_schema 필요 (extractCompanyName이 schema 기반 동작)
+  const { data: rows, error } = await supabase
+    .from("review_results")
+    .select(
+      `
+      id,
+      applications!inner (
+        id,
+        form_data
+      ),
+      programs!inner (
+        id,
+        form_schema
+      )
+      `,
+    )
+    .is("company_name", null);
+
+  if (error) {
+    console.error("[backfillCompanyNames] fetch", error);
+    return { success: false, error: "백필 대상 조회에 실패했습니다." };
+  }
+
+  // 3. 각 row에 대해 추출 후 UPDATE
+  // 한 건씩 UPDATE - 적은 건수 가정. 수천 건 이상이면 batch UPDATE 필요
+  let updated = 0;
+  for (const row of rows ?? []) {
+    // Supabase nested select - !inner이라 객체로 옴 (하지만 타입은 배열일 수도)
+    const application = Array.isArray(row.applications)
+      ? row.applications[0]
+      : row.applications;
+    const program = Array.isArray(row.programs)
+      ? row.programs[0]
+      : row.programs;
+
+    if (!application || !program) continue;
+
+    const formSchema = program.form_schema as FormSchema | null;
+    const formData = application.form_data as ApplicationFormData;
+    if (!formSchema) continue;
+
+    const companyName = extractCompanyName(formSchema, formData);
+    if (!companyName) continue; // 여전히 추출 불가 - 스킵
+
+    const { error: updErr } = await supabase
+      .from("review_results")
+      .update({ company_name: companyName })
+      .eq("id", row.id);
+
+    if (updErr) {
+      console.error("[backfillCompanyNames] update", row.id, updErr);
+      continue; // 한 건 실패해도 다음 건 계속
+    }
+    updated++;
+  }
+
+  // 4. 캐시 무효화
+  revalidatePath("/dashboard/archive");
+
+  return {
+    success: true,
+    data: { processed: rows?.length ?? 0, updated },
+  };
+}

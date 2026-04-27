@@ -126,6 +126,11 @@ function FieldItem({
           </span>
           <span className="font-medium">{field.label}</span>
           {field.required && <span className="text-red-500 text-xs">필수</span>}
+          {field.isCompanyName && (
+            <span className="text-xs px-2 py-0.5 border border-blue-300 text-blue-600 rounded">
+              회사명
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -164,13 +169,17 @@ function FieldItem({
 }
 
 function FieldEditor({ fieldId }: { fieldId: string }) {
-  const { schema, updateField } = useFormBuilderStore();
+  const { schema, updateField , setCompanyNameField } = useFormBuilderStore();
   const field = schema.fields.find((f) => f.id === fieldId);
 
   if (!field) return null;
 
-  const hasOptions = ['select', 'radio', 'checkbox'].includes(field.type);
-  const isFileField = field.type === 'file'; // ← 추가
+  const hasOptions = ["select", "radio", "checkbox"].includes(field.type);
+  const isFileField = field.type === "file"; // ← 추가
+  // 회사명 지정 가능한 타입 - 텍스트만
+  const canBeCompanyName = field.type === "text" || field.type === "textarea";
+
+  
 
   return (
     <div className="bg-white rounded-lg shadow p-4 space-y-4">
@@ -190,7 +199,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
         <label className="block text-sm text-gray-600 mb-1">플레이스홀더</label>
         <input
           type="text"
-          value={field.placeholder || ''}
+          value={field.placeholder || ""}
           onChange={(e) =>
             updateField(fieldId, { placeholder: e.target.value })
           }
@@ -210,6 +219,30 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
           필수 입력
         </label>
       </div>
+      {/* ↓ 회사명 필드 지정 (text/textarea만) */}
+      {canBeCompanyName && (
+        <div className="border-t pt-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`company-name-${fieldId}`}
+              checked={!!field.isCompanyName}
+              onChange={(e) => setCompanyNameField(fieldId, e.target.checked)}
+              className="rounded"
+            />
+            <label
+              htmlFor={`company-name-${fieldId}`}
+              className="text-sm text-gray-600"
+            >
+              회사명 필드로 사용
+            </label>
+          </div>
+          <p className="mt-1 ml-6 text-xs text-gray-500">
+            심사 결과 저장 시 이 필드의 값이 아카이브 검색의 키가 됩니다. 폼당
+            하나만 지정할 수 있습니다.
+          </p>
+        </div>
+      )}
 
       {hasOptions && (
         <OptionsEditor
@@ -227,10 +260,8 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
             </label>
             <input
               type="text"
-              value={field.accept || ''}
-              onChange={(e) =>
-                updateField(fieldId, { accept: e.target.value })
-              }
+              value={field.accept || ""}
+              onChange={(e) => updateField(fieldId, { accept: e.target.value })}
               placeholder=".pdf,.doc,.docx"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -245,7 +276,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
             </label>
             <input
               type="number"
-              value={field.maxFileSize ?? ''}
+              value={field.maxFileSize ?? ""}
               onChange={(e) =>
                 updateField(fieldId, {
                   maxFileSize: e.target.value

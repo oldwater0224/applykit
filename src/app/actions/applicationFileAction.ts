@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/src/lib/supabase/server';
 import type { ApplicationFile } from '@/src/types/applicationFile';
+import { ALLOWED_FILES_LABEL, isAllowedFile } from '@/src/lib/file/allowedTypes';
 
 // 다른 Action들과 동일한 응답 패턴
 type ActionResult<T = null> =
@@ -83,6 +84,24 @@ export async function uploadApplicationFile(
   const timestamp = Date.now();
   const safeName = file.name.replace(/[^\w.\-가-힣]/g, '_'); // 위험 문자 치환
   const storagePath = `${user.id}/${applicationId}/${fieldKey}/${timestamp}_${safeName}`;
+
+  // 파일 형식 서버 검증 - 클라이언트 우회 차단
+if (!isAllowedFile(file)) {
+  return {
+    success: false,
+    error: `${ALLOWED_FILES_LABEL} 파일만 업로드할 수 있습니다.`,
+  };
+}
+
+// 파일 크기 서버 검증 - 일반적 상한 (10MB)
+// MVP는 클라이언트 maxFileSize에 의존하지만 서버에도 안전망
+const MAX_BYTES = 10 * 1024 * 1024;
+if (file.size > MAX_BYTES) {
+  return {
+    success: false,
+    error: "파일 크기는 10MB 이하여야 합니다.",
+  };
+}
 
   // 5. Storage 업로드
   const { error: uploadError } = await supabase.storage

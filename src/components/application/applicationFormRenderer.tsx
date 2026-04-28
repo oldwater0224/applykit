@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { FormField, FormSchema } from '@/src/types/form';
-import { ApplicationFormData } from '@/src/types/applications';
-import {
-  ApplicationFile,
-  formatFileSize,
-} from '@/src/types/applicationFile';
+import { useState } from "react";
+import { FormField, FormSchema } from "@/src/types/form";
+import { ApplicationFormData } from "@/src/types/applications";
+import { ApplicationFile, formatFileSize } from "@/src/types/applicationFile";
+import { ACCEPT_ATTRIBUTE, ALLOWED_FILES_LABEL, isAllowedFile } from "@/src/lib/file/allowedTypes";
 
 interface ApplicationFormRendererProps {
   schema: FormSchema;
@@ -91,7 +89,7 @@ function FieldRenderer({
   isUploading,
 }: FieldRendererProps) {
   const baseInputClass = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-    error ? 'border-red-500' : 'border-gray-300'
+    error ? "border-red-500" : "border-gray-300"
   }`;
 
   return (
@@ -102,28 +100,28 @@ function FieldRenderer({
       </label>
 
       {/* 텍스트 계열 - 5-1단계 그대로 */}
-      {(field.type === 'text' ||
-        field.type === 'email' ||
-        field.type === 'phone' ||
-        field.type === 'number' ||
-        field.type === 'date') && (
+      {(field.type === "text" ||
+        field.type === "email" ||
+        field.type === "phone" ||
+        field.type === "number" ||
+        field.type === "date") && (
         <input
           type={
-            field.type === 'phone'
-              ? 'tel'
-              : field.type === 'date'
-                ? 'date'
+            field.type === "phone"
+              ? "tel"
+              : field.type === "date"
+                ? "date"
                 : field.type
           }
           placeholder={field.placeholder}
           value={
-            typeof value === 'string' || typeof value === 'number'
+            typeof value === "string" || typeof value === "number"
               ? String(value)
-              : ''
+              : ""
           }
           onChange={(e) => {
-            if (field.type === 'number') {
-              onChange(e.target.value === '' ? null : Number(e.target.value));
+            if (field.type === "number") {
+              onChange(e.target.value === "" ? null : Number(e.target.value));
             } else {
               onChange(e.target.value);
             }
@@ -133,10 +131,10 @@ function FieldRenderer({
         />
       )}
 
-      {field.type === 'textarea' && (
+      {field.type === "textarea" && (
         <textarea
           placeholder={field.placeholder}
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => onChange(e.target.value)}
           maxLength={field.maxLength}
           rows={4}
@@ -144,9 +142,9 @@ function FieldRenderer({
         />
       )}
 
-      {field.type === 'select' && (
+      {field.type === "select" && (
         <select
-          value={typeof value === 'string' ? value : ''}
+          value={typeof value === "string" ? value : ""}
           onChange={(e) => onChange(e.target.value)}
           className={baseInputClass}
         >
@@ -159,7 +157,7 @@ function FieldRenderer({
         </select>
       )}
 
-      {field.type === 'radio' && (
+      {field.type === "radio" && (
         <div className="space-y-2">
           {field.options?.map((opt) => (
             <label key={opt} className="flex items-center gap-2 cursor-pointer">
@@ -176,7 +174,7 @@ function FieldRenderer({
         </div>
       )}
 
-      {field.type === 'checkbox' && (
+      {field.type === "checkbox" && (
         <div className="space-y-2">
           {field.options?.map((opt) => {
             const selected = Array.isArray(value) ? value : [];
@@ -206,7 +204,7 @@ function FieldRenderer({
       )}
 
       {/* ↓ 파일 필드 - 5-3단계에서 실제 업로드 연결 */}
-      {field.type === 'file' && (
+      {field.type === "file" && (
         <FileFieldRenderer
           field={field}
           files={fieldFiles}
@@ -219,9 +217,9 @@ function FieldRenderer({
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
 
       {field.maxLength &&
-        (field.type === 'text' || field.type === 'textarea') && (
+        (field.type === "text" || field.type === "textarea") && (
           <p className="mt-1 text-xs text-gray-500 text-right">
-            {typeof value === 'string' ? value.length : 0} / {field.maxLength}
+            {typeof value === "string" ? value.length : 0} / {field.maxLength}
           </p>
         )}
     </div>
@@ -264,25 +262,19 @@ function FileFieldRenderer({
           `파일 크기는 ${field.maxFileSize}MB 이하여야 합니다.`,
         );
         // input 초기화 - 사용자가 다른 파일 선택할 수 있도록
-        e.target.value = '';
+        e.target.value = "";
         return;
       }
     }
 
     // 2. 파일 형식 검증 (확장자 기준)
     // accept는 ".pdf,.doc,.docx" 형식의 문자열
-    if (field.accept) {
-      const allowed = field.accept
-        .split(',')
-        .map((ext) => ext.trim().toLowerCase());
-      const fileName = file.name.toLowerCase();
-      const isAllowed = allowed.some((ext) => fileName.endsWith(ext));
-
-      if (!isAllowed) {
-        setValidationError(`허용된 파일 형식이 아닙니다: ${field.accept}`);
-        e.target.value = '';
-        return;
-      }
+    // MVP는 PDF/Excel만 허용 - field.accept와 무관하게 강제
+    // (운영기관이 폼 빌더에 다른 형식 입력해도 여기서 차단)
+    if (!isAllowedFile(file)) {
+      setValidationError(`${ALLOWED_FILES_LABEL} 파일만 업로드할 수 있습니다.`);
+      e.target.value = "";
+      return;
     }
 
     // 검증 통과 - 업로드 시작
@@ -290,11 +282,11 @@ function FileFieldRenderer({
     try {
       await onUpload(file);
       // 업로드 성공 시 input 초기화 - 같은 파일 다시 선택 가능하게
-      e.target.value = '';
+      e.target.value = "";
     } catch (err) {
       // 부모가 에러를 surface하므로 여기서는 console만
-      console.error('[FileFieldRenderer] upload failed', err);
-      e.target.value = '';
+      console.error("[FileFieldRenderer] upload failed", err);
+      e.target.value = "";
     }
   }
 
@@ -330,7 +322,7 @@ function FileFieldRenderer({
       <div className="px-3 py-4 border border-dashed border-gray-300 rounded-md">
         <input
           type="file"
-          accept={field.accept}
+          accept={ACCEPT_ATTRIBUTE}
           onChange={handleFileChange}
           disabled={isUploading}
           className="block w-full text-sm"

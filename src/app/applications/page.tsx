@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useMyApplications } from '@/src/hooks/useApplication';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMyApplications } from "@/src/hooks/useApplication";
 import {
   APPLICATION_STATUS_LABEL,
   APPLICATION_STATUS_STYLE,
   ApplicationWithProgram,
-} from '@/src/types/applications';
+} from "@/src/types/applications";
+import SignOutButton from "@/src/components/signOutButton";
 
 export default function MyApplicationsPage() {
   const { data: applications, isLoading, error } = useMyApplications();
@@ -26,7 +27,7 @@ export default function MyApplicationsPage() {
         <div className="max-w-4xl mx-auto text-center text-red-600">
           {error instanceof Error
             ? error.message
-            : '지원서 목록을 불러오지 못했습니다.'}
+            : "지원서 목록을 불러오지 못했습니다."}
         </div>
       </div>
     );
@@ -37,12 +38,7 @@ export default function MyApplicationsPage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">내 지원서</h1>
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            대시보드로
-          </Link>
+          <SignOutButton />
         </div>
       </header>
 
@@ -86,8 +82,6 @@ function ApplicationCard({
     );
   }
 
-  
-
   function handleClick() {
     if (!application.is_complete) {
       // 작성 중 - 작성 페이지로 이동해서 이어서 작성
@@ -110,14 +104,14 @@ function ApplicationCard({
           <h2 className="text-lg font-semibold truncate">{program.title}</h2>
           {program.deadline && (
             <p className="text-sm text-gray-500 mt-1">
-              접수 마감:{' '}
-              {new Date(program.deadline).toLocaleDateString('ko-KR')}
+              접수 마감:{" "}
+              {new Date(program.deadline).toLocaleDateString("ko-KR")}
             </p>
           )}
           <p className="text-xs text-gray-400 mt-2">
             {application.is_complete && application.submitted_at
-              ? `제출일: ${new Date(application.submitted_at).toLocaleString('ko-KR')}`
-              : `최근 작성: ${new Date(application.created_at).toLocaleString('ko-KR')}`}
+              ? `제출일: ${new Date(application.submitted_at).toLocaleString("ko-KR")}`
+              : `최근 작성: ${new Date(application.created_at).toLocaleString("ko-KR")}`}
           </p>
         </div>
 
@@ -131,7 +125,7 @@ function ApplicationCard({
 
           {/* 액션 버튼 - 카드 클릭과 동일한 동작이지만 명시적으로 표시 */}
           <span className="text-sm text-blue-600">
-            {application.is_complete ? '상세 보기 →' : '이어서 작성 →'}
+            {application.is_complete ? "상세 보기 →" : "이어서 작성 →"}
           </span>
         </div>
       </div>
@@ -152,10 +146,10 @@ function EmptyState() {
         관심 있는 공고에 지원해보세요.
       </p>
       <Link
-        href="/dashboard"
+        href="/programs"
         className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
       >
-        대시보드로 이동
+        공고보기
       </Link>
     </div>
   );

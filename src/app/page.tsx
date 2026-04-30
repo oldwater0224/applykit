@@ -15,7 +15,7 @@ export default async function Home() {
     <main className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">ApplyKit</h1>
-        <p className="text-gray-600 mb-8">AI 기반 지원서 관리 시스템</p>
+        <p className="text-gray-600 mb-8">지원서 관리 시스템</p>
         <div className="flex gap-4 justify-center">
           <Link
             href="/login"

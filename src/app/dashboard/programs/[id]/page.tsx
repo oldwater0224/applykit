@@ -190,6 +190,10 @@ function ApplicationsTab({ programId }: { programId: string }) {
     isLoading,
     error,
   } = useProgramApplications(programId);
+  // 양식 schema는 부모에서 이미 program으로 받아옴 - props로 받는 게 깔끔하지만
+  // 현재 구조에서는 useProgram을 한 번 더 호출하는 게 변경 폭이 적음
+  // 같은 queryKey라 중복 호출 안 됨 (TanStack Query 캐시 hit)
+  const { data: program } = useProgram(programId);
 
   if (isLoading) {
     return (
@@ -216,7 +220,10 @@ function ApplicationsTab({ programId }: { programId: string }) {
       <ApplicationStatsCards applications={applications} />
       <div>
         <h2 className="text-lg font-semibold mb-4">지원서 목록</h2>
-        <ApplicationsTable applications={applications} />
+        <ApplicationsTable
+          applications={applications}
+          schema={program?.form_schema ?? null}
+        />
       </div>
     </div>
   );

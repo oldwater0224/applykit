@@ -98,7 +98,7 @@ export function CreateProgramModal() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="draft">작성 중</option>
-              <option value="open">모집 중</option>
+              <option value="active">모집 중</option>
               <option value="closed">마감</option>
             </select>
           </div>

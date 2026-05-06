@@ -118,7 +118,7 @@ export async function updateApplication(
   }
 
   // 소유권 검증 - 다른 사용자의 지원서 수정 차단
-  // RLS가 이미 막지만, 앱 레벨에서도 체크해서 친절한 에러 메시지 제공
+  // RLS가 이미 막지만, 앱 레벨에서도 체크
   if (existing.user_id !== user.id) {
     return { success: false, error: '수정 권한이 없습니다.' };
   }

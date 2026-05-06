@@ -203,7 +203,7 @@ function FieldRenderer({
         </div>
       )}
 
-      {/* ↓ 파일 필드 - 5-3단계에서 실제 업로드 연결 */}
+      {/* ↓ 파일 필드 */}
       {field.type === "file" && (
         <FileFieldRenderer
           field={field}
@@ -227,7 +227,7 @@ function FieldRenderer({
 }
 
 /**
- * 파일 필드 전용 렌더러
+ * 파일 필드 전용 렌더
  * - 업로드된 파일 목록 표시
  * - 새 파일 업로드 input
  * - 클라이언트 사이드 검증 (파일 크기, 형식)

@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
-import { createClient } from '@/src/lib/supabase/server';
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/src/lib/supabase/server";
 import type {
   Program,
   CreateProgramData,
   UpdateProgramData,
-} from '@/src/types/program';
+} from "@/src/types/program";
 
 // applicationAction.ts와 동일한 응답 패턴
 // 디스크리미네이티드 유니온으로 호출부에서 타입 좁히기 가능
@@ -19,7 +19,7 @@ type ActionResult<T = null> =
  * - 운영기관 대시보드에서 "내 프로그램 목록" 용도
  */
 export async function getPrograms(
-  orgId: string
+  orgId: string,
 ): Promise<ActionResult<Program[]>> {
   const supabase = await createClient();
 
@@ -29,18 +29,18 @@ export async function getPrograms(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
+    return { success: false, error: "로그인이 필요합니다." };
   }
 
   const { data, error } = await supabase
-    .from('programs')
-    .select('*')
-    .eq('org_id', orgId)
-    .order('created_at', { ascending: false });
+    .from("programs")
+    .select("*")
+    .eq("org_id", orgId)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error('[getPrograms]', error);
-    return { success: false, error: '프로그램 목록 조회에 실패했습니다.' };
+    console.error("[getPrograms]", error);
+    return { success: false, error: "프로그램 목록 조회에 실패했습니다." };
   }
 
   return { success: true, data: data || [] };
@@ -51,22 +51,20 @@ export async function getPrograms(
  * - 프로그램 상세, 폼 빌더, 지원서 작성 페이지 공통 사용
  */
 
-export async function getProgram(
-  id: string
-): Promise<ActionResult<Program>> {
+export async function getProgram(id: string): Promise<ActionResult<Program>> {
   const supabase = await createClient();
 
   // organizations 중첩 조회 - 기관명 표시용
-  
+
   const { data, error } = await supabase
-    .from('programs')
-    .select('*,organizations(id,name)')
-    .eq('id', id)
+    .from("programs")
+    .select("*,organizations(id,name)")
+    .eq("id", id)
     .single();
 
   if (error) {
-    console.error('[getProgram]', error);
-    return { success: false, error: '프로그램을 찾을 수 없습니다.' };
+    console.error("[getProgram]", error);
+    return { success: false, error: "프로그램을 찾을 수 없습니다." };
   }
 
   return { success: true, data };
@@ -79,7 +77,7 @@ export async function getProgram(
  */
 export async function createProgram(
   orgId: string,
-  programData: CreateProgramData
+  programData: CreateProgramData,
 ): Promise<ActionResult<Program>> {
   const supabase = await createClient();
 
@@ -88,18 +86,18 @@ export async function createProgram(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
+    return { success: false, error: "로그인이 필요합니다." };
   }
 
   // jsonb 컬럼은 undefined를 보내면 Supabase가 혼동할 수 있으므로
   // 명시적으로 null 처리
   const { data, error } = await supabase
-    .from('programs')
+    .from("programs")
     .insert({
       org_id: orgId,
       title: programData.title,
       description: programData.description,
-      status: programData.status || 'draft',
+      status: programData.status || "active",
       slug: programData.slug,
       deadline: programData.deadline,
       form_schema: programData.form_schema ?? null,
@@ -108,11 +106,11 @@ export async function createProgram(
     .single();
 
   if (error) {
-    console.error('[createProgram]', error);
-    return { success: false, error: '프로그램 생성에 실패했습니다.' };
+    console.error("[createProgram]", error);
+    return { success: false, error: "프로그램 생성에 실패했습니다." };
   }
 
-  revalidatePath('/dashboard/programs');
+  revalidatePath("/dashboard/programs");
 
   return { success: true, data };
 }
@@ -123,7 +121,7 @@ export async function createProgram(
  * - partial update: 전달된 필드만 반영, undefined는 제거
  */
 export async function updateProgram(
-  updateData: UpdateProgramData
+  updateData: UpdateProgramData,
 ): Promise<ActionResult<Program>> {
   const supabase = await createClient();
 
@@ -132,7 +130,7 @@ export async function updateProgram(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
+    return { success: false, error: "로그인이 필요합니다." };
   }
 
   // id는 WHERE 조건용이라 update 페이로드에서 분리
@@ -148,18 +146,18 @@ export async function updateProgram(
   }
 
   const { data, error } = await supabase
-    .from('programs')
+    .from("programs")
     .update(payload)
-    .eq('id', id)
+    .eq("id", id)
     .select()
     .single();
 
   if (error) {
-    console.error('[updateProgram]', error);
-    return { success: false, error: '프로그램 수정에 실패했습니다.' };
+    console.error("[updateProgram]", error);
+    return { success: false, error: "프로그램 수정에 실패했습니다." };
   }
 
-  revalidatePath('/dashboard/programs');
+  revalidatePath("/dashboard/programs");
   revalidatePath(`/dashboard/programs/${id}`);
 
   return { success: true, data };
@@ -170,9 +168,7 @@ export async function updateProgram(
  * - FK 제약에 따라 연관 applications도 영향받을 수 있음
  * - 추후 soft delete 고려
  */
-export async function deleteProgram(
-  id: string
-): Promise<ActionResult> {
+export async function deleteProgram(id: string): Promise<ActionResult> {
   const supabase = await createClient();
 
   const {
@@ -180,20 +176,17 @@ export async function deleteProgram(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
+    return { success: false, error: "로그인이 필요합니다." };
   }
 
-  const { error } = await supabase
-    .from('programs')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabase.from("programs").delete().eq("id", id);
 
   if (error) {
-    console.error('[deleteProgram]', error);
-    return { success: false, error: '프로그램 삭제에 실패했습니다.' };
+    console.error("[deleteProgram]", error);
+    return { success: false, error: "프로그램 삭제에 실패했습니다." };
   }
 
-  revalidatePath('/dashboard/programs');
+  revalidatePath("/dashboard/programs");
 
   return { success: true, data: null };
 }
@@ -214,21 +207,22 @@ export async function getPublicPrograms(): Promise<ActionResult<Program[]>> {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, error: '로그인이 필요합니다.' };
+    return { success: false, error: "로그인이 필요합니다." };
   }
 
   // closed가 아닌 모든 공고 + 기관명
   // deadline NULLS LAST - 마감일 없는 공고는 뒤로
   // deadline 있는 것끼리는 오름차순 (가까운 것부터)
   const { data, error } = await supabase
-    .from('programs')
-    .select('*,organizations(id,name)')
-    .neq('status', 'closed')
-    .order('deadline', { ascending: true, nullsFirst: false });
+    .from("programs")
+    .select("*")
+    .neq("status", "draft")
+    .order("deadline", { ascending: true, nullsFirst: false });
+  
 
   if (error) {
-    console.error('[getPublicPrograms]', error);
-    return { success: false, error: '공고 목록 조회에 실패했습니다.' };
+    console.error("[getPublicPrograms]", error);
+    return { success: false, error: "공고 목록 조회에 실패했습니다." };
   }
 
   return { success: true, data: data || [] };

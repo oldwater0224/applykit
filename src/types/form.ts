@@ -41,14 +41,14 @@ export const DEFAULT_FORM_SCHEMA: FormSchema = {
       id: 'name',
       type: 'text',
       label: '이름',
-      placeholder: '홍길동',
+      placeholder: '',
       required: true,
     },
     {
       id: 'email',
       type: 'email',
       label: '이메일',
-      placeholder: 'email@example.com',
+      placeholder: '',
       required: true,
     },
     {

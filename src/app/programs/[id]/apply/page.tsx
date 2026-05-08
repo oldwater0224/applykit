@@ -74,7 +74,7 @@ export default function ApplyPage() {
     [program?.form_schema],
   );
 
-  // 진행률 계산 - 5-1과 동일
+  // 진행률 계산 
   const progress = useMemo(() => {
     const requiredFields = schema.fields.filter((f) => f.required);
     if (requiredFields.length === 0) return 100;
@@ -206,8 +206,6 @@ export default function ApplyPage() {
     return newErrors;
   }
 
-  
-
   async function handleSubmit() {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -256,13 +254,16 @@ export default function ApplyPage() {
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8 text-center">
           <h1 className="text-xl font-bold mb-2">이미 제출된 지원서입니다</h1>
           <p className="text-gray-600 mb-6">
-            {program.title}에 이미 지원하셨습니다.
+            {program.title}에 이미 지원하셨습니다.<br/>
+            이미 지원한 지원서는 수정이
+            불가합니다.
           </p>
+
           <Link
             href="/applications"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            내 지원서 보기
+            내 지원목록 보기
           </Link>
         </div>
       </div>
@@ -349,7 +350,6 @@ export default function ApplyPage() {
         )}
 
         <div className="mt-6 flex justify-end gap-3">
-          
           <button
             onClick={handleSubmit}
             disabled={isPending}

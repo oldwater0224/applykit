@@ -124,9 +124,7 @@ function ApplicationCard({
           </span>
 
           {/* 액션 버튼 - 카드 클릭과 동일한 동작이지만 명시적으로 표시 */}
-          <span className="text-sm text-blue-600">
-            {application.is_complete ? "상세 보기 →" : "이어서 작성 →"}
-          </span>
+          
         </div>
       </div>
     </li>

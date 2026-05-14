@@ -62,7 +62,7 @@ export default function CompaniesPage() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* 헤더 */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">스타트업 데이터베이스</h1>
+        <h1 className="text-2xl font-bold text-gray-900">기업 데이터베이스</h1>
         <p className="text-gray-500 mt-1">
           총 {totalCount.toLocaleString()}개 기업
         </p>

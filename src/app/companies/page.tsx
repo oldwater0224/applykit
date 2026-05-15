@@ -8,8 +8,10 @@
 import { useState } from 'react';
 import { useCompanies, useCompanySectors } from '@/src/hooks/useCompanies';
 import Link from 'next/link';
+import type {Company} from "@/src/types/company"
 
 // 금액 포맷 (억 단위)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function formatBillion(amount: number | null): string {
   if (!amount) return '-';
   const billion = Math.round(amount / 100000000);
@@ -140,7 +142,7 @@ export default function CompaniesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {companies.map((company: any) => (
+              {companies.map((company: Company) => (
                 <Link
                   key={company.id}
                   href={`/companies/${company.id}`}

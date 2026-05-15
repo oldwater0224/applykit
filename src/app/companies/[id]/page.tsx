@@ -3,15 +3,16 @@
 // 기업 상세 페이지
 // ============================================================
 
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useCompanyDetail } from '@/src/hooks/useCompanies';
-import Link from 'next/link';
+import { useParams } from "next/navigation";
+import { useCompanyDetail } from "@/src/hooks/useCompanies";
+import Link from "next/link";
+import { Disclosure, Financial } from "@/src/types/company";
 
 // 금액 포맷 (억 단위, 부호 포함)
 function formatBillion(amount: number | null): string {
-  if (amount === null || amount === undefined) return '-';
+  if (amount === null || amount === undefined) return "-";
   const billion = amount / 100000000;
   if (Math.abs(billion) >= 10000) {
     return `${(billion / 10000).toFixed(1)}조`;
@@ -21,16 +22,19 @@ function formatBillion(amount: number | null): string {
 
 // 날짜 포맷
 function formatDate(date: string | null): string {
-  if (!date) return '-';
-  return new Date(date).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
 // 전년 대비 증감률
-function calcGrowthRate(current: number | null, previous: number | null): string | null {
+function calcGrowthRate(
+  current: number | null,
+  previous: number | null,
+): string | null {
   if (!current || !previous || previous === 0) return null;
   const rate = ((current - previous) / Math.abs(previous)) * 100;
   return rate > 0 ? `+${rate.toFixed(1)}%` : `${rate.toFixed(1)}%`;
@@ -89,20 +93,21 @@ export default function CompanyDetailPage() {
           <div className="flex gap-2">
             <span
               className={`px-3 py-1 text-sm rounded-md font-medium
-                ${company.corp_cls === 'Y'
-                  ? 'bg-green-50 text-green-700'
-                  : company.corp_cls === 'K'
-                  ? 'bg-purple-50 text-purple-700'
-                  : 'bg-gray-50 text-gray-600'
+                ${
+                  company.corp_cls === "Y"
+                    ? "bg-green-50 text-green-700"
+                    : company.corp_cls === "K"
+                      ? "bg-purple-50 text-purple-700"
+                      : "bg-gray-50 text-gray-600"
                 }`}
             >
-              {company.corp_cls === 'Y'
-                ? '유가증권'
-                : company.corp_cls === 'K'
-                ? '코스닥'
-                : company.corp_cls === 'N'
-                ? '코넥스'
-                : '비상장'}
+              {company.corp_cls === "Y"
+                ? "유가증권"
+                : company.corp_cls === "K"
+                  ? "코스닥"
+                  : company.corp_cls === "N"
+                    ? "코넥스"
+                    : "비상장"}
             </span>
             {company.sector && (
               <span className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-md font-medium">
@@ -115,15 +120,21 @@ export default function CompanyDetailPage() {
         {/* 기본정보 그리드 */}
         <div className="grid grid-cols-2 gap-4 mt-6 text-sm">
           <InfoItem label="대표자" value={company.ceo_name} />
-          <InfoItem label="설립일" value={formatDate(company.established_date)} />
+          <InfoItem
+            label="설립일"
+            value={formatDate(company.established_date)}
+          />
           <InfoItem label="주소" value={company.address} span2 />
           <InfoItem label="사업자번호" value={company.bizr_no} />
-          <InfoItem label="업종" value={company.industry_name || company.industry_code} />
+          <InfoItem
+            label="업종"
+            value={company.industry_name || company.industry_code}
+          />
           {company.homepage_url && (
             <InfoItem label="홈페이지">
               <a
                 href={
-                  company.homepage_url.startsWith('http')
+                  company.homepage_url.startsWith("http")
                     ? company.homepage_url
                     : `https://${company.homepage_url}`
                 }
@@ -147,22 +158,36 @@ export default function CompanyDetailPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 pr-4 text-gray-500 font-medium">연도</th>
-                  <th className="text-right py-3 px-4 text-gray-500 font-medium">매출액</th>
-                  <th className="text-right py-3 px-4 text-gray-500 font-medium">영업이익</th>
-                  <th className="text-right py-3 px-4 text-gray-500 font-medium">순이익</th>
-                  <th className="text-right py-3 pl-4 text-gray-500 font-medium">자산총계</th>
+                  <th className="text-left py-3 pr-4 text-gray-500 font-medium">
+                    연도
+                  </th>
+                  <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                    매출액
+                  </th>
+                  <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                    영업이익
+                  </th>
+                  <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                    순이익
+                  </th>
+                  <th className="text-right py-3 pl-4 text-gray-500 font-medium">
+                    자산총계
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {financials.map((f: any, i: number) => {
+               
+                {financials.map((f: Financial, i: number) => {
                   const prev = financials[i + 1]; // 이전 연도
                   const revenueGrowth = prev
                     ? calcGrowthRate(f.revenue, prev.revenue)
                     : null;
 
                   return (
-                    <tr key={f.id} className="border-b border-gray-100 last:border-0">
+                    <tr
+                      key={f.id}
+                      className="border-b border-gray-100 last:border-0"
+                    >
                       <td className="py-3 pr-4 font-medium text-gray-900">
                         {f.fiscal_year}
                       </td>
@@ -171,9 +196,9 @@ export default function CompanyDetailPage() {
                         {revenueGrowth && (
                           <div
                             className={`text-xs mt-0.5 ${
-                              revenueGrowth.startsWith('+')
-                                ? 'text-red-500'
-                                : 'text-blue-500'
+                              revenueGrowth.startsWith("+")
+                                ? "text-red-500"
+                                : "text-blue-500"
                             }`}
                           >
                             {revenueGrowth}
@@ -183,8 +208,8 @@ export default function CompanyDetailPage() {
                       <td
                         className={`py-3 px-4 text-right ${
                           f.operating_income && f.operating_income < 0
-                            ? 'text-blue-500'
-                            : 'text-gray-700'
+                            ? "text-blue-500"
+                            : "text-gray-700"
                         }`}
                       >
                         {formatBillion(f.operating_income)}
@@ -192,8 +217,8 @@ export default function CompanyDetailPage() {
                       <td
                         className={`py-3 px-4 text-right ${
                           f.net_income && f.net_income < 0
-                            ? 'text-blue-500'
-                            : 'text-gray-700'
+                            ? "text-blue-500"
+                            : "text-gray-700"
                         }`}
                       >
                         {formatBillion(f.net_income)}
@@ -213,12 +238,14 @@ export default function CompanyDetailPage() {
       {/* 공시 내역 */}
       {disclosures.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">최근 공시</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            최근 공시
+          </h2>
           <div className="space-y-3">
-            {disclosures.map((d: any) => (
+            {disclosures.map((d: Disclosure) => (
               <a
                 key={d.id}
-                href={d.dart_url}
+                href={d.dart_url ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
@@ -253,11 +280,9 @@ function InfoItem({
   if (!value && !children) return null;
 
   return (
-    <div className={span2 ? 'col-span-2' : ''}>
+    <div className={span2 ? "col-span-2" : ""}>
       <span className="text-gray-400">{label}</span>
-      <div className="text-gray-900 mt-0.5">
-        {children || value}
-      </div>
+      <div className="text-gray-900 mt-0.5">{children || value}</div>
     </div>
   );
 }

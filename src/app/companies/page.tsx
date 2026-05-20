@@ -3,39 +3,44 @@
 // 기업 목록 페이지 (TheVC 스타일)
 // ============================================================
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCompanies, useCompanySectors } from '@/src/hooks/useCompanies';
-import Link from 'next/link';
-import type {Company} from "@/src/types/company"
+import { useState } from "react";
+import { useCompanies, useCompanySectors } from "@/src/hooks/useCompanies";
+import Link from "next/link";
+import type { Company } from "@/src/types/company";
+import Pagination from "@/src/components/ui/pagination";
 
 // 금액 포맷 (억 단위)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function formatBillion(amount: number | null): string {
-  if (!amount) return '-';
+  if (!amount) return "-";
   const billion = Math.round(amount / 100000000);
   return `${billion.toLocaleString()}억`;
 }
 
 // 날짜 포맷
 function formatDate(date: string | null): string {
-  if (!date) return '-';
-  return new Date(date).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
   });
 }
 
 export default function CompaniesPage() {
-  const [sector, setSector] = useState<string>('전체');
-  const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [sector, setSector] = useState<string>("전체");
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
 
   // 데이터 조회
   const { data: sectorsData } = useCompanySectors();
-  const { data: companiesData, isLoading, isError } = useCompanies({
+  const {
+    data: companiesData,
+    isLoading,
+    isError,
+  } = useCompanies({
     sector,
     search,
     page,
@@ -43,7 +48,7 @@ export default function CompaniesPage() {
   });
 
   const companies = companiesData?.data || [];
-  const totalPages = companiesData?.totalPages || 1;
+  // const totalPages = companiesData?.totalPages || 1;
   const totalCount = companiesData?.totalCount || 0;
   const sectors = sectorsData || [];
 
@@ -95,11 +100,12 @@ export default function CompaniesPage() {
       {/* 업종 필터 탭 */}
       <div className="flex gap-2 flex-wrap mb-6">
         <button
-          onClick={() => handleSectorChange('전체')}
+          onClick={() => handleSectorChange("전체")}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
-            ${sector === '전체'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            ${
+              sector === "전체"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
         >
           전체
@@ -109,9 +115,10 @@ export default function CompaniesPage() {
             key={s.name}
             onClick={() => handleSectorChange(s.name)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
-              ${sector === s.name
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ${
+                sector === s.name
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
           >
             {s.name} ({s.count})
@@ -138,7 +145,9 @@ export default function CompaniesPage() {
         <>
           {companies.length === 0 ? (
             <div className="text-center py-20 text-gray-400">
-              {search ? `"${search}" 검색 결과가 없습니다.` : '등록된 기업이 없습니다.'}
+              {search
+                ? `"${search}" 검색 결과가 없습니다.`
+                : "등록된 기업이 없습니다."}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -173,19 +182,25 @@ export default function CompaniesPage() {
                   <div className="space-y-1.5 text-sm text-gray-600">
                     {company.ceo_name && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 w-14 shrink-0">대표</span>
+                        <span className="text-gray-400 w-14 shrink-0">
+                          대표
+                        </span>
                         <span className="truncate">{company.ceo_name}</span>
                       </div>
                     )}
                     {company.established_date && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 w-14 shrink-0">설립</span>
+                        <span className="text-gray-400 w-14 shrink-0">
+                          설립
+                        </span>
                         <span>{formatDate(company.established_date)}</span>
                       </div>
                     )}
                     {company.address && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 w-14 shrink-0">주소</span>
+                        <span className="text-gray-400 w-14 shrink-0">
+                          주소
+                        </span>
                         <span className="truncate">{company.address}</span>
                       </div>
                     )}
@@ -195,20 +210,21 @@ export default function CompaniesPage() {
                   <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2">
                     <span
                       className={`px-2 py-0.5 text-xs rounded font-medium
-                        ${company.corp_cls === 'Y'
-                          ? 'bg-green-50 text-green-700'
-                          : company.corp_cls === 'K'
-                          ? 'bg-purple-50 text-purple-700'
-                          : 'bg-gray-50 text-gray-600'
+                        ${
+                          company.corp_cls === "Y"
+                            ? "bg-green-50 text-green-700"
+                            : company.corp_cls === "K"
+                              ? "bg-purple-50 text-purple-700"
+                              : "bg-gray-50 text-gray-600"
                         }`}
                     >
-                      {company.corp_cls === 'Y'
-                        ? '유가증권'
-                        : company.corp_cls === 'K'
-                        ? '코스닥'
-                        : company.corp_cls === 'N'
-                        ? '코넥스'
-                        : '비상장'}
+                      {company.corp_cls === "Y"
+                        ? "유가증권"
+                        : company.corp_cls === "K"
+                          ? "코스닥"
+                          : company.corp_cls === "N"
+                            ? "코넥스"
+                            : "비상장"}
                     </span>
                     {company.homepage_url && (
                       <span className="text-xs text-gray-400 truncate">
@@ -222,31 +238,16 @@ export default function CompaniesPage() {
           )}
 
           {/* 페이지네이션 */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-sm
-                           disabled:opacity-40 disabled:cursor-not-allowed
-                           hover:bg-gray-50 transition-colors"
-              >
-                이전
-              </button>
-              <span className="text-sm text-gray-600 px-4">
-                {page} / {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-sm
-                           disabled:opacity-40 disabled:cursor-not-allowed
-                           hover:bg-gray-50 transition-colors"
-              >
-                다음
-              </button>
-            </div>
-          )}
+          <div className="mt-5">
+          <Pagination 
+            total={totalCount}
+            pageSize={12}
+            currentPage={page}
+            onPageChange={setPage}
+            
+            
+          />
+          </div>
         </>
       )}
     </div>

@@ -7,7 +7,7 @@ import {
   useCreateReview,
   useUpdateReview,
 } from "@/src/hooks/useReviews";
-import type { ChecklistItem, ReviewResult } from "@/src/types/review";
+import type { ChecklistItem  } from "@/src/types/review";
 import {
   REVIEW_RESULT_LABEL,
   REVIEW_RESULT_STYLE,

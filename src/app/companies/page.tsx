@@ -48,7 +48,7 @@ export default function CompaniesPage() {
   });
 
   const companies = companiesData?.data || [];
-  const totalPages = companiesData?.totalPages || 1;
+  // const totalPages = companiesData?.totalPages || 1;
   const totalCount = companiesData?.totalCount || 0;
   const sectors = sectorsData || [];
 

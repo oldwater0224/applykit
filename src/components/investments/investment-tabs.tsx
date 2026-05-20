@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ROUND_NAME_LIST } from "@/src/types/funding";
 
 const TABS = [
   { value: "all", label: "전체" },
@@ -25,7 +24,7 @@ export default function InvestmentTabs() {
     } else {
       params.set("round", value);
     }
-    params.delete("page"); // 탭 변경 시 페이지 리셋
+    params.delete("page");
     router.push(`/investments?${params.toString()}`);
   };
 

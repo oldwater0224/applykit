@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Suspense } from "react";
 import { getInvestments } from "@/src/app/actions/investmentAction";
 import InvestmentTabs from "@/src/components/investments/investment-tabs";

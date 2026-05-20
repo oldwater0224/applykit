@@ -1,10 +1,5 @@
 "use server";
 
-// ============================================================
-// src/app/actions/investmentAction.ts
-// 투자 라운드 목록 조회 Server Action
-// ============================================================
-
 import { createClient } from "@/src/lib/supabase/server";
 import { normalizeRoundName } from "@/src/types/funding";
 
@@ -26,6 +21,23 @@ export interface InvestmentListResult {
   total: number;
 }
 
+// --- Supabase JOIN 결과 타입 ---
+interface FundingRoundJoinRow {
+  id: string;
+  round_name: string;
+  amount: number | null;
+  currency: string | null;
+  announced_date: string | null;
+  news_url: string | null;
+  company_id: string;
+  companies: {
+    corp_name: string;
+    sector: string | null;
+    industry_name: string | null;
+    logo_url: string | null;
+  } | null;
+}
+
 export async function getInvestments({
   round,
   limit = 20,
@@ -41,12 +53,11 @@ export async function getInvestments({
     .from("funding_rounds")
     .select(
       "id, round_name, amount, currency, announced_date, news_url, company_id, companies(corp_name, sector, industry_name, logo_url)",
-      { count: "exact" }
+      { count: "exact" },
     )
     .order("announced_date", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  // 라운드 필터 (탭)
   if (round && round !== "all") {
     query = query.eq("round_name", round);
   }
@@ -58,7 +69,9 @@ export async function getInvestments({
     return { data: [], total: 0 };
   }
 
-  const items: InvestmentListItem[] = (data as any[]).map((r) => ({
+  const rows = (data ?? []) as unknown as FundingRoundJoinRow[];
+
+  const items: InvestmentListItem[] = rows.map((r) => ({
     id: r.id,
     roundName: normalizeRoundName(r.round_name),
     amount: r.amount,

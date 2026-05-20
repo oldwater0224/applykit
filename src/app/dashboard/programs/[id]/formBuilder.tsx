@@ -92,7 +92,7 @@ export function FormBuilder() {
 
 function FieldItem({
   field,
-  index,
+  
   isSelected,
   onSelect,
   onRemove,

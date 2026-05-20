@@ -1,11 +1,5 @@
 "use server";
 
-// ============================================================
-// src/app/actions/dashboardAction.ts
-// 대시보드 통계 Server Action
-// funding_rounds + companies 테이블에서 집계
-// ============================================================
-
 import { createClient } from "@/src/lib/supabase/server";
 import type {
   DashboardStats,
@@ -15,10 +9,34 @@ import type {
 } from "@/src/types/funding";
 import { normalizeRoundName } from "@/src/types/funding";
 
+// --- Supabase JOIN 결과 타입 ---
+interface FundingRoundRow {
+  id: string;
+  round_name: string;
+  amount: number | null;
+  announced_date: string | null;
+}
+
+interface RoundWithCompanyRow {
+  amount: number | null;
+  companies: { sector: string | null; industry_name: string | null }[];
+}
+
+interface RecentRoundRow {
+  id: string;
+  round_name: string;
+  amount: number | null;
+  announced_date: string | null;
+  companies: {
+    corp_name: string;
+    sector: string | null;
+    industry_name: string | null;
+  }[];
+}
+
 export async function getDashboardStats(): Promise<DashboardStats> {
   const supabase = await createClient();
 
-  // 현재 연/월 기준
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -31,28 +49,32 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .from("funding_rounds")
     .select("id, round_name, amount, announced_date");
 
-  const totalRounds = allRounds?.length ?? 0;
-  const totalAmount = allRounds?.reduce((sum, r) => sum + (r.amount ?? 0), 0) ?? 0;
+  const rounds = (allRounds ?? []) as FundingRoundRow[];
+  const totalRounds = rounds.length;
+  const totalAmount = rounds.reduce((sum, r) => sum + (r.amount ?? 0), 0);
 
   // 2) 이번 달 투자
-  const monthlyData = allRounds?.filter(
-    (r) => r.announced_date && r.announced_date >= monthStart
-  ) ?? [];
+  const monthlyData = rounds.filter(
+    (r) => r.announced_date && r.announced_date >= monthStart,
+  );
   const monthlyRounds = monthlyData.length;
-  const monthlyAmount = monthlyData.reduce((sum, r) => sum + (r.amount ?? 0), 0);
+  const monthlyAmount = monthlyData.reduce(
+    (sum, r) => sum + (r.amount ?? 0),
+    0,
+  );
 
   // 3) 전년 동월 투자
-  const prevYearData = allRounds?.filter(
+  const prevYearData = rounds.filter(
     (r) =>
       r.announced_date &&
       r.announced_date >= prevYearMonthStart &&
-      r.announced_date < prevYearMonthEnd
-  ) ?? [];
+      r.announced_date < prevYearMonthEnd,
+  );
   const prevYearMonthlyRounds = prevYearData.length;
 
   // 4) 라운드별 집계
   const roundMap = new Map<string, { count: number; amount: number }>();
-  allRounds?.forEach((r) => {
+  rounds.forEach((r) => {
     const name = normalizeRoundName(r.round_name);
     const prev = roundMap.get(name) ?? { count: 0, amount: 0 };
     roundMap.set(name, {
@@ -65,15 +87,16 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .map(([roundName, { count, amount }]) => ({ roundName, count, amount }))
     .sort((a, b) => b.count - a.count);
 
-  // 5) 업종별 집계 (companies JOIN)
-  const { data: roundsWithCompany  } = await supabase
+  // 5) 업종별 집계
+  const { data: roundsWithCompany } = await supabase
     .from("funding_rounds")
     .select("amount, companies!inner(sector, industry_name)")
     .not("companies.sector", "is", null);
 
   const sectorMap = new Map<string, { count: number; amount: number }>();
-  (roundsWithCompany as any[])?.forEach((r) => {
-    const sector = r.companies?.sector ?? r.companies?.industry_name ?? "기타";
+  ((roundsWithCompany ?? []) as unknown as RoundWithCompanyRow[]).forEach((r) => {
+    const company = r.companies?.[0];
+    const sector = company?.sector ?? company?.industry_name ?? "기타";
     const prev = sectorMap.get(sector) ?? { count: 0, amount: 0 };
     sectorMap.set(sector, {
       count: prev.count + 1,
@@ -89,19 +112,22 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   // 6) 최근 투자 5건
   const { data: recentData } = await supabase
     .from("funding_rounds")
-    .select("id, round_name, amount, announced_date, companies(corp_name, sector, industry_name)")
+    .select(
+      "id, round_name, amount, announced_date, companies(corp_name, sector, industry_name)",
+    )
     .order("announced_date", { ascending: false })
     .limit(5);
 
-  const recentRounds: RecentRound[] =
-    (recentData as any[])?.map((r) => ({
-      id: r.id,
-      companyName: r.companies?.corp_name ?? "알 수 없음",
-      sector: r.companies?.sector ?? r.companies?.industry_name ?? null,
-      roundName: normalizeRoundName(r.round_name),
-      amount: r.amount,
-      announcedDate: r.announced_date ?? "",
-    })) ?? [];
+  const recentRounds: RecentRound[] = (
+    (recentData ?? []) as RecentRoundRow[]
+  ).map((r) => ({
+    id: r.id,
+    companyName: r.companies?.[0]?.corp_name ?? "알 수 없음",
+    sector: r.companies?.[0]?.sector ?? r.companies?.[0]?.industry_name ?? null,
+    roundName: normalizeRoundName(r.round_name),
+    amount: r.amount,
+    announcedDate: r.announced_date ?? "",
+  }));
 
   return {
     totalRounds,

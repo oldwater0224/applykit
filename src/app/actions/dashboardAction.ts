@@ -19,7 +19,7 @@ interface FundingRoundRow {
 
 interface RoundWithCompanyRow {
   amount: number | null;
-  companies: { sector: string | null; industry_name: string | null }[];
+  companies: { sector: string | null; industry_name: string | null } | null;
 }
 
 interface RecentRoundRow {
@@ -31,7 +31,7 @@ interface RecentRoundRow {
     corp_name: string;
     sector: string | null;
     industry_name: string | null;
-  }[];
+  } | null;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -95,7 +95,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   const sectorMap = new Map<string, { count: number; amount: number }>();
   ((roundsWithCompany ?? []) as unknown as RoundWithCompanyRow[]).forEach((r) => {
-    const company = r.companies?.[0];
+    const company = r.companies;
     const sector = company?.sector ?? company?.industry_name ?? "기타";
     const prev = sectorMap.get(sector) ?? { count: 0, amount: 0 };
     sectorMap.set(sector, {
@@ -119,11 +119,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .limit(5);
 
   const recentRounds: RecentRound[] = (
-    (recentData ?? []) as RecentRoundRow[]
+    (recentData ?? []) as unknown as RecentRoundRow[]
   ).map((r) => ({
     id: r.id,
-    companyName: r.companies?.[0]?.corp_name ?? "알 수 없음",
-    sector: r.companies?.[0]?.sector ?? r.companies?.[0]?.industry_name ?? null,
+    companyName: r.companies?.corp_name ?? "알 수 없음",
+    sector: r.companies?.sector ?? r.companies?.industry_name ?? null,
     roundName: normalizeRoundName(r.round_name),
     amount: r.amount,
     announcedDate: r.announced_date ?? "",

@@ -3,6 +3,8 @@
 // 기업 데이터 타입 정의
 // ============================================================
 
+import { FundingRound } from "./funding";
+
 // --- companies 테이블 행 타입 ---
 export interface Company {
   id: string;
@@ -62,6 +64,7 @@ export interface Disclosure {
 export interface CompanyDetail extends Company {
   financials: Financial[];
   disclosures: Disclosure[];
+  fundingRounds : FundingRound[];
 }
 
 // --- 업종 필터용 ---

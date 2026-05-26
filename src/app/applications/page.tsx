@@ -8,7 +8,7 @@ import {
   APPLICATION_STATUS_STYLE,
   ApplicationWithProgram,
 } from "@/src/types/applications";
-import SignOutButton from "@/src/components/signOutButton";
+import SignOutButton from "@/src/components/ui/signOutButton";
 
 export default function MyApplicationsPage() {
   const { data: applications, isLoading, error } = useMyApplications();
@@ -124,7 +124,6 @@ function ApplicationCard({
           </span>
 
           {/* 액션 버튼 - 카드 클릭과 동일한 동작이지만 명시적으로 표시 */}
-          
         </div>
       </div>
     </li>

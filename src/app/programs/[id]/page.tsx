@@ -1,6 +1,11 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+// ============================================================
+// src/app/programs/[id]/page.tsx
+// 프로그램 상세 페이지 — 새 디자인 + 기업 연결
+// ============================================================
+
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
@@ -8,7 +13,9 @@ import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
 export default function ProgramPublicDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const programId = params.id as string;
+  const companyId = searchParams.get("company");
 
   const {
     data: program,
@@ -16,137 +23,135 @@ export default function ProgramPublicDetailPage() {
     error: programError,
   } = useProgram(programId);
 
-  // 이미 지원했는지 확인 - 버튼 상태 분기용
   const { data: existingApplication, isLoading: isAppLoading } =
     useMyApplicationByProgram(programId);
 
   if (isProgramLoading || isAppLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto text-center">로딩 중...</div>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
       </div>
     );
   }
 
   if (programError || !program) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto text-center text-red-600">
-          공고를 찾을 수 없습니다.
-        </div>
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+        <p className="mb-4 text-gray-500">공고를 찾을 수 없습니다.</p>
+        <Link href="/programs" className="text-blue-600 hover:underline">
+          목록으로 돌아가기
+        </Link>
       </div>
     );
   }
 
-  // 접수 가능 여부 계산
-  // 결정: 'closed'가 아니면 접수 가능 (draft도 포함)
-  // 추후 'published' 발행 기능 추가 시 이 로직을 정식화할 예정
   const now = new Date();
   const deadline = program.deadline ? new Date(program.deadline) : null;
   const isDeadlinePassed = deadline !== null && deadline < now;
   const isPublished = program.status !== "closed";
   const canApply = isPublished && !isDeadlinePassed;
 
-  // D-day 계산
-  // ceil로 올림 - 오늘 마감이면 D-0, 내일 마감이면 D-1
   const daysRemaining =
     deadline !== null
-      ? Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.ceil(
+          (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
       : null;
 
-  // 폼 스키마 유무 - 양식이 없으면 지원 불가
   const hasFormSchema =
     program.form_schema && program.form_schema.fields.length > 0;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <Link
-            href="/dashboard"
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            ← 홈으로
-          </Link>
-        </div>
-      </header>
+  // 지원 페이지로 이동 (company 파라미터 전달)
+  const handleApply = () => {
+    const applyUrl = companyId
+      ? `/programs/${programId}/apply?company=${companyId}`
+      : `/programs/${programId}/apply`;
+    router.push(applyUrl);
+  };
 
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-8">
-          {/* 상태 뱃지 */}
-          <div className="flex items-center gap-2 mb-4">
-            {isDeadlinePassed ? (
-              <span className="px-2 py-0.5 text-xs border border-red-300 text-red-700 bg-red-50 rounded-full">
-                접수 마감
-              </span>
-            ) : isPublished ? (
-              <span className="px-2 py-0.5 text-xs border border-green-300 text-green-700 bg-green-50 rounded-full">
-                접수 중
-              </span>
-            ) : (
-              <span className="px-2 py-0.5 text-xs border border-gray-300 text-gray-600 bg-gray-50 rounded-full">
-                마감
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      {/* 뒤로가기 */}
+      <Link
+        href="/programs"
+        className="mb-6 inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
+      >
+        ← 공고 목록
+      </Link>
+
+      <div className="rounded-xl border border-gray-200 bg-white p-8">
+        {/* 상태 뱃지 */}
+        <div className="mb-4 flex items-center gap-2">
+          {isDeadlinePassed ? (
+            <span className="rounded-full border border-red-300 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">
+              접수 마감
+            </span>
+          ) : isPublished ? (
+            <span className="rounded-full border border-green-300 bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+              접수 중
+            </span>
+          ) : (
+            <span className="rounded-full border border-gray-300 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+              마감
+            </span>
+          )}
+          {daysRemaining !== null &&
+            daysRemaining >= 0 &&
+            !isDeadlinePassed && (
+              <span className="rounded-full border border-blue-300 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                D-{daysRemaining}
               </span>
             )}
-          </div>
+        </div>
 
-          {/* 기관명 - organizations가 있을 때만 표시 */}
-          {program.organizations && (
-            <p className="text-sm text-gray-500 mb-1">
-              {program.organizations.name}
+        {/* 기관명 */}
+        {program.organizations && (
+          <p className="mb-1 text-sm text-gray-500">
+            {program.organizations.name}
+          </p>
+        )}
+
+        {/* 제목 */}
+        <h1 className="text-2xl font-bold text-gray-900">{program.title}</h1>
+
+        {/* 마감 정보 */}
+        {deadline && (
+          <div className="mt-4 flex items-center gap-3 text-sm">
+            <span className="text-gray-500">접수 마감:</span>
+            <span className="text-gray-900">
+              {deadline.toLocaleDateString("ko-KR")}
+            </span>
+          </div>
+        )}
+
+        {/* 공고 설명 */}
+        {program.description && (
+          <div className="mt-6 border-t border-gray-100 pt-6">
+            <h2 className="mb-2 text-sm font-medium text-gray-700">
+              공고 내용
+            </h2>
+            <p className="whitespace-pre-wrap wrap-break-word text-sm text-gray-600">
+              {program.description}
             </p>
-          )}
-
-          <h1 className="text-2xl font-bold">{program.title}</h1>
-
-          {/* 마감 정보 */}
-          {deadline && (
-            <div className="mt-4 flex items-center gap-3 text-sm">
-              <span className="text-gray-500">접수 마감:</span>
-              <span>{deadline.toLocaleDateString("ko-KR")}</span>
-              {daysRemaining !== null &&
-                daysRemaining >= 0 &&
-                !isDeadlinePassed && (
-                  <span className="px-2 py-0.5 text-xs border border-blue-300 text-blue-700 bg-blue-50 rounded-full">
-                    D-{daysRemaining}
-                  </span>
-                )}
-            </div>
-          )}
-
-          {/* 공고 설명 */}
-          {program.description && (
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <h2 className="text-sm font-medium text-gray-700 mb-2">
-                공고 내용
-              </h2>
-              <p className="text-sm whitespace-pre-wrap wrap-break-word">
-                {program.description}
-              </p>
-            </div>
-          )}
-
-          {/* 액션 섹션 */}
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <ApplyButton
-              canApply={canApply}
-              hasFormSchema={!!hasFormSchema}
-              isDeadlinePassed={isDeadlinePassed}
-              isPublished={isPublished}
-              existingApplication={existingApplication}
-              onApply={() => router.push(`/programs/${programId}/apply`)}
-            />
           </div>
+        )}
+
+        {/* 액션 */}
+        <div className="mt-8 border-t border-gray-100 pt-6">
+          <ApplyButton
+            canApply={canApply}
+            hasFormSchema={!!hasFormSchema}
+            isDeadlinePassed={isDeadlinePassed}
+            isPublished={isPublished}
+            existingApplication={existingApplication}
+            onApply={handleApply}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * 지원하기 버튼 - 상태에 따라 6가지 분기
- * - 우선순위: 제출 완료 > 임시저장 > 양식 미등록 > 미발행 > 마감 > 정상
- */
 function ApplyButton({
   canApply,
   hasFormSchema,
@@ -162,8 +167,6 @@ function ApplyButton({
   existingApplication: { id: string; is_complete: boolean } | null | undefined;
   onApply: () => void;
 }) {
-  // 1. 제출 완료 - 가장 높은 우선순위
-  // 마감/비발행이 와도 내 제출 이력은 먼저 보여줘야 함
   if (existingApplication?.is_complete) {
     return (
       <div className="space-y-3">
@@ -172,7 +175,7 @@ function ApplyButton({
         </p>
         <Link
           href={`/applications/${existingApplication.id}`}
-          className="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
         >
           내 지원서 보기
         </Link>
@@ -180,14 +183,13 @@ function ApplyButton({
     );
   }
 
-  // 2. 임시저장 상태 - 이어서 작성
   if (existingApplication && !existingApplication.is_complete) {
     return (
       <div className="space-y-3">
         <p className="text-sm text-amber-700">작성 중인 지원서가 있습니다.</p>
         <button
           onClick={onApply}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
         >
           이어서 작성하기
         </button>
@@ -195,48 +197,44 @@ function ApplyButton({
     );
   }
 
-  // 3. 양식 미등록
   if (!hasFormSchema) {
     return (
       <button
         disabled
-        className="px-6 py-3 border border-gray-300 text-gray-400 rounded-md cursor-not-allowed"
+        className="cursor-not-allowed rounded-lg border border-gray-300 px-6 py-2.5 text-sm text-gray-400"
       >
         지원 양식 준비 중
       </button>
     );
   }
 
-  // 4. 미발행(closed) 상태
   if (!isPublished) {
     return (
       <button
         disabled
-        className="px-6 py-3 border border-gray-300 text-gray-400 rounded-md cursor-not-allowed"
+        className="cursor-not-allowed rounded-lg border border-gray-300 px-6 py-2.5 text-sm text-gray-400"
       >
         접수가 마감되었습니다
       </button>
     );
   }
 
-  // 5. 기간 만료
   if (isDeadlinePassed) {
     return (
       <button
         disabled
-        className="px-6 py-3 border border-gray-300 text-gray-400 rounded-md cursor-not-allowed"
+        className="cursor-not-allowed rounded-lg border border-gray-300 px-6 py-2.5 text-sm text-gray-400"
       >
         접수 기간이 지났습니다
       </button>
     );
   }
 
-  // 6. 정상 - 지원 가능
   if (canApply) {
     return (
       <button
         onClick={onApply}
-        className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700"
       >
         지원하기
       </button>

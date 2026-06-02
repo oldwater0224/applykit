@@ -1,10 +1,5 @@
 "use client";
 
-// ============================================================
-// src/components/companies/financial-chart.tsx
-// 재무제표 차트 — 매출/영업이익/순이익 연도별 추이
-// ============================================================
-
 import {
   ResponsiveContainer,
   BarChart,
@@ -28,9 +23,8 @@ export default function FinancialChart({
 }: {
   financials: Financial[];
 }) {
-  if (financials.length === 0) return null;
+  if (!financials || financials.length === 0) return null;
 
-  // 오래된 순으로 정렬
   const chartData = [...financials]
     .sort((a, b) => a.fiscal_year - b.fiscal_year)
     .map((f) => ({
@@ -41,36 +35,42 @@ export default function FinancialChart({
     }));
 
   return (
-    <div className="h-72 w-full">
+    <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
-          margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+          margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="year" tick={{ fontSize: 12 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--gray-100)" />
+          <XAxis
+            dataKey="year"
+            tick={{ fontSize: 11, fill: "var(--gray-400)" }}
+            axisLine={{ stroke: "var(--gray-200)" }}
+            tickLine={false}
+          />
           <YAxis
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 10, fill: "var(--gray-400)" }}
             tickFormatter={formatBillionShort}
-            width={60}
+            width={55}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip
-            formatter={(value) => [
-              formatBillionShort(Number(value)),
-              undefined,
-            ]}
+            formatter={(value) => [formatBillionShort(Number(value)), undefined]}
             contentStyle={{
-              borderRadius: "8px",
-              border: "1px solid #e5e7eb",
-              fontSize: "13px",
+              borderRadius: "6px",
+              border: "1px solid var(--gray-200)",
+              fontSize: "12px",
+              backgroundColor: "var(--card-bg)",
+              boxShadow: "var(--card-hover-shadow)",
             }}
           />
           <Legend
-            wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }}
+            wrapperStyle={{ fontSize: "11px", paddingTop: "6px" }}
           />
-          <Bar dataKey="매출액" fill="#3b82f6" radius={[3, 3, 0, 0]} />
-          <Bar dataKey="영업이익" fill="#10b981" radius={[3, 3, 0, 0]} />
-          <Bar dataKey="순이익" fill="#8b5cf6" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="매출액" fill="var(--brand-500)" radius={[2, 2, 0, 0]} />
+          <Bar dataKey="영업이익" fill="var(--accent-emerald)" radius={[2, 2, 0, 0]} />
+          <Bar dataKey="순이익" fill="var(--round-series-c)" radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

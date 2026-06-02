@@ -77,7 +77,7 @@ export default function InvestorsPage() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="투자자명으로 검색..."
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-white text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"

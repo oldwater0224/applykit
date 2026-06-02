@@ -1,17 +1,24 @@
 "use client";
 
-// ============================================================
-// src/components/companies/funding-timeline.tsx
-// 투자 이력 타임라인
-// ============================================================
-
-import { ROUND_COLORS, normalizeRoundName } from "@/src/types/funding";
 import type { FundingRound } from "@/src/types/funding";
+import { normalizeRoundName } from "@/src/types/funding";
+
+const ROUND_DOT_COLORS: Record<string, string> = {
+  Seed: "var(--round-seed)",
+  "Pre-A": "var(--round-pre-a)",
+  "Series A": "var(--round-series-a)",
+  "Series B": "var(--round-series-b)",
+  "Series C": "var(--round-series-c)",
+  "Series D": "var(--round-series-d)",
+  "Pre-IPO": "var(--round-pre-ipo)",
+  IPO: "var(--round-ipo)",
+  "M&A": "var(--round-ma)",
+};
 
 function formatAmount(amount: number | null) {
   if (!amount) return "비공개";
   if (amount >= 10000) return `${(amount / 10000).toFixed(1)}조`;
-  return `${amount.toLocaleString()}억 원`;
+  return `${amount.toLocaleString()}억`;
 }
 
 function formatDate(dateStr: string | null) {
@@ -25,15 +32,19 @@ export default function FundingTimeline({
 }: {
   rounds: FundingRound[];
 }) {
-  if (rounds.length === 0) {
+  if (!rounds || rounds.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-gray-300">
-        <p className="text-sm text-gray-400">등록된 투자 이력이 없습니다.</p>
+      <div
+        className="flex h-32 items-center justify-center rounded-lg border border-dashed"
+        style={{ borderColor: "var(--gray-300)" }}
+      >
+        <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+          등록된 투자 이력이 없습니다
+        </p>
       </div>
     );
   }
 
-  // 최신순 정렬
   const sorted = [...rounds].sort((a, b) => {
     const da = a.announced_date ?? "";
     const db = b.announced_date ?? "";
@@ -42,54 +53,67 @@ export default function FundingTimeline({
 
   return (
     <div className="relative">
-      {/* 세로 라인 */}
-      <div className="absolute left-4 top-2 bottom-2 w-px bg-gray-200" />
+      <div
+        className="absolute left-1.75 top-2 bottom-2 w-px"
+        style={{ backgroundColor: "var(--gray-200)" }}
+      />
 
-      <div className="space-y-4">
+      <div className="space-y-1">
         {sorted.map((round, i) => {
-          const roundName = normalizeRoundName(round.round_name);
-          const colorClass =
-            ROUND_COLORS[roundName as keyof typeof ROUND_COLORS] ??
-            "bg-gray-100 text-gray-600";
+          const name = normalizeRoundName(round.round_name);
+          const dotColor = ROUND_DOT_COLORS[name] ?? "var(--gray-400)";
 
           return (
-            <div key={round.id} className="relative flex items-start gap-4 pl-10">
+            <div key={round.id} className="relative flex items-center gap-3 pl-6 py-2">
               {/* 도트 */}
               <div
-                className={`absolute left-2.5 top-1.5 size-3 rounded-full border-2 border-white ${
-                  i === 0 ? "bg-blue-500" : "bg-gray-300"
-                }`}
+                className="absolute left-0.75 size-2.5 rounded-full border-2"
+                style={{
+                  backgroundColor: i === 0 ? dotColor : "var(--card-bg)",
+                  borderColor: dotColor,
+                }}
               />
 
-              {/* 콘텐츠 */}
-              <div className="flex-1 rounded-lg border border-gray-100 bg-white p-3 transition hover:border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${colorClass}`}
-                    >
-                      {roundName}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {formatDate(round.announced_date)}
-                    </span>
-                  </div>
-                  <span className="text-sm font-bold tabular-nums text-gray-900">
-                    {formatAmount(round.amount)}
-                  </span>
-                </div>
+              {/* 날짜 */}
+              <span
+                className="w-16 shrink-0 text-[11px] tabular-nums"
+                style={{ color: "var(--gray-400)" }}
+              >
+                {formatDate(round.announced_date)}
+              </span>
 
-                {round.news_url && (
-                  <a
-                    href={round.news_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-block text-xs text-blue-500 hover:underline"
-                  >
-                    관련 기사 →
-                  </a>
-                )}
-              </div>
+              {/* 라운드 */}
+              <span
+                className="inline-flex w-20 shrink-0 items-center gap-1 text-[12px] font-semibold"
+                style={{ color: "var(--gray-700)" }}
+              >
+                <span
+                  className="inline-block size-1.5 rounded-full"
+                  style={{ backgroundColor: dotColor }}
+                />
+                {name}
+              </span>
+
+              {/* 금액 */}
+              <span
+                className="text-[13px] font-bold tabular-nums"
+                style={{ color: "var(--gray-900)" }}
+              >
+                {formatAmount(round.amount)}
+              </span>
+
+              {/* 뉴스 링크 */}
+              {round.news_url && (
+                <a
+                  href={round.news_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto text-[11px]"
+                  style={{ color: "var(--brand-600)" }}
+                >
+                  기사 →
+                </a>
+              )}
             </div>
           );
         })}

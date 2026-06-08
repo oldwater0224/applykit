@@ -8,7 +8,7 @@ export default function ProgramsPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-20">
-          <div className="size-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <div className=" size-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
         </div>
       }
     >

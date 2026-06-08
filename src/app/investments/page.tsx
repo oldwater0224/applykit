@@ -95,7 +95,7 @@ export default async function InvestmentsPage({
         </p>
         <h1
           className="mt-1 text-[22px] font-bold tracking-tight"
-          style={{ color: "var(--gray-900)" }}
+          style={{ color: "#fff" }}
         >
           투자/M&A
         </h1>

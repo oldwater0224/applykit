@@ -75,7 +75,7 @@ export default function InvestorDetailPage() {
       <div className="mb-5 rounded-lg border p-5" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-[20px] font-bold" style={{ color: "var(--gray-900)" }}>{investor.name}</h1>
+            <h1 className="text-[20px] font-bold" style={{ color: "var(--gray-100)" }}>{investor.name}</h1>
             {investor.description && (
               <p className="mt-1 text-[12px]" style={{ color: "var(--gray-500)" }}>{investor.description}</p>
             )}
@@ -104,7 +104,7 @@ export default function InvestorDetailPage() {
 
       {/* 투자 이력 테이블 */}
       <div className="rounded-lg border p-5" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
-        <h2 className="mb-3 text-[13px] font-semibold" style={{ color: "var(--gray-700)" }}>투자 이력</h2>
+        <h2 className="mb-3 text-[13px] font-semibold" style={{ color: "var(--gray-300)" }}>투자 이력</h2>
 
         {portfolio.length === 0 ? (
           <div className="flex h-32 items-center justify-center">
@@ -131,7 +131,7 @@ export default function InvestorDetailPage() {
                     return (
                       <tr key={p.fundingInvestorId} style={{ borderBottom: "1px solid var(--gray-50)" }}>
                         <td className="py-2 pr-3">
-                          <Link href={`/companies/${p.companyId}`} className="font-medium transition hover:underline" style={{ color: "var(--gray-800)" }}>
+                          <Link href={`/companies/${p.companyId}`} className="font-medium transition hover:underline" style={{ color: "var(--gray-100)" }}>
                             {p.companyName}
                           </Link>
                           {p.isLead && (
@@ -170,8 +170,8 @@ export default function InvestorDetailPage() {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border p-3 text-center" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
-      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-400)" }}>{label}</p>
-      <p className="mt-1 text-[15px] font-bold" style={{ color: "var(--gray-900)" }}>{value}</p>
+      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-100)" }}>{label}</p>
+      <p className="mt-1 text-[15px] font-bold" style={{ color: "var(--gray-300)" }}>{value}</p>
     </div>
   );
 }

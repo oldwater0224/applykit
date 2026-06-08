@@ -41,7 +41,11 @@ export default function InvestorsPage() {
   const [page, setPage] = useState(1);
 
   const { data: typesData } = useInvestorTypes();
-  const { data: investorsData, isLoading, isError } = useInvestors({
+  const {
+    data: investorsData,
+    isLoading,
+    isError,
+  } = useInvestors({
     type,
     search,
     page,
@@ -62,7 +66,10 @@ export default function InvestorsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+        <h1
+          className="text-2xl font-bold tracking-tight"
+          style={{ color: "#fff" }}
+        >
           투자자
         </h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -90,7 +97,10 @@ export default function InvestorsPage() {
       {/* 유형 필터 */}
       <div className="mb-6 flex flex-wrap gap-1.5">
         <button
-          onClick={() => { setType("전체"); setPage(1); }}
+          onClick={() => {
+            setType("전체");
+            setPage(1);
+          }}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             type === "전체"
               ? "bg-gray-900 text-white"
@@ -102,7 +112,10 @@ export default function InvestorsPage() {
         {types.map((t) => (
           <button
             key={t.name}
-            onClick={() => { setType(t.name); setPage(1); }}
+            onClick={() => {
+              setType(t.name);
+              setPage(1);
+            }}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               type === t.name
                 ? "bg-gray-900 text-white"
@@ -134,23 +147,27 @@ export default function InvestorsPage() {
           {investors.length === 0 ? (
             <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white">
               <p className="text-sm text-gray-400">
-                {search ? `"${search}" 검색 결과가 없습니다.` : "등록된 투자자가 없습니다."}
+                {search
+                  ? `"${search}" 검색 결과가 없습니다.`
+                  : "등록된 투자자가 없습니다."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ">
               {investors.map((inv) => (
                 <Link
                   key={inv.id}
                   href={`/investors/${inv.id}`}
-                  className="block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-blue-300 hover:shadow-md"
+                  className="block rounded-xl border  border-gray-200  p-5 transition-all hover:border-blue-300 hover:shadow-md"
+                  
                 >
                   <div className="mb-3 flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-900">{inv.name}</h3>
+                    <h3 className="font-semibold text-gray-300">{inv.name}</h3>
                     {inv.investor_type && (
                       <span
                         className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium ${
-                          TYPE_COLORS[inv.investor_type] ?? "bg-gray-100 text-gray-600"
+                          TYPE_COLORS[inv.investor_type] ??
+                          "bg-gray-100 text-gray-600"
                         }`}
                       >
                         {getTypeLabel(inv.investor_type)}

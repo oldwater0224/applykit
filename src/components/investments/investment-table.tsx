@@ -56,31 +56,45 @@ export default function InvestmentTable({
         <table className="w-full text-[12px]">
           <thead>
             <tr style={{ borderBottom: "1px solid var(--gray-100)" }}>
-              <th className="px-3 py-2.5 text-left font-medium" style={{ color: "var(--gray-400)" }}>
+              <th
+                className="px-3 py-2.5 text-left font-medium"
+                style={{ color: "#fff" }}
+              >
                 날짜
               </th>
-              <th className="px-3 py-2.5 text-left font-medium" style={{ color: "var(--gray-400)" }}>
+              <th
+                className="px-3 py-2.5 text-left font-medium"
+                style={{ color: "#fff" }}
+              >
                 기업명
               </th>
-              <th className="hidden px-3 py-2.5 text-left font-medium md:table-cell" style={{ color: "var(--gray-400)" }}>
+              <th
+                className="hidden px-3 py-2.5 text-left font-medium md:table-cell"
+                style={{ color: "#fff" }}
+              >
                 분야
               </th>
-              <th className="px-3 py-2.5 text-left font-medium" style={{ color: "var(--gray-400)" }}>
+              <th
+                className="px-3 py-2.5 text-left font-medium"
+                style={{ color: "#fff" }}
+              >
                 라운드
               </th>
-              <th className="px-3 py-2.5 text-right font-medium" style={{ color: "var(--gray-400)" }}>
+              <th
+                className="px-3 py-2.5 text-right font-medium"
+                style={{ color: "#fff" }}
+              >
                 금액
               </th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => {
-              const dotColor =
-                ROUND_DOT_COLORS[item.roundName] ?? "var(--gray-400)";
+              const dotColor = ROUND_DOT_COLORS[item.roundName] ?? "#fff";
               return (
                 <tr
                   key={item.id}
-                  className="transition hover:bg-slate-50/60"
+                  // className="transition hover:bg-slate-50/60"
                   style={{ borderBottom: "1px solid var(--gray-50)" }}
                 >
                   <td
@@ -93,32 +107,35 @@ export default function InvestmentTable({
                     <Link
                       href={`/companies/${item.companyId}`}
                       className="font-medium transition hover:underline"
-                      style={{ color: "var(--gray-800)" }}
+                      style={{ color: "#fff" }}
                     >
                       {item.companyName}
                     </Link>
                   </td>
                   <td
                     className="hidden px-3 py-2.5 md:table-cell"
-                    style={{ color: "var(--gray-500)" }}
+                    style={{ color: "var(--gray-300)" }}
                   >
                     {item.sector ?? "—"}
                   </td>
                   <td className="px-3 py-2.5">
                     <span
                       className="inline-flex items-center gap-1 text-[11px] font-semibold"
-                      style={{ color: "var(--gray-700)" }}
+                      style={{ color: "var(--gray-400)" }}
                     >
                       <span
                         className="inline-block size-1.5 rounded-full"
-                        style={{ backgroundColor: dotColor }}
+                        style={{
+                          backgroundColor: dotColor,
+                          color: "var(--gray-100)",
+                        }}
                       />
                       {item.roundName}
                     </span>
                   </td>
                   <td
                     className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums font-medium"
-                    style={{ color: "var(--gray-800)" }}
+                    style={{ color: "var(--gray-100)" }}
                   >
                     {formatAmount(item.amount)}
                   </td>
@@ -146,16 +163,22 @@ export default function InvestmentTable({
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[13px] font-medium" style={{ color: "var(--gray-800)" }}>
+                  <p
+                    className="text-[13px] font-medium"
+                    style={{ color: "var(--gray-800)" }}
+                  >
                     {item.companyName}
                   </p>
-                  <p className="mt-0.5 text-[11px]" style={{ color: "var(--gray-400)" }}>
+                  <p
+                    className="mt-0.5 text-[11px]"
+                    style={{ color: "var(--gray-400)" }}
+                  >
                     {item.sector ?? "—"} · {formatDate(item.announcedDate)}
                   </p>
                 </div>
                 <span
                   className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold"
-                  style={{ color: "var(--gray-700)" }}
+                  style={{ color: "var(--gray-100)" }}
                 >
                   <span
                     className="inline-block size-1.5 rounded-full"
@@ -166,7 +189,7 @@ export default function InvestmentTable({
               </div>
               <p
                 className="mt-2 text-right text-[15px] font-bold tabular-nums"
-                style={{ color: "var(--gray-900)" }}
+                style={{ color: "var(--gray-300)" }}
               >
                 {formatAmount(item.amount)}
               </p>

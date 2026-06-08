@@ -31,7 +31,8 @@ export default function ProgramsContent() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-bold tracking-high"
+        style={{color : "#fff"}}>
           지원하기
         </h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -56,7 +57,7 @@ export default function ProgramsContent() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="프로그램명, 기관명으로 검색..."
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 sm:max-w-md"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 sm:max-w-md text-white"
         />
       </div>
 

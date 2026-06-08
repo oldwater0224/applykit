@@ -25,7 +25,7 @@ export function TabList({
   return (
     <div
       className="flex gap-0.5"
-      style={{ borderBottom: "1px solid var(--gray-200)" }}
+      // style={{ borderBottom: "1px solid var(--gray-200)" }}
     >
       {tabs.map((tab) => (
         <button
@@ -33,7 +33,7 @@ export function TabList({
           onClick={() => onChange(tab.id)}
           className="relative px-3 py-2 text-[12px] font-medium transition-colors"
           style={{
-            color: activeTab === tab.id ? "var(--gray-900)" : "var(--gray-400)",
+            color: activeTab === tab.id ? "var(--gray-100)" : "var(--gray-400)",
           }}
         >
           {tab.label}
@@ -48,7 +48,7 @@ export function TabList({
           {activeTab === tab.id && (
             <span
               className="absolute inset-x-0 -bottom-px h-0.5"
-              style={{ backgroundColor: "var(--navy-900)" }}
+              
             />
           )}
         </button>

@@ -35,7 +35,7 @@ export default function FundingTimeline({
   if (!rounds || rounds.length === 0) {
     return (
       <div
-        className="flex h-32 items-center justify-center rounded-lg border border-dashed"
+        className="flex h-32 items-center justify-center rounded-lg"
         style={{ borderColor: "var(--gray-300)" }}
       >
         <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>

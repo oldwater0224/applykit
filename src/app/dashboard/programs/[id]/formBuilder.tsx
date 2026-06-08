@@ -49,7 +49,7 @@ export function FormBuilder() {
   return (
     <div className="space-y-4">
       {/* 필드 목록 */}
-      <div className="bg-white rounded-lg shadow p-4 space-y-2">
+      <div className=" rounded-lg shadow p-4 space-y-2">
         {schema.fields.length === 0 ? (
           <p className="text-gray-500 text-center py-4">필드를 추가해주세요</p>
         ) : (

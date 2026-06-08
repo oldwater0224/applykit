@@ -1,84 +1,94 @@
-'use client'
+"use client";
 
-import { usePrograms } from '@/src/hooks/usePrograms'
-import { useProgramStore } from '@/src/stores/programstore'
-import { useAuth } from '@/src/hooks/useAuth'
-import { Program } from '@/src/types/program'
-import Link from 'next/link'
-import { CreateProgramModal } from './createProgramModal'
-import { EditProgramModal } from './editProgramModal'
-import { DeleteProgramModal } from './deleteProgramModal'
+import { usePrograms } from "@/src/hooks/usePrograms";
+import { useProgramStore } from "@/src/stores/programstore";
+import { useAuth } from "@/src/hooks/useAuth";
+import { Program } from "@/src/types/program";
+import Link from "next/link";
+import { CreateProgramModal } from "./createProgramModal";
+import { EditProgramModal } from "./editProgramModal";
+import { DeleteProgramModal } from "./deleteProgramModal";
+import { DashboardPageHeader } from "@/src/components/dashboard/pageHeader";
 
 export default function ProgramsPage() {
-  const { isAuthenticated } = useAuth()
-  const { data: programs, isLoading, error } = usePrograms()
-  const { openCreateModal, openEditModal, openDeleteModal } = useProgramStore()
+  const { isAuthenticated } = useAuth();
+  const { data: programs, isLoading, error } = usePrograms();
+  const { openCreateModal, openEditModal, openDeleteModal } = useProgramStore();
 
-  if (!isAuthenticated) {
-    return <div className="p-8">로딩 중...</div>
-  }
-
-  if (isLoading) {
-    return <div className="p-8">프로그램 목록을 불러오는 중...</div>
+  if (!isAuthenticated || isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="size-6 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--brand-500)" }} />
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-8 text-red-600">에러: {error.message}</div>
+    return (
+      <div className="p-8 text-center text-[13px]" style={{ color: "var(--accent-rose)" }}>
+        에러: {error.message}
+      </div>
+    );
   }
 
-  // programs가 없거나 빈 배열이면 빈 목록 표시
-  const programList = Array.isArray(programs) ? programs : []
+  const programList = Array.isArray(programs) ? programs : [];
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
-            ← 대시보드
-          </Link>
-          <h1 className="text-2xl font-bold mt-2">공고 관리</h1>
-        </div>
-        <button
-          onClick={openCreateModal}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-        >
-          + 새 공고 만들기
-        </button>
-      </div>
-
-      {programList.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-500 mb-4">등록된 공고가 없습니다.</p>
+    <div>
+      <DashboardPageHeader
+        backHref="/dashboard"
+        backLabel="← 대시보드"
+        title="공고 관리"
+        actions={
           <button
             onClick={openCreateModal}
-            className="text-blue-600 hover:underline"
+            className="rounded-md px-3.5 py-1.5 text-[12px] font-medium text-white transition"
+            style={{ backgroundColor: "var(--brand-600)" }}
           >
-            첫 번째 공고 만들기
+            + 새 공고
           </button>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {programList.map((program) => {
-            // 각 항목이 유효한지 체크
-            if (!program || !program.id) return null
-            
-            return (
-              <ProgramCard
-                key={program.id}
-                program={program}
-                onEdit={() => openEditModal(program)}
-                onDelete={() => openDeleteModal(program)}
-              />
-            )
-          })}
-        </div>
-      )}
+        }
+      />
+
+      <div className="p-6">
+        {programList.length === 0 ? (
+          <div
+            className="flex h-48 flex-col items-center justify-center rounded-lg border border-dashed"
+            style={{ borderColor: "var(--gray-300)" }}
+          >
+            <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+              등록된 공고가 없습니다
+            </p>
+            <button
+              onClick={openCreateModal}
+              className="mt-2 text-[12px] font-medium"
+              style={{ color: "var(--brand-600)" }}
+            >
+              첫 번째 공고 만들기
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {programList.map((program) => {
+              if (!program?.id) return null;
+              return (
+                <ProgramCard
+                  key={program.id}
+                  program={program}
+                  onEdit={() => openEditModal(program)}
+                  onDelete={() => openDeleteModal(program)}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <CreateProgramModal />
       <EditProgramModal />
       <DeleteProgramModal />
     </div>
-  )
+  );
 }
 
 function ProgramCard({
@@ -86,73 +96,75 @@ function ProgramCard({
   onEdit,
   onDelete,
 }: {
-  program: Program
-  onEdit: () => void
-  onDelete: () => void
+  program: Program;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
-  const statusColors: Record<string, string> = {
-    draft: 'bg-gray-100 text-gray-600',
-    open: 'bg-green-100 text-green-600',
-    closed: 'bg-red-100 text-red-600',
-  }
+  const statusStyle: Record<string, { bg: string; color: string; label: string }> = {
+    draft: { bg: "var(--gray-100)", color: "var(--gray-600)", label: "작성 중" },
+    open: { bg: "#ecfdf5", color: "var(--accent-emerald)", label: "모집 중" },
+    closed: { bg: "#fff1f2", color: "var(--accent-rose)", label: "마감" },
+  };
 
-  const statusLabels: Record<string, string> = {
-    draft: '작성 중',
-    open: '모집 중',
-    closed: '마감',
-  }
-
-  const title = program.title || '제목 없음'
-  const status = program.status || 'draft'
+  const s = statusStyle[program.status || "draft"] ?? statusStyle.draft;
 
   return (
-   <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-start">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            {/* 제목 클릭 시 상세 페이지로 이동 */}
-            <Link 
+    <div
+      className="rounded-lg border p-4 transition hover:shadow-sm"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+    >
+      <div className="flex items-start justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Link
               href={`/dashboard/programs/${program.id}`}
-              className="text-lg font-semibold hover:text-blue-600 transition"
+              className="text-[14px] font-semibold transition hover:underline"
+              style={{ color: "var(--gray-200)" }}
             >
-              {title}
+              {program.title || "제목 없음"}
             </Link>
-            <span className={`text-xs px-2 py-1 rounded ${statusColors[status]}`}>
-              {statusLabels[status]}
+            <span
+              className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+              style={{ backgroundColor: s.bg, color: s.color }}
+            >
+              {s.label}
             </span>
           </div>
           {program.description && (
-            <p className="text-gray-600 text-sm mb-3">{program.description}</p>
+            <p className="mt-1 line-clamp-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
+              {program.description}
+            </p>
           )}
           {program.deadline && (
-            <p className="text-sm text-gray-500">
-              마감: {new Date(program.deadline).toLocaleDateString('ko-KR')}
+            <p className="mt-1 text-[11px]" style={{ color: "var(--gray-400)" }}>
+              마감: {new Date(program.deadline).toLocaleDateString("ko-KR")}
             </p>
           )}
         </div>
-        <div className="flex gap-2">
-          {/* 양식 편집 버튼 추가 */}
+        <div className="ml-4 flex shrink-0 gap-1.5">
           <Link
             href={`/dashboard/programs/${program.id}`}
-            className="px-3 py-1 text-sm border border-blue-300 text-blue-600 rounded hover:bg-blue-50"
+            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            style={{ borderColor: "var(--brand-500)", color: "var(--brand-600)" }}
           >
             양식 편집
           </Link>
           <button
             onClick={onEdit}
-            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50"
+            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            style={{ borderColor: "var(--gray-200)", color: "var(--gray-600)" }}
           >
             수정
           </button>
           <button
             onClick={onDelete}
-            className="px-3 py-1 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50"
+            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            style={{ borderColor: "var(--accent-rose)", color: "var(--accent-rose)" }}
           >
             삭제
           </button>
         </div>
       </div>
     </div>
-
-  )
+  );
 }

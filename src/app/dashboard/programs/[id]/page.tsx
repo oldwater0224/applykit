@@ -90,9 +90,10 @@ export default function ProgramDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+      <header className="bg-gray-900 text-white"
+     >
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center ">
             <div>
               <Link
                 href="/dashboard/programs"
@@ -158,7 +159,7 @@ export default function ProgramDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* 탭별 콘텐츠 분기 */}
         {activeTab === "form" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
             <div>
               <h2 className="text-lg font-semibold mb-4">양식 편집</h2>
               <FormBuilder />

@@ -1,11 +1,5 @@
 "use client";
 
-// ============================================================
-// src/app/companies/page.tsx
-// 기업 목록 페이지 — Day 4 고도화
-// 다중 필터 + 정렬 + 검색 디바운스 + 카드 개선
-// ============================================================
-
 import { useState, useMemo, useCallback } from "react";
 import {
   useCompanies,
@@ -16,7 +10,6 @@ import Link from "next/link";
 import type { Company } from "@/src/types/company";
 import Pagination from "@/src/components/ui/pagination";
 
-// 상장 구분 옵션
 const CORP_CLS_OPTIONS = [
   { value: "전체", label: "전체" },
   { value: "Y", label: "유가증권" },
@@ -25,24 +18,21 @@ const CORP_CLS_OPTIONS = [
   { value: "E", label: "비상장" },
 ] as const;
 
-// 정렬 옵션
 const SORT_OPTIONS = [
   { value: "created_at:desc", label: "최신순" },
   { value: "corp_name:asc", label: "이름순" },
   { value: "established_date:asc", label: "설립일순" },
 ] as const;
 
-// 날짜 포맷
 function formatDate(date: string | null): string {
-  if (!date) return "-";
+  if (!date) return "—";
   return new Date(date).toLocaleDateString("ko-KR", {
     year: "numeric",
-    month: "long",
+    month: "short",
   });
 }
 
 export default function CompaniesPage() {
-  // 필터 상태
   const [sector, setSector] = useState("전체");
   const [fundingStage, setFundingStage] = useState("전체");
   const [corpCls, setCorpCls] = useState("전체");
@@ -51,31 +41,15 @@ export default function CompaniesPage() {
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
 
-  // 정렬 파싱
   const [sortBy, sortOrder] = useMemo(() => {
     const [by, order] = sort.split(":");
-    return [
-      by as "corp_name" | "established_date" | "created_at",
-      order as "asc" | "desc",
-    ];
+    return [by as "corp_name" | "established_date" | "created_at", order as "asc" | "desc"];
   }, [sort]);
 
-  // 데이터 조회
   const { data: sectorsData } = useCompanySectors();
   const { data: stagesData } = useFundingStages();
-  const {
-    data: companiesData,
-    isLoading,
-    isError,
-  } = useCompanies({
-    sector,
-    fundingStage,
-    corpCls,
-    search,
-    page,
-    pageSize: 12,
-    sortBy,
-    sortOrder,
+  const { data: companiesData, isLoading, isError } = useCompanies({
+    sector, fundingStage, corpCls, search, page, pageSize: 12, sortBy, sortOrder,
   });
 
   const companies = companiesData?.data || [];
@@ -83,175 +57,120 @@ export default function CompaniesPage() {
   const sectors = sectorsData || [];
   const stages = stagesData || [];
 
-  // 검색 실행
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      setSearch(searchInput);
-      setPage(1);
-    },
-    [searchInput]
-  );
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    setSearch(searchInput);
+    setPage(1);
+  }, [searchInput]);
 
-  // 필터 변경 헬퍼
   const resetPage = useCallback(() => setPage(1), []);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       {/* 헤더 */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-          스타트업 데이터베이스
+      <div className="mb-5">
+        <p className="text-[11px] font-medium uppercase tracking-widest" style={{ color: "var(--gray-400)" }}>
+          Startups
+        </p>
+        <h1 className="mt-1 text-[22px] font-bold tracking-tight" style={{ color: "#fff" }}>
+          스타트업
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
           총 {totalCount.toLocaleString()}개 기업
         </p>
       </div>
 
       {/* 검색 + 정렬 */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <form onSubmit={handleSearch} className="flex gap-2 sm:max-w-md sm:flex-1">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <form onSubmit={handleSearch} className="flex gap-2 sm:max-w-sm sm:flex-1">
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="기업명으로 검색..."
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] outline-none transition focus:ring-2 text-gray-100"
+            style={{
+              borderColor: "var(--gray-200)",
+              backgroundColor: "var(--card-bg)",
+            }}
           />
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            className="rounded-md px-4 py-1.5 text-[12px] font-medium text-white transition"
+            style={{ backgroundColor: "var(--brand-600)" }}
           >
             검색
           </button>
         </form>
-
         <select
           value={sort}
-          onChange={(e) => {
-            setSort(e.target.value);
-            resetPage();
-          }}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => { setSort(e.target.value); resetPage(); }}
+          className="rounded-md border px-2.5 py-1.5 text-[12px] outline-none"
+          style={{ borderColor: "var(--gray-200)", color: "var(--gray-600)" }}
         >
           {SORT_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
+            <option key={value} value={value}>{label}</option>
           ))}
         </select>
       </div>
 
-      {/* 필터 그룹 */}
-      <div className="mb-6 space-y-3">
-        {/* 업종 필터 */}
+      {/* 필터 */}
+      <div className="mb-5 space-y-2">
         <FilterRow label="업종">
-          <FilterChip
-            active={sector === "전체"}
-            onClick={() => {
-              setSector("전체");
-              resetPage();
-            }}
-          >
-            전체
-          </FilterChip>
+          <Chip active={sector === "전체"} onClick={() => { setSector("전체"); resetPage(); }}>전체</Chip>
           {sectors.map((s) => (
-            <FilterChip
-              key={s.name}
-              active={sector === s.name}
-              onClick={() => {
-                setSector(s.name);
-                resetPage();
-              }}
-            >
-              {s.name} ({s.count})
-            </FilterChip>
+            <Chip key={s.name} active={sector === s.name} onClick={() => { setSector(s.name); resetPage(); }}>
+              {s.name} <span style={{ color: "var(--gray-400)" }}>({s.count})</span>
+            </Chip>
           ))}
         </FilterRow>
-
-        {/* 투자 단계 필터 */}
         <FilterRow label="투자 단계">
-          <FilterChip
-            active={fundingStage === "전체"}
-            onClick={() => {
-              setFundingStage("전체");
-              resetPage();
-            }}
-          >
-            전체
-          </FilterChip>
+          <Chip active={fundingStage === "전체"} onClick={() => { setFundingStage("전체"); resetPage(); }}>전체</Chip>
           {stages.map((s) => (
-            <FilterChip
-              key={s.name}
-              active={fundingStage === s.name}
-              onClick={() => {
-                setFundingStage(s.name);
-                resetPage();
-              }}
-            >
-              {s.name} ({s.count})
-            </FilterChip>
+            <Chip key={s.name} active={fundingStage === s.name} onClick={() => { setFundingStage(s.name); resetPage(); }}>
+              {s.name}
+            </Chip>
           ))}
         </FilterRow>
-
-        {/* 상장 구분 필터 */}
-        <FilterRow label="상장 구분">
+        <FilterRow label="상장">
           {CORP_CLS_OPTIONS.map(({ value, label }) => (
-            <FilterChip
-              key={value}
-              active={corpCls === value}
-              onClick={() => {
-                setCorpCls(value);
-                resetPage();
-              }}
-            >
+            <Chip key={value} active={corpCls === value} onClick={() => { setCorpCls(value); resetPage(); }}>
               {label}
-            </FilterChip>
+            </Chip>
           ))}
         </FilterRow>
       </div>
 
-      {/* 로딩 */}
+      {/* 로딩/에러 */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
-          <div className="size-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <div className="size-6 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--brand-500)" }} />
         </div>
       )}
-
-      {/* 에러 */}
       {isError && (
-        <div className="py-20 text-center text-red-500">
+        <div className="py-20 text-center text-[13px]" style={{ color: "var(--accent-rose)" }}>
           데이터를 불러오는 중 오류가 발생했습니다.
         </div>
       )}
 
-      {/* 기업 카드 그리드 */}
+      {/* 카드 그리드 */}
       {!isLoading && !isError && (
         <>
           {companies.length === 0 ? (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white">
-              <p className="text-sm text-gray-400">
-                {search
-                  ? `"${search}" 검색 결과가 없습니다.`
-                  : "조건에 맞는 기업이 없습니다."}
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed" style={{ borderColor: "var(--gray-300)" }}>
+              <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+                {search ? `"${search}" 검색 결과가 없습니다.` : "조건에 맞는 기업이 없습니다."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {companies.map((company: Company) => (
                 <CompanyCard key={company.id} company={company} />
               ))}
             </div>
           )}
-
-          {/* 페이지네이션 */}
-          <div className="mt-8">
-            <Pagination
-              total={totalCount}
-              pageSize={12}
-              currentPage={page}
-              onPageChange={setPage}
-            />
+          <div className="mt-6">
+            <Pagination total={totalCount} pageSize={12} currentPage={page} onPageChange={setPage} />
           </div>
         </>
       )}
@@ -259,121 +178,85 @@ export default function CompaniesPage() {
   );
 }
 
-// --- 기업 카드 ---
 function CompanyCard({ company }: { company: Company }) {
+  const clsLabel =
+    company.corp_cls === "Y" ? "유가증권" :
+    company.corp_cls === "K" ? "코스닥" :
+    company.corp_cls === "N" ? "코넥스" : "비상장";
+  const clsColor =
+    company.corp_cls === "Y" ? "var(--accent-emerald)" :
+    company.corp_cls === "K" ? "var(--round-series-c)" :
+    company.corp_cls === "N" ? "var(--accent-amber)" : "var(--gray-400)";
+
   return (
     <Link
       href={`/companies/${company.id}`}
-      className="block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:border-blue-300 hover:shadow-md"
+      className="block rounded-lg border p-4 transition-all hover:shadow-md"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
-      {/* 기업명 + 분야 */}
-      <div className="mb-3 flex items-start justify-between">
+      <div className="mb-2 flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-gray-900">
+          <h3 className="truncate text-[14px] font-semibold" style={{ color: "var(--gray-100)" }}>
             {company.corp_name}
           </h3>
           {company.corp_name_eng && (
-            <p className="mt-0.5 truncate text-xs text-gray-400">
+            <p className="mt-0.5 truncate text-[11px]" style={{ color: "var(--gray-400)" }}>
               {company.corp_name_eng}
             </p>
           )}
         </div>
         {company.sector && (
-          <span className="ml-2 shrink-0 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+          <span className="ml-2 shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-700)" }}>
             {company.sector}
           </span>
         )}
       </div>
 
-      {/* 기업 정보 */}
-      <div className="space-y-1.5 text-sm text-gray-600">
+      <div className="space-y-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
         {company.ceo_name && (
-          <div className="flex items-center gap-2">
-            <span className="w-14 shrink-0 text-gray-400">대표</span>
+          <div className="flex gap-2">
+            <span className="w-10 shrink-0" style={{ color: "var(--gray-400)" }}>대표</span>
             <span className="truncate">{company.ceo_name}</span>
           </div>
         )}
         {company.established_date && (
-          <div className="flex items-center gap-2">
-            <span className="w-14 shrink-0 text-gray-400">설립</span>
+          <div className="flex gap-2">
+            <span className="w-10 shrink-0" style={{ color: "var(--gray-400)" }}>설립</span>
             <span>{formatDate(company.established_date)}</span>
-          </div>
-        )}
-        {company.address && (
-          <div className="flex items-center gap-2">
-            <span className="w-14 shrink-0 text-gray-400">주소</span>
-            <span className="truncate">{company.address}</span>
           </div>
         )}
       </div>
 
-      {/* 하단 뱃지 */}
-      <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3">
-        <span
-          className={`rounded px-2 py-0.5 text-xs font-medium ${
-            company.corp_cls === "Y"
-              ? "bg-green-50 text-green-700"
-              : company.corp_cls === "K"
-                ? "bg-purple-50 text-purple-700"
-                : company.corp_cls === "N"
-                  ? "bg-amber-50 text-amber-700"
-                  : "bg-gray-50 text-gray-600"
-          }`}
-        >
-          {company.corp_cls === "Y"
-            ? "유가증권"
-            : company.corp_cls === "K"
-              ? "코스닥"
-              : company.corp_cls === "N"
-                ? "코넥스"
-                : "비상장"}
+      <div className="mt-3 flex items-center gap-2 border-t pt-2.5" style={{ borderColor: "var(--gray-100)" }}>
+        <span className="inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: clsColor }}>
+          <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: clsColor }} />
+          {clsLabel}
         </span>
-        {company.homepage_url && (
-          <span className="truncate text-xs text-gray-400">
-            {company.homepage_url}
-          </span>
-        )}
       </div>
     </Link>
   );
 }
 
-// --- 필터 행 ---
-function FilterRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="mt-1.5 w-16 shrink-0 text-xs font-medium text-gray-500">
+    <div className="flex items-start gap-2">
+      <span className="mt-1 w-14 shrink-0 text-[11px] font-medium" style={{ color: "var(--gray-400)" }}>
         {label}
       </span>
-      <div className="flex flex-wrap gap-1.5">{children}</div>
+      <div className="flex flex-wrap gap-1">{children}</div>
     </div>
   );
 }
 
-// --- 필터 칩 ---
-function FilterChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active
-          ? "bg-gray-900 text-white"
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-      }`}
+      className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-all"
+      style={{
+        backgroundColor: active ? "var(--navy-900)" : "var(--gray-100)",
+        color: active ? "var(--gray-100)" : "var(--gray-500)",
+      }}
     >
       {children}
     </button>

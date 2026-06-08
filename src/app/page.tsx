@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { getDashboardStats } from "@/src/app/actions/dashboardAction";
-import { ROUND_COLORS  } from "@/src/types/funding";
+// import { ROUND_COLORS, normalizeRoundName } from "@/src/types/funding";
 
 export default async function HomePage() {
   const stats = await getDashboardStats();
 
-  // 전년 동월 대비 증감
   const monthlyGrowth =
     stats.prevYearMonthlyRounds > 0
       ? Math.round(
@@ -16,251 +15,373 @@ export default async function HomePage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* 히어로 섹션 */}
-      <section className="mb-10">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          한국 스타트업 투자 동향
-        </h1>
-        <p className="mt-2 text-sm text-gray-500">
-          국내 스타트업 투자 데이터를 한눈에. DART 공시 기반 실시간 업데이트.
-        </p>
-      </section>
+    <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
+      {/* 헤더 영역 */}
+      <div className="mb-6 flex items-end justify-between">
+        <div>
+          <p
+            className="text-[11px] font-medium uppercase tracking-widest"
+            style={{ color: "var(--gray-400)" }}
+          >
+            Korea Startup Investment
+          </p>
+          <h1
+            className="mt-1 text-[22px] font-bold tracking-tight"
+            style={{ color: "#fff" }}
+          >
+            한국 스타트업 투자
+          </h1>
+        </div>
+        <div className="text-right">
+          <p className="text-[11px]" style={{ color: "var(--gray-400)" }}>
+            DART 공시 기반 · 자동 업데이트
+          </p>
+        </div>
+      </div>
 
-      {/* 종합 통계 카드 */}
-      <section className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard
-          label="총 투자 건수"
-          value={stats.totalRounds.toLocaleString()}
-          suffix="건"
-        />
-        <StatCard
+      {/* 메인 통계 바 */}
+      <div
+        className="mb-6 flex items-center gap-8 rounded-xl px-6 py-4"
+        style={{
+          backgroundColor: "var(--navy-900)",
+        }}
+      >
+        <StatBig
           label="총 투자 금액"
-          value={stats.totalAmount.toLocaleString()}
-          suffix="억 원"
+          value={formatLargeAmount(stats.totalAmount)}
+          sub="억 원"
         />
-        <StatCard
-          label="이번 달 투자"
-          value={stats.monthlyRounds.toLocaleString()}
-          suffix="건"
-          badge={
+        <div className="h-8 w-px" style={{ backgroundColor: "var(--navy-700)" }} />
+        <StatBig
+          label="전년대비 금액"
+          value={
             monthlyGrowth !== null
-              ? monthlyGrowth >= 0
-                ? `+${monthlyGrowth}% YoY`
-                : `${monthlyGrowth}% YoY`
-              : undefined
+              ? `${monthlyGrowth >= 0 ? "+" : ""}${monthlyGrowth}%`
+              : "—"
           }
-          badgePositive={monthlyGrowth !== null ? monthlyGrowth >= 0 : undefined}
+          positive={monthlyGrowth !== null ? monthlyGrowth >= 0 : undefined}
         />
-        <StatCard
-          label="이번 달 금액"
-          value={stats.monthlyAmount.toLocaleString()}
-          suffix="억 원"
+        <div className="h-8 w-px" style={{ backgroundColor: "var(--navy-700)" }} />
+        <StatBig
+          label="총 건수"
+          value={stats.totalRounds.toLocaleString()}
+          sub="건"
         />
-      </section>
+        <div className="hidden h-8 w-px sm:block" style={{ backgroundColor: "var(--navy-700)" }} />
+        <div className="hidden sm:block">
+          <StatBig
+            label="이번 달"
+            value={stats.monthlyRounds.toLocaleString()}
+            sub="건"
+          />
+        </div>
+      </div>
 
-      {/* 투자 라운드별 현황 */}
-      <section className="mb-10">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
+      {/* 라운드별 카드 그리드 */}
+      <section className="mb-8">
+        <div className="mb-3 flex items-center justify-between">
+          <h2
+            className="text-[13px] font-semibold"
+            style={{ color: "#fff" }}
+          >
             투자 라운드별 현황
           </h2>
           <Link
             href="/investments"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-[12px] font-medium"
+            style={{ color: "var(--brand-600)" }}
           >
             전체 보기 →
           </Link>
         </div>
 
         {stats.roundsByName.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
             {stats.roundsByName.map(({ roundName, count, amount }) => (
               <Link
                 key={roundName}
                 href={`/investments?round=${encodeURIComponent(roundName)}`}
-                className="group rounded-lg border border-gray-200 bg-white p-4 transition hover:border-gray-300 hover:shadow-sm"
+                className="group rounded-lg border px-3 py-3 transition-all hover:shadow-md"
+                style={{
+                  backgroundColor: "var(--card-bg)",
+                  borderColor: "var(--card-border)",
+                }}
               >
-                <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    ROUND_COLORS[roundName as keyof typeof ROUND_COLORS] ??
-                    "bg-gray-100 text-gray-600"
-                  }`}
+                <div className="mb-2 flex items-center justify-between">
+                  <RoundBadge name={roundName} />
+                </div>
+                <p
+                  className="text-xl font-bold tabular-nums"
+                  style={{ color: "#fff" }}
                 >
-                  {roundName}
-                </span>
-                <p className="mt-3 text-2xl font-bold tabular-nums text-gray-900">
                   {count}
-                  <span className="text-sm font-normal text-gray-400">건</span>
+                  <span
+                    className="ml-0.5 text-[11px] font-normal"
+                    style={{ color: "var(--gray-400)" }}
+                  >
+                    건
+                  </span>
                 </p>
-                <p className="mt-0.5 text-xs text-gray-500">
-                  {amount.toLocaleString()}억 원
+                <p
+                  className="mt-0.5 text-[11px] tabular-nums"
+                  style={{ color: "var(--gray-400)" }}
+                >
+                  {amount.toLocaleString()}억
                 </p>
               </Link>
             ))}
           </div>
         ) : (
-          <EmptyState message="등록된 투자 라운드가 없습니다." />
+          <EmptyBlock />
         )}
       </section>
 
-      {/* 2컬럼: 업종 TOP + 최근 투자 */}
-      <div className="grid gap-8 lg:grid-cols-5">
+      {/* 2열: 분야 TOP + 최근 투자 */}
+      <div className="grid gap-6 lg:grid-cols-5">
         {/* 투자 분야 TOP */}
         <section className="lg:col-span-2">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            투자 분야 TOP
+          <h2
+            className="mb-3 text-[13px] font-semibold"
+            style={{ color: "#fff" }}
+          >
+            투자 분야 TOP 6
           </h2>
-          {stats.topSectors.length > 0 ? (
-            <div className="space-y-3">
-              {stats.topSectors.map((sector, i) => {
-                const maxCount = stats.topSectors[0].count;
-                const widthPct = Math.max((sector.count / maxCount) * 100, 8);
-
-                return (
-                  <div key={sector.sector}>
-                    <div className="mb-1 flex items-center justify-between text-sm">
-                      <span className="font-medium text-gray-700">
-                        <span className="mr-2 text-gray-400">{i + 1}</span>
-                        {sector.sector}
-                      </span>
-                      <span className="tabular-nums text-gray-500">
-                        {sector.count}건
-                      </span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+          <div
+            className="rounded-lg border p-4"
+            style={{
+              backgroundColor: "var(--card-bg)",
+              borderColor: "var(--card-border)",
+            }}
+          >
+            {stats.topSectors.length > 0 ? (
+              <div className="space-y-3">
+                {stats.topSectors.map((sector, i) => {
+                  const maxCount = stats.topSectors[0].count;
+                  const pct = Math.max((sector.count / maxCount) * 100, 6);
+                  return (
+                    <div key={sector.sector}>
+                      <div className="mb-1 flex items-center justify-between">
+                        <span className="text-[12px] font-medium" style={{ color: "#fff" }}>
+                          <span className="mr-1.5 inline-block w-4 text-center text-[11px]" style={{ color: "var(--gray-400)" }}>
+                            {i + 1}
+                          </span>
+                          {sector.sector}
+                        </span>
+                        <span className="text-[11px] tabular-nums" style={{ color: "var(--gray-400)" }}>
+                          {sector.count}건 · {sector.amount.toLocaleString()}억
+                        </span>
+                      </div>
                       <div
-                        className="h-full rounded-full bg-blue-500 transition-all"
-                        style={{ width: `${widthPct}%` }}
-                      />
+                        className="h-1.5 w-full overflow-hidden rounded-full"
+                        style={{ backgroundColor: "var(--gray-100)" }}
+                      >
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${pct}%`,
+                            backgroundColor: i === 0 ? "var(--brand-500)" : "var(--brand-500)",
+                            opacity: 1 - i * 0.12,
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <EmptyState message="업종 데이터가 부족합니다." />
-          )}
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="py-8 text-center text-[12px]" style={{ color: "var(--gray-400)" }}>
+                데이터 부족
+              </p>
+            )}
+          </div>
         </section>
 
         {/* 최근 투자 */}
         <section className="lg:col-span-3">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">최근 투자</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <h2
+              className="text-[13px] font-semibold"
+              style={{ color: "#fff" }}
+            >
+              최근 투자
+            </h2>
             <Link
               href="/investments"
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="text-[12px] font-medium"
+              style={{ color: "var(--brand-600)" }}
             >
               더 보기 →
             </Link>
           </div>
-
-          {stats.recentRounds.length > 0 ? (
-            <div className="overflow-hidden rounded-lg border border-gray-200">
-              <table className="w-full text-sm">
+          <div
+            className="overflow-hidden rounded-lg border"
+            style={{
+              backgroundColor: "var(--card-bg)",
+              borderColor: "var(--card-border)",
+            }}
+          >
+            {stats.recentRounds.length > 0 ? (
+              <table className="w-full text-[12px]">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50/60">
-                    <th className="px-4 py-2.5 text-left font-medium text-gray-500">
+                  <tr style={{ borderBottom: "1px solid var(--gray-100)" }}>
+                    <th
+                      className="px-3 py-2 text-left font-medium"
+                      style={{ color: "#fff" }}
+                    >
                       기업
                     </th>
-                    <th className="hidden px-4 py-2.5 text-left font-medium text-gray-500 sm:table-cell">
+                    <th
+                      className="hidden px-3 py-2 text-left font-medium sm:table-cell"
+                      style={{ color: "#fff" }}
+                    >
                       분야
                     </th>
-                    <th className="px-4 py-2.5 text-left font-medium text-gray-500">
+                    <th
+                      className="px-3 py-2 text-left font-medium"
+                      style={{ color: "#fff" }}
+                    >
                       라운드
                     </th>
-                    <th className="px-4 py-2.5 text-right font-medium text-gray-500">
+                    <th
+                      className="px-3 py-2 text-right font-medium"
+                      style={{ color: "#fff" }}
+                    >
                       금액
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {stats.recentRounds.map((round) => (
                     <tr
                       key={round.id}
-                      className="transition hover:bg-gray-50/50"
+                      className="transition hover:bg-slate-50/50"
+                      style={{ borderBottom: "1px solid #fff" }}
                     >
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">
+                      <td className="px-3 py-2.5">
+                        <span className="font-medium" style={{ color: "#fff" }}>
                           {round.companyName}
-                        </p>
-                      </td>
-                      <td className="hidden px-4 py-3 text-gray-500 sm:table-cell">
-                        {round.sector ?? "-"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
-                            ROUND_COLORS[
-                              round.roundName as keyof typeof ROUND_COLORS
-                            ] ?? "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {round.roundName}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right tabular-nums font-medium text-gray-900">
+                      <td
+                        className="hidden px-3 py-2.5 sm:table-cell"
+                        style={{ color: "#fff" }}
+                      >
+                        {round.sector ?? "—"}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <RoundBadge name={round.roundName} small />
+                      </td>
+                      <td
+                        className="px-3 py-2.5 text-right tabular-nums font-medium"
+                        style={{ color: "#fff" }}
+                      >
                         {round.amount
                           ? `${round.amount.toLocaleString()}억`
-                          : "-"}
+                          : "—"}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          ) : (
-            <EmptyState message="등록된 투자 데이터가 없습니다." />
-          )}
+            ) : (
+              <p className="py-12 text-center text-[12px]" style={{ color: "#fff" }}>
+                데이터 없음
+              </p>
+            )}
+          </div>
         </section>
       </div>
     </div>
   );
 }
 
-// --- 통계 카드 ---
-function StatCard({
+/* ── 서브 컴포넌트 ── */
+
+function StatBig({
   label,
   value,
-  suffix,
-  badge,
-  badgePositive,
+  sub,
+  positive,
 }: {
   label: string;
   value: string;
-  suffix: string;
-  badge?: string;
-  badgePositive?: boolean;
+  sub?: string;
+  positive?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-xs font-medium text-gray-500">{label}</p>
-      <p className="mt-1 text-xl font-bold tabular-nums text-gray-900 sm:text-2xl">
-        {value}
-        <span className="ml-1 text-sm font-normal text-gray-400">
-          {suffix}
-        </span>
+    <div>
+      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-500)" }}>
+        {label}
       </p>
-      {badge && (
+      <p className="mt-0.5 flex items-baseline gap-1">
         <span
-          className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-            badgePositive
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-red-50 text-red-600"
-          }`}
+          className="text-xl font-bold tabular-nums"
+          style={{
+            color:
+              positive === true
+                ? "var(--accent-emerald)"
+                : positive === false
+                  ? "var(--accent-rose)"
+                  : "#ffffff",
+          }}
         >
-          {badge}
+          {value}
         </span>
-      )}
+        {sub && (
+          <span className="text-[11px]" style={{ color: "var(--gray-500)" }}>
+            {sub}
+          </span>
+        )}
+      </p>
     </div>
   );
 }
 
-// --- 빈 상태 ---
-function EmptyState({ message }: { message: string }) {
+// 라운드별 색상 도트 + 라벨
+const ROUND_DOT_COLORS: Record<string, string> = {
+  Seed: "var(--round-seed)",
+  "Pre-A": "var(--round-pre-a)",
+  "Series A": "var(--round-series-a)",
+  "Series B": "var(--round-series-b)",
+  "Series C": "var(--round-series-c)",
+  "Series D": "var(--round-series-d)",
+  "Pre-IPO": "var(--round-pre-ipo)",
+  IPO: "var(--round-ipo)",
+  "M&A": "var(--round-ma)",
+};
+
+function RoundBadge({ name, small }: { name: string; small?: boolean }) {
+  const dotColor = ROUND_DOT_COLORS[name] ?? "var(--gray-400)";
   return (
-    <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white">
-      <p className="text-sm text-gray-400">{message}</p>
+    <span
+      className={`inline-flex items-center gap-1 font-semibold ${
+        small ? "text-[11px]" : "text-[11px]"
+      }`}
+      style={{ color: "#fff" }}
+    >
+      <span
+        className="inline-block size-1.5 rounded-full"
+        style={{ backgroundColor: dotColor }}
+      />
+      {name}
+    </span>
+  );
+}
+
+function EmptyBlock() {
+  return (
+    <div
+      className="flex h-32 items-center justify-center rounded-lg border border-dashed"
+      style={{ borderColor: "var(--gray-300)" }}
+    >
+      <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+        등록된 데이터가 없습니다
+      </p>
     </div>
   );
+}
+
+function formatLargeAmount(amount: number): string {
+  if (amount >= 10000) return `${(amount / 10000).toFixed(1)}조`;
+  return amount.toLocaleString();
 }

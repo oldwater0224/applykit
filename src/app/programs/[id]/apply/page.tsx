@@ -251,7 +251,7 @@ export default function ApplyPage() {
   if (existingApplication?.is_complete) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8 text-center">
+        <div className="max-w-2xl mx-auto rounded-lg shadow p-8 text-center">
           <h1 className="text-xl font-bold mb-2">이미 제출된 지원서입니다</h1>
           <p className="text-gray-600 mb-6">
             {program.title}에 이미 지원하셨습니다.<br/>

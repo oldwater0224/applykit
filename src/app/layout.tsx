@@ -1,12 +1,8 @@
-// 루트 레이아웃 — 모든 페이지에 공통으로 적용됨
 import type { Metadata } from "next";
 import "./globals.css";
+import "../styles/designToken.css";
 import QueryProvider from "../providers/query-provider";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
 import GNB from "@/src/components/layout/gnb";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "ApplyKit — 한국 스타트업 투자 데이터베이스",
@@ -20,11 +16,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={cn("h-full", "font-sans", inter.variable)}>
-      <body className="h-full bg-gray-50 text-gray-900 antialiased">
+    <html lang="ko" className="h-full">
+      <head>
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body
+        className="h-full antialiased"
+        style={{
+          fontFamily: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
+          backgroundColor: "var(--page-bg)",
+          color: "var(--gray-900)",
+        }}
+      >
         <QueryProvider>
           <GNB />
-          {children}
+          <main>{children}</main>
         </QueryProvider>
       </body>
     </html>

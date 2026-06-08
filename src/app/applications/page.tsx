@@ -34,10 +34,10 @@ export default function MyApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen">
+      <header className=" shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">내 지원서</h1>
+          <h1 className="text-xl font-bold text-white">내 지원서</h1>
           <SignOutButton />
         </div>
       </header>
@@ -97,11 +97,11 @@ function ApplicationCard({
   return (
     <li
       onClick={handleClick}
-      className="bg-white rounded-lg shadow p-6 cursor-pointer transition hover:shadow-md"
+      className="rounded-lg shadow p-6 cursor-pointer transition hover:shadow-md"
     >
       <div className="flex justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-semibold truncate">{program.title}</h2>
+        <div className="flex-1 min-w-0 ">
+          <h2 className="text-lg font-semibold truncate text-gray-200">{program.title}</h2>
           {program.deadline && (
             <p className="text-sm text-gray-500 mt-1">
               접수 마감:{" "}

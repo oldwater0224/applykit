@@ -72,7 +72,7 @@ export default function CompaniesPage() {
         <p className="text-[11px] font-medium uppercase tracking-widest" style={{ color: "var(--gray-400)" }}>
           Startups
         </p>
-        <h1 className="mt-1 text-[22px] font-bold tracking-tight" style={{ color: "var(--gray-900)" }}>
+        <h1 className="mt-1 text-[22px] font-bold tracking-tight" style={{ color: "#fff" }}>
           스타트업
         </h1>
         <p className="mt-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
@@ -88,7 +88,7 @@ export default function CompaniesPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="기업명으로 검색..."
-            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] outline-none transition focus:ring-2"
+            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] outline-none transition focus:ring-2 text-gray-100"
             style={{
               borderColor: "var(--gray-200)",
               backgroundColor: "var(--card-bg)",
@@ -196,7 +196,7 @@ function CompanyCard({ company }: { company: Company }) {
     >
       <div className="mb-2 flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-[14px] font-semibold" style={{ color: "var(--gray-900)" }}>
+          <h3 className="truncate text-[14px] font-semibold" style={{ color: "var(--gray-100)" }}>
             {company.corp_name}
           </h3>
           {company.corp_name_eng && (
@@ -255,7 +255,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-all"
       style={{
         backgroundColor: active ? "var(--navy-900)" : "var(--gray-100)",
-        color: active ? "#ffffff" : "var(--gray-500)",
+        color: active ? "var(--gray-100)" : "var(--gray-500)",
       }}
     >
       {children}

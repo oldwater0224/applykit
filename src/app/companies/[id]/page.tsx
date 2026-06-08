@@ -78,9 +78,9 @@ export default function CompanyDetailPage() {
       <div className="mb-5 rounded-lg border p-5" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-[20px] font-bold" style={{ color: "var(--gray-900)" }}>{company.corp_name}</h1>
+            <h1 className="text-[20px] font-bold" style={{ color: "var(--gray-100)" }}>{company.corp_name}</h1>
             {company.corp_name_eng && (
-              <p className="mt-0.5 text-[12px]" style={{ color: "var(--gray-400)" }}>{company.corp_name_eng}</p>
+              <p className="mt-0.5 text-[12px]" style={{ color: "var(--gray-300)" }}>{company.corp_name_eng}</p>
             )}
           </div>
           <div className="flex gap-1.5">
@@ -117,7 +117,7 @@ export default function CompanyDetailPage() {
           )}
         </div>
 
-        <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--gray-100)" }}>
+        {/* <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--gray-100)" }}>
           <Link
             href={`/programs?company=${companyId}`}
             className="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-[12px] font-medium text-white transition"
@@ -125,7 +125,7 @@ export default function CompanyDetailPage() {
           >
             이 기업에 지원하기
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* 투자 요약 */}
@@ -236,8 +236,8 @@ export default function CompanyDetailPage() {
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border p-3 text-center" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
-      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-400)" }}>{label}</p>
-      <p className="mt-1 text-[15px] font-bold" style={{ color: "var(--gray-900)" }}>{value}</p>
+      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-200)" }}>{label}</p>
+      <p className="mt-1 text-[15px] font-bold" style={{ color: "var(--gray-100)" }}>{value}</p>
     </div>
   );
 }
@@ -246,8 +246,8 @@ function InfoItem({ label, value, span2, children }: { label: string; value?: st
   if (!value && !children) return null;
   return (
     <div className={span2 ? "col-span-2" : ""}>
-      <span style={{ color: "var(--gray-400)" }}>{label}</span>
-      <div className="mt-0.5" style={{ color: "var(--gray-800)" }}>{children || value}</div>
+      <span style={{ color: "var(--gray-200)" }}>{label}</span>
+      <div className="mt-0.5" style={{ color: "var(--gray-100)" }}>{children || value}</div>
     </div>
   );
 }

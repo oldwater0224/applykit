@@ -27,7 +27,7 @@ export default async function HomePage() {
           </p>
           <h1
             className="mt-1 text-[22px] font-bold tracking-tight"
-            style={{ color: "var(--gray-400)" }}
+            style={{ color: "#fff" }}
           >
             한국 스타트업 투자
           </h1>

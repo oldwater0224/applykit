@@ -42,6 +42,8 @@ politics.md
 
 # vercel
 .vercel
+vercel.json
+
 
 # typescript
 *.tsbuildinfo

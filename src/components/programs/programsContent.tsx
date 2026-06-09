@@ -133,7 +133,7 @@ function ProgramCard({
   return (
     <Link
       href={href}
-      className="block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:border-blue-300 hover:shadow-md"
+      className="block rounded-xl border border-gray-200  p-6 transition-all hover:border-blue-300 hover:shadow-md"
     >
       {/* 뱃지 */}
       <div className="mb-3 flex items-center gap-2">
@@ -165,7 +165,7 @@ function ProgramCard({
       )}
 
       {/* 제목 */}
-      <h2 className="line-clamp-2 text-lg font-semibold text-gray-900">
+      <h2 className="line-clamp-2 text-lg font-semibold text-gray-100">
         {program.title}
       </h2>
 

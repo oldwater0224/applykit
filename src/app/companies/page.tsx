@@ -90,7 +90,7 @@ export default function CompaniesPage() {
             placeholder="기업명으로 검색..."
             className="flex-1 rounded-md border px-3 py-1.5 text-[13px] outline-none transition focus:ring-2 text-gray-100"
             style={{
-              borderColor: "var(--gray-200)",
+              
               backgroundColor: "var(--card-bg)",
             }}
           />
@@ -206,7 +206,7 @@ function CompanyCard({ company }: { company: Company }) {
           )}
         </div>
         {company.sector && (
-          <span className="ml-2 shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-700)" }}>
+          <span className="ml-2 shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "", color: "var(--brand-700)" }}>
             {company.sector}
           </span>
         )}

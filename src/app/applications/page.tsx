@@ -8,7 +8,7 @@ import {
   APPLICATION_STATUS_STYLE,
   ApplicationWithProgram,
 } from "@/src/types/applications";
-import SignOutButton from "@/src/components/ui/signOutButton";
+
 
 export default function MyApplicationsPage() {
   const { data: applications, isLoading, error } = useMyApplications();
@@ -38,7 +38,7 @@ export default function MyApplicationsPage() {
       <header className=" shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-white">내 지원서</h1>
-          <SignOutButton />
+         
         </div>
       </header>
 

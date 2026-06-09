@@ -77,7 +77,7 @@ export default function FundingTimeline({
               {/* 날짜 */}
               <span
                 className="w-16 shrink-0 text-[11px] tabular-nums"
-                style={{ color: "var(--gray-400)" }}
+                style={{ color: "var(--gray-100)" }}
               >
                 {formatDate(round.announced_date)}
               </span>
@@ -85,7 +85,7 @@ export default function FundingTimeline({
               {/* 라운드 */}
               <span
                 className="inline-flex w-20 shrink-0 items-center gap-1 text-[12px] font-semibold"
-                style={{ color: "var(--gray-700)" }}
+                style={{ color: "var(--gray-400)" }}
               >
                 <span
                   className="inline-block size-1.5 rounded-full"
@@ -97,7 +97,7 @@ export default function FundingTimeline({
               {/* 금액 */}
               <span
                 className="text-[13px] font-bold tabular-nums"
-                style={{ color: "var(--gray-900)" }}
+                style={{ color: "var(--gray-500)" }}
               >
                 {formatAmount(round.amount)}
               </span>

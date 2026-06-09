@@ -84,12 +84,12 @@ export default function CompanyDetailPage() {
             )}
           </div>
           <div className="flex gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium" style={{ color: clsColor, backgroundColor: `color-mix(in srgb, ${clsColor} 10%, white)` }}>
+            <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium" style={{ color: clsColor, backgroundColor: `color-mix(in srgb, ${clsColor} 10%)` }}>
               <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: clsColor }} />
               {clsLabel}
             </span>
             {company.sector && (
-              <span className="rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-700)" }}>
+              <span className="rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "", color: "var(--brand-700)" }}>
                 {company.sector}
               </span>
             )}
@@ -158,11 +158,11 @@ export default function CompanyDetailPage() {
                   <table className="w-full text-[12px]">
                     <thead>
                       <tr style={{ borderBottom: "1px solid var(--gray-200)" }}>
-                        <th className="py-2 pr-3 text-left font-medium" style={{ color: "var(--gray-400)" }}>연도</th>
-                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-400)" }}>매출액</th>
-                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-400)" }}>영업이익</th>
-                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-400)" }}>순이익</th>
-                        <th className="py-2 pl-3 text-right font-medium" style={{ color: "var(--gray-400)" }}>자산총계</th>
+                        <th className="py-2 pr-3 text-left font-medium" style={{ color: "var(--gray-100)" }}>연도</th>
+                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-100)" }}>매출액</th>
+                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-100)" }}>영업이익</th>
+                        <th className="px-3 py-2 text-right font-medium" style={{ color: "var(--gray-100)" }}>순이익</th>
+                        <th className="py-2 pl-3 text-right font-medium" style={{ color: "var(--gray-100)" }}>자산총계</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -171,8 +171,8 @@ export default function CompanyDetailPage() {
                         const growth = prev ? calcGrowthRate(f.revenue, prev.revenue) : null;
                         return (
                           <tr key={f.id} style={{ borderBottom: "1px solid var(--gray-50)" }}>
-                            <td className="py-2 pr-3 font-medium" style={{ color: "var(--gray-800)" }}>{f.fiscal_year}</td>
-                            <td className="px-3 py-2 text-right" style={{ color: "var(--gray-700)" }}>
+                            <td className="py-2 pr-3 font-medium" style={{ color: "var(--gray-300)" }}>{f.fiscal_year}</td>
+                            <td className="px-3 py-2 text-right" style={{ color: "var(--gray-300)" }}>
                               {formatBillion(f.revenue)}
                               {growth && (
                                 <span className="ml-1 text-[10px]" style={{ color: growth.startsWith("+") ? "var(--accent-rose)" : "var(--brand-500)" }}>
@@ -180,13 +180,13 @@ export default function CompanyDetailPage() {
                                 </span>
                               )}
                             </td>
-                            <td className="px-3 py-2 text-right" style={{ color: f.operating_income && f.operating_income < 0 ? "var(--brand-500)" : "var(--gray-700)" }}>
+                            <td className="px-3 py-2 text-right" style={{ color: f.operating_income && f.operating_income < 0 ? "var(--brand-500)" : "var(--gray-300)" }}>
                               {formatBillion(f.operating_income)}
                             </td>
-                            <td className="px-3 py-2 text-right" style={{ color: f.net_income && f.net_income < 0 ? "var(--brand-500)" : "var(--gray-700)" }}>
+                            <td className="px-3 py-2 text-right" style={{ color: f.net_income && f.net_income < 0 ? "var(--brand-500)" : "var(--gray-300)" }}>
                               {formatBillion(f.net_income)}
                             </td>
-                            <td className="py-2 pl-3 text-right" style={{ color: "var(--gray-700)" }}>
+                            <td className="py-2 pl-3 text-right" style={{ color: "var(--gray-300)" }}>
                               {formatBillion(f.total_assets)}
                             </td>
                           </tr>

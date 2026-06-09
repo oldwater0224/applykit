@@ -9,6 +9,7 @@
 //   (현재 MVP는 단일 운영기관, 운영진은 SQL로 직접 등록)
 
 import { createClient } from "@/src/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 interface AuthState {
@@ -64,7 +65,7 @@ export async function signIn(
     return { error: "이메일과 비밀번호를 입력해주세요." };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data : authData , error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -73,13 +74,25 @@ export async function signIn(
     return { error: "이메일 또는 비밀번호가 올바르지 않습니다." };
   }
 
-  // 로그인 후 /dashboard로 이동
-  // dashboard 페이지에서 멤버십에 따라 자동 분기 (운영기관 화면 vs 지원자 화면)
-  redirect("/dashboard");
+  // 운영기관 멤버 확인
+  const {data : orgMember} = await supabase
+  .from("org_members")
+  .select("org_id")
+  .eq("user_id", authData.user.id)
+  //결과 없어도 에러가 아닌 Null 반환 - maybeSingle
+  .maybeSingle()
+  // 운영기관 멤버는 대시보드로 , 아니면 지원자 화면으로
+  if(orgMember){
+    revalidatePath("/", "layout");
+    redirect("/dashboard")
+  }else {
+  revalidatePath("/", "layout");
+  redirect("/programs")};
 }
 
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  revalidatePath("/", "layout");
   redirect("/login");
 }

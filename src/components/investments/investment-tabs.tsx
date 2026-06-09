@@ -41,7 +41,7 @@ export default function InvestmentTabs() {
             className="shrink-0 rounded-md px-3 py-1.5 text-[12px] font-medium transition-all"
             style={{
               backgroundColor: isActive ? "var(--navy-900)" : "var(--gray-100)",
-              color: isActive ? "#ffffff" : "var(--gray-500)",
+              color: isActive ? "var(--gray-100)" : "var(--gray-500)",
             }}
           >
             {label}

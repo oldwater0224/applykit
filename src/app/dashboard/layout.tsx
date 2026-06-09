@@ -16,6 +16,17 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // 운영기관이 아닐 경우 메인으로 전환
+  const {data : orgMember} = await supabase
+  .from("org_members")
+  .select("org_id")
+  .eq("user_id" , user.id)
+  .maybeSingle();
+
+  if(!orgMember){
+    redirect("/")
+  }
+
   return (
     <div className="flex h-screen" style={{ backgroundColor: "var(--page-bg)" }}>
       <DashboardSidebar />

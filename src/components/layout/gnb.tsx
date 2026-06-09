@@ -7,6 +7,7 @@ import {
   globalSearch,
   type SearchResult,
 } from "@/src/app/actions/searchAction";
+import { createClient } from "@/src/lib/supabase/client";
 
 const NAV_ITEMS = [
   { href: "/", label: "홈" },
@@ -27,6 +28,7 @@ export default function GNB() {
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -56,6 +58,29 @@ export default function GNB() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!user);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+
+     
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router]);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
   const handleSearchInput = useCallback((value: string) => {
     setSearchQuery(value);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -286,14 +311,23 @@ export default function GNB() {
               </div>
             )}
           </div>
-
-          <Link
-            href="/login"
-            className="rounded-md px-3 py-1 text-[12px] font-medium transition"
-            style={{ color: "var(--gray-400)" }}
-          >
-            로그인
-          </Link>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="rounded-md px-3 py-1 text-[12px] font-medium transition"
+              style={{ color: "var(--gray-400)" }}
+            >
+              로그아웃
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-md px-3 py-1 text-[12px] font-medium transition"
+              style={{ color: "var(--gray-400)" }}
+            >
+              로그인
+            </Link>
+          )}
         </div>
 
         {/* 모바일 햄버거 */}

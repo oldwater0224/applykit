@@ -26,12 +26,12 @@ function getTypeLabel(type: string | null) {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  VC: "bg-blue-50 text-blue-700",
-  CVC: "bg-purple-50 text-purple-700",
-  PE: "bg-amber-50 text-amber-700",
-  Accelerator: "bg-emerald-50 text-emerald-700",
-  Angel: "bg-pink-50 text-pink-700",
-  Government: "bg-gray-100 text-gray-700",
+  VC: "text-blue-700",
+  CVC: " text-purple-700",
+  PE: " text-amber-700",
+  Accelerator: " text-emerald-700",
+  Angel: " text-pink-700",
+  Government: " text-gray-700",
 };
 
 export default function InvestorsPage() {
@@ -65,6 +65,13 @@ export default function InvestorsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
+      <div>
+        <p
+            className="text-[11px] font-medium uppercase tracking-widest"
+            style={{ color: "var(--gray-400)" }}
+          >
+            Investors
+          </p>
       <div className="mb-6">
         <h1
           className="text-2xl font-bold tracking-tight"
@@ -75,6 +82,7 @@ export default function InvestorsPage() {
         <p className="mt-1 text-sm text-gray-500">
           VC · 액셀러레이터 · CVC {totalCount.toLocaleString()}곳
         </p>
+      </div>
       </div>
 
       {/* 검색 */}
@@ -145,7 +153,7 @@ export default function InvestorsPage() {
       {!isLoading && !isError && (
         <>
           {investors.length === 0 ? (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white">
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 ">
               <p className="text-sm text-gray-400">
                 {search
                   ? `"${search}" 검색 결과가 없습니다.`

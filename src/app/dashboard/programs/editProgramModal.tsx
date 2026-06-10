@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { useProgramStore } from "@/src/stores/programstore";
 import { useUpdateProgram } from "@/src/hooks/usePrograms";
 
+const modalInputStyle: React.CSSProperties = {
+  backgroundColor: "var(--navy-800)",
+  borderColor: "var(--navy-600)",
+  color: "var(--gray-100)",
+};
+
 export function EditProgramModal() {
   const { isEditModalOpen, selectedProgram, closeModal } = useProgramStore();
   const updateProgram = useUpdateProgram();
@@ -54,12 +60,17 @@ export function EditProgramModal() {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-md p-6">
-        <h2 className="text-xl font-bold mb-4">공고 수정</h2>
+      <div
+        className="rounded-lg w-full max-w-md p-6 border"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+      >
+        <h2 className="text-xl font-bold mb-4" style={{ color: "var(--gray-100)" }}>
+          공고 수정
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
               공고 제목 *
             </label>
             <input
@@ -68,12 +79,13 @@ export function EditProgramModal() {
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              style={modalInputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
               설명
             </label>
             <textarea
@@ -81,12 +93,13 @@ export function EditProgramModal() {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              style={modalInputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
               마감일
             </label>
             <input
@@ -94,19 +107,21 @@ export function EditProgramModal() {
               name="deadline"
               value={formData.deadline}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              style={modalInputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
               상태
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              style={modalInputStyle}
             >
               <option value="draft">작성 중</option>
               <option value="active">모집 중</option>
@@ -115,7 +130,7 @@ export function EditProgramModal() {
           </div>
 
           {updateProgram.error && (
-            <p className="text-red-600 text-sm">
+            <p className="text-sm" style={{ color: "var(--accent-rose)" }}>
               오류: {updateProgram.error.message}
             </p>
           )}
@@ -124,14 +139,18 @@ export function EditProgramModal() {
             <button
               type="button"
               onClick={closeModal}
-              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 border rounded-md transition"
+              style={{ borderColor: "var(--navy-600)", color: "var(--gray-300)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               취소
             </button>
             <button
               type="submit"
               disabled={updateProgram.isPending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 text-white rounded-md disabled:opacity-50"
+              style={{ backgroundColor: "var(--brand-600)" }}
             >
               {updateProgram.isPending ? "저장 중..." : "저장"}
             </button>

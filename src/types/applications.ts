@@ -75,7 +75,6 @@ export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   failed : "불합격",
 } as const;
 // 상태별 뱃지 스타일 - UI 전역에서 공통으로 사용
-// bg-gray-*/text-gray-*는 금지 - border만 gray 허용
 // as const로 모든 상태 누락 시 컴파일 에러 유도
 export const APPLICATION_STATUS_STYLE: Record<ApplicationStatus, string> = {
   draft: "bg-amber-50 text-amber-700 border-amber-200",

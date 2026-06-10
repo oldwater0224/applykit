@@ -96,40 +96,44 @@ export default async function HomePage() {
         </div>
 
         {stats.roundsByName.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
-            {stats.roundsByName.map(({ roundName, count, amount }) => (
-              <Link
-                key={roundName}
-                href={`/investments?round=${encodeURIComponent(roundName)}`}
-                className="group rounded-lg border px-3 py-3 transition-all hover:shadow-md"
-                style={{
-                  backgroundColor: "var(--card-bg)",
-                  borderColor: "var(--card-border)",
-                }}
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <RoundBadge name={roundName} />
-                </div>
-                <p
-                  className="text-xl font-bold tabular-nums"
-                  style={{ color: "#fff" }}
-                >
-                  {count}
-                  <span
-                    className="ml-0.5 text-[11px] font-normal"
-                    style={{ color: "var(--gray-400)" }}
+          <div className="overflow-hidden">
+            <div className="marquee-track">
+              {[...stats.roundsByName, ...stats.roundsByName].map(
+                ({ roundName, count, amount }, i) => (
+                  <Link
+                    key={`${roundName}-${i}`}
+                    href={`/investments?round=${encodeURIComponent(roundName)}`}
+                    className="group mx-1 w-[160px] shrink-0 rounded-lg border px-3 py-3 transition-all hover:shadow-md"
+                    style={{
+                      backgroundColor: "var(--card-bg)",
+                      borderColor: "var(--card-border)",
+                    }}
                   >
-                    건
-                  </span>
-                </p>
-                <p
-                  className="mt-0.5 text-[11px] tabular-nums"
-                  style={{ color: "var(--gray-400)" }}
-                >
-                  {amount.toLocaleString()}억
-                </p>
-              </Link>
-            ))}
+                    <div className="mb-2 flex items-center justify-between">
+                      <RoundBadge name={roundName} />
+                    </div>
+                    <p
+                      className="text-xl font-bold tabular-nums"
+                      style={{ color: "#fff" }}
+                    >
+                      {count}
+                      <span
+                        className="ml-0.5 text-[11px] font-normal"
+                        style={{ color: "var(--gray-400)" }}
+                      >
+                        건
+                      </span>
+                    </p>
+                    <p
+                      className="mt-0.5 text-[11px] tabular-nums"
+                      style={{ color: "var(--gray-400)" }}
+                    >
+                      {amount.toLocaleString()}억
+                    </p>
+                  </Link>
+                )
+              )}
+            </div>
           </div>
         ) : (
           <EmptyBlock />

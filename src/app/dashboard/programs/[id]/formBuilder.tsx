@@ -5,6 +5,12 @@ import { useFormBuilderStore } from "@/src/stores/formbuilderstore";
 import { FormField, FieldType, FIELD_TYPE_LABELS } from "@/src/types/form";
 import { useId } from "react";
 
+const inputStyle: React.CSSProperties = {
+  backgroundColor: "var(--navy-800)",
+  borderColor: "var(--navy-600)",
+  color: "var(--gray-100)",
+};
+
 export function FormBuilder() {
   const {
     schema,
@@ -31,7 +37,7 @@ export function FormBuilder() {
           : undefined,
     };
     addField(newField);
-    selectField(newField.id); // 추가 직후에 자동으로 선택
+    selectField(newField.id);
   }
 
   function handleMoveUp(index: number) {
@@ -49,9 +55,14 @@ export function FormBuilder() {
   return (
     <div className="space-y-4">
       {/* 필드 목록 */}
-      <div className=" rounded-lg shadow p-4 space-y-2">
+      <div
+        className="rounded-lg border p-4 space-y-2"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+      >
         {schema.fields.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">필드를 추가해주세요</p>
+          <p className="text-center py-4" style={{ color: "var(--gray-500)" }}>
+            필드를 추가해주세요
+          </p>
         ) : (
           schema.fields.map((field, index) => (
             <FieldItem
@@ -72,14 +83,22 @@ export function FormBuilder() {
       {/* 선택된 필드 편집 */}
       {selectedFieldId && <FieldEditor fieldId={selectedFieldId} />}
       {/* 필드 추가 버튼들 */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <p className="text-sm font-medium text-gray-700 mb-3">필드 추가</p>
+      <div
+        className="rounded-lg border p-4"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+      >
+        <p className="text-sm font-medium mb-3" style={{ color: "var(--gray-300)" }}>
+          필드 추가
+        </p>
         <div className="grid grid-cols-2 gap-2">
           {(Object.keys(FIELD_TYPE_LABELS) as FieldType[]).map((type) => (
             <button
               key={type}
               onClick={() => handleAddField(type)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-left"
+              className="px-3 py-2 text-sm border rounded text-left transition"
+              style={{ borderColor: "var(--navy-600)", color: "var(--gray-300)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               {FIELD_TYPE_LABELS[type]}
             </button>
@@ -92,7 +111,7 @@ export function FormBuilder() {
 
 function FieldItem({
   field,
-  
+
   isSelected,
   onSelect,
   onRemove,
@@ -114,21 +133,31 @@ function FieldItem({
   return (
     <div
       onClick={onSelect}
-      className={`p-3 border rounded cursor-pointer transition ${
-        isSelected
-          ? "border-blue-500 bg-blue-50"
-          : "border-gray-200 hover:border-gray-300"
-      }`}
+      className="p-3 border rounded cursor-pointer transition"
+      style={{
+        borderColor: isSelected ? "var(--brand-500)" : "var(--navy-600)",
+        backgroundColor: isSelected ? "rgba(59, 130, 246, 0.1)" : "transparent",
+      }}
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">
+          <span
+            className="text-xs px-2 py-0.5 rounded"
+            style={{ backgroundColor: "var(--navy-800)", color: "var(--gray-400)" }}
+          >
             {FIELD_TYPE_LABELS[field.type]}
           </span>
-          <span className="font-medium">{field.label}</span>
-          {field.required && <span className="text-red-500 text-xs">필수</span>}
+          <span className="font-medium" style={{ color: "var(--gray-200)" }}>
+            {field.label}
+          </span>
+          {field.required && (
+            <span className="text-xs" style={{ color: "var(--accent-rose)" }}>필수</span>
+          )}
           {field.isCompanyName && (
-            <span className="text-xs px-2 py-0.5 border border-blue-300 text-blue-600 rounded">
+            <span
+              className="text-xs px-2 py-0.5 border rounded"
+              style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)" }}
+            >
               회사명
             </span>
           )}
@@ -140,7 +169,8 @@ function FieldItem({
               onMoveUp();
             }}
             disabled={isFirst}
-            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+            className="p-1 disabled:opacity-30"
+            style={{ color: "var(--gray-400)" }}
           >
             ↑
           </button>
@@ -150,7 +180,8 @@ function FieldItem({
               onMoveDown();
             }}
             disabled={isLast}
-            className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
+            className="p-1 disabled:opacity-30"
+            style={{ color: "var(--gray-400)" }}
           >
             ↓
           </button>
@@ -159,7 +190,8 @@ function FieldItem({
               e.stopPropagation();
               onRemove();
             }}
-            className="p-1 text-red-400 hover:text-red-600"
+            className="p-1"
+            style={{ color: "var(--accent-rose)" }}
           >
             ×
           </button>
@@ -176,33 +208,37 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
   if (!field) return null;
 
   const hasOptions = ["select", "radio", "checkbox"].includes(field.type);
-  const isFileField = field.type === "file"; // ← 추가
-  // 회사명 지정 가능한 타입 - 텍스트만
+  const isFileField = field.type === "file";
   const canBeCompanyName = field.type === "text" || field.type === "textarea";
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 space-y-4">
-      <h3 className="font-medium">필드 설정</h3>
+    <div
+      className="rounded-lg border p-4 space-y-4"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+    >
+      <h3 className="font-medium" style={{ color: "var(--gray-100)" }}>필드 설정</h3>
 
       <div>
-        <label className="block text-sm text-gray-600 mb-1">라벨</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--gray-400)" }}>라벨</label>
         <input
           type="text"
           value={field.label}
           onChange={(e) => updateField(fieldId, { label: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+          style={inputStyle}
         />
       </div>
 
       <div>
-        <label className="block text-sm text-gray-600 mb-1">플레이스홀더</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--gray-400)" }}>플레이스홀더</label>
         <input
           type="text"
           value={field.placeholder || ""}
           onChange={(e) =>
             updateField(fieldId, { placeholder: e.target.value })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+          style={inputStyle}
         />
       </div>
 
@@ -214,13 +250,13 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
           onChange={(e) => updateField(fieldId, { required: e.target.checked })}
           className="rounded"
         />
-        <label htmlFor="required" className="text-sm text-gray-600">
+        <label htmlFor="required" className="text-sm" style={{ color: "var(--gray-400)" }}>
           필수 입력
         </label>
       </div>
-      {/* ↓ 회사명 필드 지정 (text/textarea만) */}
+
       {canBeCompanyName && (
-        <div className="border-t pt-4">
+        <div className="border-t pt-4" style={{ borderColor: "var(--navy-700)" }}>
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -231,12 +267,13 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
             />
             <label
               htmlFor={`company-name-${fieldId}`}
-              className="text-sm text-gray-600"
+              className="text-sm"
+              style={{ color: "var(--gray-400)" }}
             >
               회사명 필드로 사용
             </label>
           </div>
-          <p className="mt-1 ml-6 text-xs text-gray-500">
+          <p className="mt-1 ml-6 text-xs" style={{ color: "var(--gray-500)" }}>
             심사 결과 저장 시 이 필드의 값이 아카이브 검색의 키가 됩니다. 폼당
             하나만 지정할 수 있습니다.
           </p>
@@ -250,11 +287,10 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
         />
       )}
 
-      {/* ↓ 파일 필드 전용 설정 추가 */}
       {isFileField && (
-        <div className="border-t pt-4 space-y-2">
-          <p className="text-sm font-medium">파일 업로드 설정</p>
-          <p className="text-xs text-gray-500">
+        <div className="border-t pt-4 space-y-2" style={{ borderColor: "var(--navy-700)" }}>
+          <p className="text-sm font-medium" style={{ color: "var(--gray-300)" }}>파일 업로드 설정</p>
+          <p className="text-xs" style={{ color: "var(--gray-500)" }}>
             MVP에서는 {ALLOWED_FILES_LABEL} 파일만 허용되며, 최대 10MB까지
             업로드 가능합니다.
           </p>
@@ -287,7 +323,7 @@ function OptionsEditor({
 
   return (
     <div>
-      <label className="block text-sm text-gray-600 mb-1">옵션</label>
+      <label className="block text-sm mb-1" style={{ color: "var(--gray-400)" }}>옵션</label>
       <div className="space-y-2">
         {options.map((opt, index) => (
           <div key={index} className="flex gap-2">
@@ -295,11 +331,13 @@ function OptionsEditor({
               type="text"
               value={opt}
               onChange={(e) => handleChange(index, e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              style={inputStyle}
             />
             <button
               onClick={() => handleRemove(index)}
-              className="px-2 text-red-500 hover:text-red-700"
+              className="px-2"
+              style={{ color: "var(--accent-rose)" }}
             >
               ×
             </button>
@@ -307,7 +345,8 @@ function OptionsEditor({
         ))}
         <button
           onClick={handleAdd}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm hover:underline"
+          style={{ color: "var(--brand-500)" }}
         >
           + 옵션 추가
         </button>

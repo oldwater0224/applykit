@@ -3,14 +3,23 @@
 import { useFormBuilderStore } from '@/src/stores/formbuilderstore'
 import { FormField } from '@/src/types/form'
 
+const previewInputStyle: React.CSSProperties = {
+  backgroundColor: 'var(--navy-800)',
+  borderColor: 'var(--navy-600)',
+  color: 'var(--gray-100)',
+}
+
 export function FormPreview() {
   const { schema } = useFormBuilderStore()
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div
+      className="rounded-lg border p-6"
+      style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
+    >
       <form className="space-y-4">
         {schema.fields.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
+          <p className="text-center py-8" style={{ color: 'var(--gray-500)' }}>
             왼쪽에서 필드를 추가하면 여기에 미리보기가 표시됩니다.
           </p>
         ) : (
@@ -22,7 +31,8 @@ export function FormPreview() {
         {schema.fields.length > 0 && (
           <button
             type="button"
-            className="w-full py-2 bg-blue-600 text-white rounded-md cursor-not-allowed opacity-70"
+            className="w-full py-2 text-white rounded-md cursor-not-allowed opacity-70"
+            style={{ backgroundColor: 'var(--brand-600)' }}
           >
             제출 (미리보기)
           </button>
@@ -33,13 +43,13 @@ export function FormPreview() {
 }
 
 function PreviewField({ field }: { field: FormField }) {
-  const baseInputClass = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+  const baseInputClass = "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--gray-300)' }}>
         {field.label}
-        {field.required && <span className="text-red-500 ml-1">*</span>}
+        {field.required && <span className="ml-1" style={{ color: 'var(--accent-rose)' }}>*</span>}
       </label>
 
       {field.type === 'text' && (
@@ -47,6 +57,7 @@ function PreviewField({ field }: { field: FormField }) {
           type="text"
           placeholder={field.placeholder}
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
@@ -56,6 +67,7 @@ function PreviewField({ field }: { field: FormField }) {
           type="email"
           placeholder={field.placeholder}
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
@@ -65,6 +77,7 @@ function PreviewField({ field }: { field: FormField }) {
           type="tel"
           placeholder={field.placeholder}
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
@@ -74,6 +87,7 @@ function PreviewField({ field }: { field: FormField }) {
           type="number"
           placeholder={field.placeholder}
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
@@ -82,6 +96,7 @@ function PreviewField({ field }: { field: FormField }) {
         <input
           type="date"
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
@@ -91,12 +106,13 @@ function PreviewField({ field }: { field: FormField }) {
           placeholder={field.placeholder}
           rows={4}
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}
 
       {field.type === 'select' && (
-        <select className={baseInputClass} disabled>
+        <select className={baseInputClass} style={previewInputStyle} disabled>
           <option value="">선택하세요</option>
           {field.options?.map((opt, i) => (
             <option key={i} value={opt}>{opt}</option>
@@ -109,7 +125,7 @@ function PreviewField({ field }: { field: FormField }) {
           {field.options?.map((opt, i) => (
             <label key={i} className="flex items-center gap-2">
               <input type="radio" name={field.id} disabled />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm" style={{ color: 'var(--gray-200)' }}>{opt}</span>
             </label>
           ))}
         </div>
@@ -120,7 +136,7 @@ function PreviewField({ field }: { field: FormField }) {
           {field.options?.map((opt, i) => (
             <label key={i} className="flex items-center gap-2">
               <input type="checkbox" disabled />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm" style={{ color: 'var(--gray-200)' }}>{opt}</span>
             </label>
           ))}
         </div>
@@ -130,6 +146,7 @@ function PreviewField({ field }: { field: FormField }) {
         <input
           type="file"
           className={baseInputClass}
+          style={previewInputStyle}
           disabled
         />
       )}

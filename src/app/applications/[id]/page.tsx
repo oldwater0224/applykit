@@ -18,22 +18,23 @@ export default function ApplicationDetailPage() {
     error: appError,
   } = useApplication(applicationId);
 
-  // 파일 목록 조회 - applicationId 있을 때만
   const { data: files = [], isLoading: isFilesLoading } =
     useApplicationFiles(applicationId);
 
   if (isAppLoading || isFilesLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto text-center">로딩 중...</div>
+      <div className="min-h-screen p-8">
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-400)" }}>
+          로딩 중...
+        </div>
       </div>
     );
   }
 
   if (appError || !application) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto text-center text-red-600">
+      <div className="min-h-screen p-8">
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--accent-rose)" }}>
           지원서를 찾을 수 없습니다.
         </div>
       </div>
@@ -42,37 +43,39 @@ export default function ApplicationDetailPage() {
 
   const program = application.programs;
 
-  // 삭제된 프로그램 케이스
   if (!program) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-3xl mx-auto text-center text-gray-500">
+      <div className="min-h-screen p-8">
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-500)" }}>
           이 지원서가 속한 공고가 삭제되었습니다.
         </div>
       </div>
     );
   }
 
-  
-
-  
   const schema: FormSchema = application.programs?.form_schema ?? { fields: [], version: 1 }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--page-bg)" }}>
+      <header
+        className="border-b"
+        style={{ backgroundColor: "var(--navy-900)", borderColor: "var(--navy-700)" }}
+      >
         <div className="max-w-3xl mx-auto px-4 py-4">
           <Link
             href="/applications"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm transition"
+            style={{ color: "var(--gray-400)" }}
           >
             ← 내 지원서 목록
           </Link>
           <div className="mt-2 flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate">{program.title}</h1>
+              <h1 className="text-xl font-bold truncate" style={{ color: "var(--gray-100)" }}>
+                {program.title}
+              </h1>
               {application.submitted_at && (
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
                   제출일:{' '}
                   {new Date(application.submitted_at).toLocaleString('ko-KR')}
                 </p>

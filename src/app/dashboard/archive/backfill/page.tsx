@@ -4,16 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { backfillCompanyNames } from "@/src/app/actions/reviewAction";
 
-/**
- * 회사명 백필 임시 페이지
- *
- * 사용처:
- * - 운영기관이 새로 isCompanyName 플래그를 지정한 후 과거 데이터 일괄 보정
- * - 일회성 작업이라 메뉴/네비에는 노출하지 않음 (URL 직접 입력)
- *
- * 향후:
- * - 백필 완료 후 이 페이지를 삭제하거나 권한 관리자 전용으로 제한
- */
 export default function BackfillPage() {
   const [result, setResult] = useState<{
     processed: number;
@@ -48,17 +38,23 @@ export default function BackfillPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--page-bg)" }}>
+      <header
+        className="border-b"
+        style={{ backgroundColor: "var(--navy-900)", borderColor: "var(--navy-700)" }}
+      >
         <div className="max-w-2xl mx-auto px-4 py-4">
           <Link
             href="/dashboard/archive"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm transition"
+            style={{ color: "var(--gray-400)" }}
           >
             ← 심사 아카이브
           </Link>
-          <h1 className="text-xl font-bold mt-1">회사명 일괄 보정</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-xl font-bold mt-1" style={{ color: "var(--gray-100)" }}>
+            회사명 일괄 보정
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
             기존 심사 이력 중 회사명이 비어 있는 항목을 새 폼 설정에 따라
             다시 추출합니다.
           </p>
@@ -66,10 +62,13 @@ export default function BackfillPage() {
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <div className="space-y-2 text-sm">
+        <div
+          className="rounded-lg border p-6 space-y-4"
+          style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+        >
+          <div className="space-y-2 text-sm" style={{ color: "var(--gray-300)" }}>
             <p>
-              <b>주의</b>: 이 작업은 일회성으로 실행하면 됩니다.
+              <b style={{ color: "var(--gray-100)" }}>주의</b>: 이 작업은 일회성으로 실행하면 됩니다.
             </p>
             <ul className="list-disc list-inside space-y-1">
               <li>
@@ -87,20 +86,24 @@ export default function BackfillPage() {
             type="button"
             onClick={handleRun}
             disabled={isPending}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "var(--brand-600)" }}
           >
             {isPending ? "처리 중..." : "회사명 일괄 보정 실행"}
           </button>
         </div>
 
         {result && (
-          <div className="bg-white rounded-lg shadow p-6 space-y-2 text-sm">
+          <div
+            className="rounded-lg border p-6 space-y-2 text-sm"
+            style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--gray-300)" }}
+          >
             <p>
-              <b>완료</b>: 회사명이 비어 있던 {result.processed}건 중{" "}
-              <b>{result.updated}건</b>의 회사명을 보정했습니다.
+              <b style={{ color: "var(--gray-100)" }}>완료</b>: 회사명이 비어 있던 {result.processed}건 중{" "}
+              <b style={{ color: "var(--accent-emerald)" }}>{result.updated}건</b>의 회사명을 보정했습니다.
             </p>
             {result.processed > result.updated && (
-              <p className="text-gray-500">
+              <p style={{ color: "var(--gray-500)" }}>
                 나머지 {result.processed - result.updated}건은 폼 스키마에서
                 회사명을 추출하지 못해 그대로 두었습니다.
               </p>
@@ -109,7 +112,10 @@ export default function BackfillPage() {
         )}
 
         {error && (
-          <div className="bg-white rounded-lg shadow p-6 text-sm text-red-700">
+          <div
+            className="rounded-lg border p-6 text-sm"
+            style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--accent-rose)", color: "var(--accent-rose)" }}
+          >
             {error}
           </div>
         )}

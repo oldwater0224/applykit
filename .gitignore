@@ -44,6 +44,8 @@ politics.md
 .vercel
 vercel.json
 
+# claude
+.claude 
 
 # typescript
 *.tsbuildinfo

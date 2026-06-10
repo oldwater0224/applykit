@@ -55,7 +55,7 @@ export const DEFAULT_FORM_SCHEMA: FormSchema = {
       id: 'phone',
       type: 'phone',
       label: '연락처',
-      placeholder: '010-1234-5678',
+      placeholder: '010-xxxx-xxxx',
       required: true,
     },
   ],

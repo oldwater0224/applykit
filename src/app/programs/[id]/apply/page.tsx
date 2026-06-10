@@ -37,21 +37,14 @@ export default function ApplyPage() {
   const uploadFileMutation = useUploadApplicationFile();
   const deleteFileMutation = useDeleteApplicationFile();
 
-  // 현재 작업 중인 application의 id
-  // - 기존 draft가 있으면 그 id
-  // - 없으면 null이었다가, 첫 파일 업로드 또는 임시저장 시점에 생성되어 채워짐
-  // - 한번 생성되면 페이지를 떠나기 전까지 동일 id 유지
   const [currentApplicationId, setCurrentApplicationId] = useState<
     string | null
   >(null);
 
-  // 파일 목록 - currentApplicationId가 있을 때만 조회
   const { data: uploadedFiles = [] } = useApplicationFiles(
     currentApplicationId ?? undefined,
   );
 
-  // 업로드 중인 필드 추적 - 해당 필드 input을 disable
-  // Set 사용 - 여러 필드가 동시에 업로드될 수 있음 (드물지만)
   const [uploadingFields, setUploadingFields] = useState<Set<string>>(
     new Set(),
   );
@@ -59,8 +52,6 @@ export default function ApplyPage() {
   const [formData, setFormData] = useState<ApplicationFormData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // 기존 지원서 로드 시 초기화
-  // - existingApplication이 도착하면 currentApplicationId와 formData 동시 세팅
   useEffect(() => {
     if (existingApplication) {
       setCurrentApplicationId(existingApplication.id);
@@ -74,13 +65,11 @@ export default function ApplyPage() {
     [program?.form_schema],
   );
 
-  // 진행률 계산 
   const progress = useMemo(() => {
     const requiredFields = schema.fields.filter((f) => f.required);
     if (requiredFields.length === 0) return 100;
 
     const filledCount = requiredFields.filter((f) => {
-      // 파일 필드는 업로드된 파일이 있는지로 판단
       if (f.type === "file") {
         return uploadedFiles.some((file) => file.field_key === f.id);
       }
@@ -107,20 +96,12 @@ export default function ApplyPage() {
     }
   }
 
-  /**
-   * 파일 업로드 핸들러
-   * - draft가 없으면 먼저 빈 draft 생성 후 그 id로 업로드
-   * - 한 번 생성된 draft는 currentApplicationId에 캐시되어 재사용
-   */
   async function handleFileUpload(fieldKey: string, file: File) {
-    // 업로드 중 표시
     setUploadingFields((prev) => new Set(prev).add(fieldKey));
 
     try {
       let appId = currentApplicationId;
 
-      // draft가 없으면 먼저 생성
-      // - 현재 formData를 함께 저장 (사용자가 텍스트 필드도 입력했을 수 있음)
       if (!appId) {
         const created = await createMutation.mutateAsync({
           program_id: programId,
@@ -131,14 +112,12 @@ export default function ApplyPage() {
         setCurrentApplicationId(appId);
       }
 
-      // 파일 업로드
       await uploadFileMutation.mutateAsync({
         applicationId: appId,
         fieldKey,
         file,
       });
 
-      // 파일 필드 에러가 있었으면 제거
       if (errors[fieldKey]) {
         setErrors((prev) => {
           const next = { ...prev };
@@ -147,11 +126,9 @@ export default function ApplyPage() {
         });
       }
     } catch (err) {
-      // 에러는 mutation.error로 surface됨 - 여기서는 throw해서 자식 컴포넌트도 알 수 있게
       console.error("[handleFileUpload]", err);
       throw err;
     } finally {
-      // 업로드 중 표시 해제
       setUploadingFields((prev) => {
         const next = new Set(prev);
         next.delete(fieldKey);
@@ -160,9 +137,6 @@ export default function ApplyPage() {
     }
   }
 
-  /**
-   * 파일 삭제 핸들러
-   */
   async function handleFileDelete(fileId: string) {
     if (!currentApplicationId) return;
 
@@ -182,7 +156,6 @@ export default function ApplyPage() {
     for (const field of schema.fields) {
       if (!field.required) continue;
 
-      // 파일 필드는 uploadedFiles로 검증
       if (field.type === "file") {
         const hasFile = uploadedFiles.some((f) => f.field_key === field.id);
         if (!hasFile) {
@@ -220,8 +193,6 @@ export default function ApplyPage() {
           input: { form_data: formData, is_complete: true },
         });
       } else {
-        // draft가 없는 상태에서 바로 제출하는 케이스
-        // (파일 필드 없이 텍스트만 입력하고 바로 제출)
         await createMutation.mutateAsync({
           program_id: programId,
           form_data: formData,
@@ -237,12 +208,16 @@ export default function ApplyPage() {
   // === 렌더링 분기 ===
 
   if (isProgramLoading || isApplicationLoading) {
-    return <div className="p-8 text-center">로딩 중...</div>;
+    return (
+      <div className="p-8 text-center" style={{ color: "var(--gray-400)" }}>
+        로딩 중...
+      </div>
+    );
   }
 
   if (programError || !program) {
     return (
-      <div className="p-8 text-center text-red-600">
+      <div className="p-8 text-center" style={{ color: "var(--accent-rose)" }}>
         프로그램을 찾을 수 없습니다.
       </div>
     );
@@ -250,10 +225,15 @@ export default function ApplyPage() {
 
   if (existingApplication?.is_complete) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-2xl mx-auto rounded-lg shadow p-8 text-center">
-          <h1 className="text-xl font-bold mb-2">이미 제출된 지원서입니다</h1>
-          <p className="text-gray-600 mb-6">
+      <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
+        <div
+          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+        >
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+            이미 제출된 지원서입니다
+          </h1>
+          <p className="mb-6" style={{ color: "var(--gray-400)" }}>
             {program.title}에 이미 지원하셨습니다.<br/>
             이미 지원한 지원서는 수정이
             불가합니다.
@@ -261,7 +241,8 @@ export default function ApplyPage() {
 
           <Link
             href="/applications"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="inline-block px-4 py-2 text-white rounded-md transition"
+            style={{ backgroundColor: "var(--brand-600)" }}
           >
             내 지원목록 보기
           </Link>
@@ -272,10 +253,15 @@ export default function ApplyPage() {
 
   if (schema.fields.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-8 text-center">
-          <h1 className="text-xl font-bold mb-2">아직 준비 중입니다</h1>
-          <p className="text-gray-600">
+      <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
+        <div
+          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+        >
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+            아직 준비 중입니다
+          </h1>
+          <p style={{ color: "var(--gray-400)" }}>
             이 공고의 지원 양식이 아직 등록되지 않았습니다.
           </p>
         </div>
@@ -289,7 +275,6 @@ export default function ApplyPage() {
     uploadFileMutation.isPending ||
     deleteFileMutation.isPending;
 
-  // 모든 mutation의 에러 중 가장 최근 것 표시
   const mutationError =
     createMutation.error ||
     updateMutation.error ||
@@ -297,25 +282,33 @@ export default function ApplyPage() {
     deleteFileMutation.error;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--page-bg)" }}>
+      <header
+        className="sticky top-0 z-10 border-b"
+        style={{ backgroundColor: "var(--navy-900)", borderColor: "var(--navy-700)" }}
+      >
         <div className="max-w-3xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold">{program.title}</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--gray-100)" }}>
+            {program.title}
+          </h1>
           {program.deadline && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
               접수 마감:{" "}
               {new Date(program.deadline).toLocaleDateString("ko-KR")}
             </p>
           )}
           <div className="mt-3">
-            <div className="flex justify-between text-xs text-gray-600 mb-1">
+            <div className="flex justify-between text-xs mb-1" style={{ color: "var(--gray-400)" }}>
               <span>작성 진행률</span>
               <span>{progress}%</span>
             </div>
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="w-full h-2 rounded-full overflow-hidden"
+              style={{ backgroundColor: "var(--navy-700)" }}
+            >
               <div
-                className="h-full bg-blue-600 transition-all duration-300"
-                style={{ width: `${progress}%` }}
+                className="h-full transition-all duration-300"
+                style={{ width: `${progress}%`, backgroundColor: "var(--brand-500)" }}
               />
             </div>
           </div>
@@ -336,13 +329,19 @@ export default function ApplyPage() {
         />
 
         {Object.keys(errors).length > 0 && (
-          <div className="mt-4 p-3 border border-red-300 rounded-md bg-red-50 text-sm text-red-700">
+          <div
+            className="mt-4 p-3 border rounded-md text-sm"
+            style={{ borderColor: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)", color: "var(--accent-rose)" }}
+          >
             필수 항목 {Object.keys(errors).length}개를 입력해주세요.
           </div>
         )}
 
         {mutationError && (
-          <div className="mt-4 p-3 border border-red-300 rounded-md bg-red-50 text-sm text-red-700">
+          <div
+            className="mt-4 p-3 border rounded-md text-sm"
+            style={{ borderColor: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)", color: "var(--accent-rose)" }}
+          >
             {mutationError instanceof Error
               ? mutationError.message
               : "저장 중 오류가 발생했습니다."}
@@ -353,7 +352,8 @@ export default function ApplyPage() {
           <button
             onClick={handleSubmit}
             disabled={isPending}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition"
+            style={{ backgroundColor: "var(--brand-600)" }}
           >
             {isPending ? "제출 중..." : "제출하기"}
           </button>

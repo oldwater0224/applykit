@@ -11,17 +11,10 @@ interface ApplicationFormRendererProps {
   value: ApplicationFormData;
   onChange: (fieldId: string, fieldValue: ApplicationFormData[string]) => void;
   errors?: Record<string, string>;
-
-  // ↓ 5-3단계 추가: 파일 업로드 관련 props
-  // applicationId가 null이면 아직 draft가 없는 상태 - 파일 업로드 시 자동 생성됨
   applicationId: string | null;
-  // 현재 지원서에 업로드된 파일들 - field_key별로 필터링해서 표시
   uploadedFiles: ApplicationFile[];
-  // 파일 업로드 핸들러 - 부모가 draft 생성 + 업로드를 처리
   onFileUpload: (fieldKey: string, file: File) => Promise<void>;
-  // 파일 삭제 핸들러
   onFileDelete: (fileId: string) => Promise<void>;
-  // 업로드 진행 중인 field_key 목록 - 해당 필드 disable 처리
   uploadingFields: Set<string>;
 }
 
@@ -38,14 +31,20 @@ export function ApplicationFormRenderer({
 }: ApplicationFormRendererProps) {
   if (schema.fields.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+      <div
+        className="rounded-lg border p-8 text-center"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--gray-500)" }}
+      >
         이 공고에는 아직 양식이 등록되지 않았습니다.
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-6">
+    <div
+      className="rounded-lg border p-6 space-y-6"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+    >
       {schema.fields.map((field) => (
         <FieldRenderer
           key={field.id}
@@ -53,9 +52,7 @@ export function ApplicationFormRenderer({
           value={value[field.id]}
           onChange={(v) => onChange(field.id, v)}
           error={errors?.[field.id]}
-          // 파일 필드용 props - 다른 필드는 안 쓰지만 props drilling 회피용
           applicationId={applicationId}
-          // 이 필드에 속한 파일만 필터링해서 전달
           fieldFiles={uploadedFiles.filter((f) => f.field_key === field.id)}
           onFileUpload={(file) => onFileUpload(field.id, file)}
           onFileDelete={onFileDelete}
@@ -88,18 +85,24 @@ function FieldRenderer({
   onFileDelete,
   isUploading,
 }: FieldRendererProps) {
-  const baseInputClass = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-    error ? "border-red-500" : "border-gray-300"
-  }`;
+  // 입력 필드 공통 스타일 — 다크 테마 인라인 적용
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: "var(--navy-800)",
+    borderColor: error ? "var(--accent-rose)" : "var(--navy-600)",
+    color: "var(--gray-100)",
+  };
+
+  const baseInputClass =
+    "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]";
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
         {field.label}
-        {field.required && <span className="text-red-500 ml-1">*</span>}
+        {field.required && <span className="ml-1" style={{ color: "var(--accent-rose)" }}>*</span>}
       </label>
 
-      {/* 텍스트 계열 - 5-1단계 그대로 */}
+      {/* 텍스트 계열 */}
       {(field.type === "text" ||
         field.type === "email" ||
         field.type === "phone" ||
@@ -128,6 +131,7 @@ function FieldRenderer({
           }}
           maxLength={field.maxLength}
           className={baseInputClass}
+          style={inputStyle}
         />
       )}
 
@@ -139,6 +143,7 @@ function FieldRenderer({
           maxLength={field.maxLength}
           rows={4}
           className={baseInputClass}
+          style={inputStyle}
         />
       )}
 
@@ -147,6 +152,7 @@ function FieldRenderer({
           value={typeof value === "string" ? value : ""}
           onChange={(e) => onChange(e.target.value)}
           className={baseInputClass}
+          style={inputStyle}
         >
           <option value="">선택하세요</option>
           {field.options?.map((opt) => (
@@ -168,7 +174,7 @@ function FieldRenderer({
                 checked={value === opt}
                 onChange={(e) => onChange(e.target.value)}
               />
-              <span className="text-sm">{opt}</span>
+              <span className="text-sm" style={{ color: "var(--gray-200)" }}>{opt}</span>
             </label>
           ))}
         </div>
@@ -196,14 +202,14 @@ function FieldRenderer({
                     }
                   }}
                 />
-                <span className="text-sm">{opt}</span>
+                <span className="text-sm" style={{ color: "var(--gray-200)" }}>{opt}</span>
               </label>
             );
           })}
         </div>
       )}
 
-      {/* ↓ 파일 필드 */}
+      {/* 파일 필드 */}
       {field.type === "file" && (
         <FileFieldRenderer
           field={field}
@@ -214,11 +220,11 @@ function FieldRenderer({
         />
       )}
 
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-sm" style={{ color: "var(--accent-rose)" }}>{error}</p>}
 
       {field.maxLength &&
         (field.type === "text" || field.type === "textarea") && (
-          <p className="mt-1 text-xs text-gray-500 text-right">
+          <p className="mt-1 text-xs text-right" style={{ color: "var(--gray-500)" }}>
             {typeof value === "string" ? value.length : 0} / {field.maxLength}
           </p>
         )}
@@ -226,12 +232,6 @@ function FieldRenderer({
   );
 }
 
-/**
- * 파일 필드 전용 렌더
- * - 업로드된 파일 목록 표시
- * - 새 파일 업로드 input
- * - 클라이언트 사이드 검증 (파일 크기, 형식)
- */
 function FileFieldRenderer({
   field,
   files,
@@ -245,46 +245,34 @@ function FileFieldRenderer({
   onDelete: (fileId: string) => Promise<void>;
   isUploading: boolean;
 }) {
-  // 클라이언트 사이드 검증 에러
-  // 서버 에러는 부모가 mutation.error로 표시, 여기는 즉시 피드백용
   const [validationError, setValidationError] = useState<string | null>(null);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 1. 파일 크기 검증
-    // maxFileSize는 MB 단위이므로 바이트로 환산해서 비교
     if (field.maxFileSize) {
       const maxBytes = field.maxFileSize * 1024 * 1024;
       if (file.size > maxBytes) {
         setValidationError(
           `파일 크기는 ${field.maxFileSize}MB 이하여야 합니다.`,
         );
-        // input 초기화 - 사용자가 다른 파일 선택할 수 있도록
         e.target.value = "";
         return;
       }
     }
 
-    // 2. 파일 형식 검증 (확장자 기준)
-    // accept는 ".pdf,.doc,.docx" 형식의 문자열
-    // MVP는 PDF/Excel만 허용 - field.accept와 무관하게 강제
-    // (운영기관이 폼 빌더에 다른 형식 입력해도 여기서 차단)
     if (!isAllowedFile(file)) {
       setValidationError(`${ALLOWED_FILES_LABEL} 파일만 업로드할 수 있습니다.`);
       e.target.value = "";
       return;
     }
 
-    // 검증 통과 - 업로드 시작
     setValidationError(null);
     try {
       await onUpload(file);
-      // 업로드 성공 시 input 초기화 - 같은 파일 다시 선택 가능하게
       e.target.value = "";
     } catch (err) {
-      // 부모가 에러를 surface하므로 여기서는 console만
       console.error("[FileFieldRenderer] upload failed", err);
       e.target.value = "";
     }
@@ -292,24 +280,27 @@ function FileFieldRenderer({
 
   return (
     <div className="space-y-3">
-      {/* 업로드된 파일 목록 */}
       {files.length > 0 && (
         <ul className="space-y-2">
           {files.map((file) => (
             <li
               key={file.id}
-              className="flex items-center justify-between px-3 py-2 border border-gray-200 rounded-md"
+              className="flex items-center justify-between px-3 py-2 border rounded-md"
+              style={{ borderColor: "var(--navy-600)" }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.file_name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm font-medium truncate" style={{ color: "var(--gray-200)" }}>
+                  {file.file_name}
+                </p>
+                <p className="text-xs" style={{ color: "var(--gray-500)" }}>
                   {formatFileSize(file.size_bytes)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => onDelete(file.id)}
-                className="ml-3 px-2 py-1 text-sm text-red-600 border border-red-300 rounded"
+                className="ml-3 px-2 py-1 text-sm border rounded"
+                style={{ color: "var(--accent-rose)", borderColor: "var(--accent-rose)" }}
               >
                 삭제
               </button>
@@ -319,24 +310,27 @@ function FileFieldRenderer({
       )}
 
       {/* 업로드 input */}
-      <div className="px-3 py-4 border border-dashed border-gray-300 rounded-md">
+      <div
+        className="px-3 py-4 border border-dashed rounded-md"
+        style={{ borderColor: "var(--navy-600)" }}
+      >
         <input
           type="file"
           accept={ACCEPT_ATTRIBUTE}
           onChange={handleFileChange}
           disabled={isUploading}
           className="block w-full text-sm"
+          style={{ color: "var(--gray-300)" }}
         />
-        <div className="mt-2 text-xs text-gray-500 space-y-1">
+        <div className="mt-2 text-xs space-y-1" style={{ color: "var(--gray-500)" }}>
           {field.accept && <p>허용 형식: {field.accept}</p>}
           {field.maxFileSize && <p>최대 크기: {field.maxFileSize}MB</p>}
-          {isUploading && <p className="text-blue-600">업로드 중...</p>}
+          {isUploading && <p style={{ color: "var(--brand-500)" }}>업로드 중...</p>}
         </div>
       </div>
 
-      {/* 클라이언트 사이드 검증 에러 */}
       {validationError && (
-        <p className="text-sm text-red-600">{validationError}</p>
+        <p className="text-sm" style={{ color: "var(--accent-rose)" }}>{validationError}</p>
       )}
     </div>
   );

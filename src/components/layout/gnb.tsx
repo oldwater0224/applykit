@@ -62,23 +62,24 @@ export default function GNB() {
     const supabase = createClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!user);
+      setIsLoggedIn(!!user);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setIsLoggedIn(!!session?.user);
-
-     
     });
 
     return () => subscription.unsubscribe();
-  }, [router]);
+  }, [pathname]);
 
   const handleLogout = async () => {
     const supabase = createClient();
+    const confirmed = window.confirm("로그아웃 하시겠습니까?");
+    if (!confirmed) return null;
     await supabase.auth.signOut();
+
     router.push("/");
   };
   const handleSearchInput = useCallback((value: string) => {

@@ -26,10 +26,10 @@ export function extractCompanyName(
     }
   }
 
-  // 2순위: 라벨 키워드 매칭 (text/textarea만)
+  // 2순위: 라벨 키워드 매칭 (text만)
   const fallbackField = schema.fields.find(
     (f) =>
-      (f.type === "text" || f.type === "textarea") &&
+      (f.type === "text") &&
       COMPANY_KEYWORD_REGEX.test(f.label),
   );
   if (fallbackField) {

@@ -15,6 +15,9 @@ export const ROUND_NAME_LIST = [
   "Pre-IPO",
   "IPO",
   "M&A",
+  "CB",
+  "BW",
+  "유상증자",
 ] as const;
 
 export type RoundName = (typeof ROUND_NAME_LIST)[number];
@@ -37,6 +40,11 @@ const ROUND_NORMALIZE: Record<string, RoundName> = {
   ipo: "IPO",
   "m&a": "M&A",
   ma: "M&A",
+  cb: "CB",
+  전환사채: "CB",
+  bw: "BW",
+  신주인수권부사채: "BW",
+  유상증자: "유상증자",
 };
 
 export function normalizeRoundName(raw: string): RoundName | string {
@@ -55,6 +63,9 @@ export const ROUND_COLORS: Record<string, string> = {
   "Pre-IPO": "bg-amber-50 text-amber-700",
   IPO: "bg-orange-50 text-orange-700",
   "M&A": "bg-rose-50 text-rose-700",
+  CB: "bg-cyan-50 text-cyan-700",
+  BW: "bg-sky-50 text-sky-700",
+  유상증자: "bg-slate-50 text-slate-700",
 };
 
 // --- funding_rounds 테이블 행 타입 (DB 1:1) ---

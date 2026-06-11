@@ -103,7 +103,7 @@ export default async function HomePage() {
                   <Link
                     key={`${roundName}-${i}`}
                     href={`/investments?round=${encodeURIComponent(roundName)}`}
-                    className="group mx-1 w-[160px] shrink-0 rounded-lg border px-3 py-3 transition-all hover:shadow-md"
+                    className="group mx-1 w-40 shrink-0 rounded-lg border px-3 py-3 transition-all hover:shadow-md"
                     style={{
                       backgroundColor: "var(--card-bg)",
                       borderColor: "var(--card-border)",
@@ -165,8 +165,8 @@ export default async function HomePage() {
                   return (
                     <div key={sector.sector}>
                       <div className="mb-1 flex items-center justify-between">
-                        <span className="text-[12px] font-medium" style={{ color: "#fff" }}>
-                          <span className="mr-1.5 inline-block w-4 text-center text-[11px]" style={{ color: "var(--gray-400)" }}>
+                        <span className="text-[12px] font-medium" style={{ color: "var(--gray-100)" }}>
+                          <span className="mr-1.5 inline-block w-4 text-center text-[11px]" style={{ color: "var(--gray-100)" }}>
                             {i + 1}
                           </span>
                           {sector.sector}
@@ -177,7 +177,7 @@ export default async function HomePage() {
                       </div>
                       <div
                         className="h-1.5 w-full overflow-hidden rounded-full"
-                        style={{ backgroundColor: "var(--gray-100)" }}
+                        style={{ backgroundColor: "var(--gray-500)" }}
                       >
                         <div
                           className="h-full rounded-full transition-all"
@@ -258,7 +258,7 @@ export default async function HomePage() {
                   {stats.recentRounds.map((round) => (
                     <tr
                       key={round.id}
-                      className="transition hover:bg-slate-50/50"
+                      className="transition"
                       style={{ borderBottom: "1px solid #fff" }}
                     >
                       <td className="px-3 py-2.5">
@@ -352,6 +352,9 @@ const ROUND_DOT_COLORS: Record<string, string> = {
   "Pre-IPO": "var(--round-pre-ipo)",
   IPO: "var(--round-ipo)",
   "M&A": "var(--round-ma)",
+  CB: "var(--round-cb, #06b6d4)",
+  BW: "var(--round-bw, #0ea5e9)",
+  유상증자: "var(--round-capital-increase, #64748b)",
 };
 
 function RoundBadge({ name, small }: { name: string; small?: boolean }) {

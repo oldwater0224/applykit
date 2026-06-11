@@ -88,10 +88,11 @@ export default function CompaniesPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="기업명으로 검색..."
-            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] outline-none transition focus:ring-2 text-gray-100"
+            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none  focus:ring-2 text-gray-100  focus:ring-blue-500"
             style={{
               
-              backgroundColor: "var(--card-bg)",
+              backgroundColor: "var(--navy-800)",
+              borderColor: "var(--navy-600)", color: "var(--gray-100)"
             }}
           />
           <button
@@ -105,8 +106,8 @@ export default function CompaniesPage() {
         <select
           value={sort}
           onChange={(e) => { setSort(e.target.value); resetPage(); }}
-          className="rounded-md border px-2.5 py-1.5 text-[12px] outline-none"
-          style={{ borderColor: "var(--gray-200)", color: "var(--gray-600)" }}
+          className="rounded-md border px-1 py-1.5  text-[12px] outline-none"
+          style={{ borderColor: "var(--gray-200)", color: "var(--gray-500)" }}
         >
           {SORT_OPTIONS.map(({ value, label }) => (
             <option key={value} value={value}>{label}</option>
@@ -254,8 +255,9 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       onClick={onClick}
       className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-all"
       style={{
-        backgroundColor: active ? "var(--navy-900)" : "var(--gray-100)",
-        color: active ? "var(--gray-100)" : "var(--gray-500)",
+        backgroundColor: active ? "var(--navy-900)" : "transparent",
+        border : active ? "1px solid var(--brand-500)" : "1px solid var(--gray-400)" , 
+        color: active ? "var(--gray-100)" : "var(--gray-400)",
       }}
     >
       {children}

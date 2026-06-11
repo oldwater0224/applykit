@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { syncCompany, syncFinancials, syncDisclosures } from "@/src/lib/dart/sync";
 import { delay } from "@/src/lib/dart/client";
+import { parseFundingFromDisclosures } from "@/src/lib/dart/disclosureFundingParser";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
   let companiesSynced = 0;
   let financialsSynced = 0;
   let disclosuresSynced = 0;
+  let fundingParsed = 0;
   const errors: { corpCode: string; error: string }[] = [];
 
   try {
@@ -107,7 +109,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 4) 재무제표는 매월 1일에만 동기화 (빈도 줄이기)
+    // 4) 공시에서 투자 이벤트 자동 감지
+    try {
+      const fundingResult = await parseFundingFromDisclosures();
+      fundingParsed = fundingResult.created;
+      if (fundingResult.errors.length > 0) {
+        errors.push({ corpCode: 'funding_parser', error: fundingResult.errors.join('; ') });
+      }
+    } catch (err) {
+      errors.push({ corpCode: 'funding_parser', error: String(err) });
+    }
+
+    // 5) 재무제표는 매월 1일에만 동기화 (빈도 줄이기)
     const today = new Date();
     if (today.getDate() === 1) {
       for (const company of companies) {
@@ -124,10 +137,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 5) 로그 업데이트
+    // 6) 로그 업데이트
     await updateLog(supabase, logId, {
       status: "success",
-      summary: `기업 ${companiesSynced}건, 공시 ${disclosuresSynced}건, 재무 ${financialsSynced}건 동기화 완료`,
+      summary: `기업 ${companiesSynced}건, 공시 ${disclosuresSynced}건, 재무 ${financialsSynced}건, 투자감지 ${fundingParsed}건 동기화 완료`,
       companiesSynced,
       financialsSynced,
       disclosuresSynced,
@@ -139,6 +152,7 @@ export async function GET(request: NextRequest) {
       companiesSynced,
       financialsSynced,
       disclosuresSynced,
+      fundingParsed,
       errors: errors.length,
       duration: `${Math.round((Date.now() - startTime.getTime()) / 1000)}s`,
     });

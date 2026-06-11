@@ -99,7 +99,7 @@ export default function InvestmentTable({
                 >
                   <td
                     className="whitespace-nowrap px-3 py-2.5 tabular-nums"
-                    style={{ color: "var(--gray-400)" }}
+                    style={{ color: "#fff" }}
                   >
                     {formatDate(item.announcedDate)}
                   </td>
@@ -107,7 +107,7 @@ export default function InvestmentTable({
                     <Link
                       href={`/companies/${item.companyId}`}
                       className="font-medium transition hover:underline"
-                      style={{ color: "#fff" }}
+                      style={{ color: "var(--gray-100)" }}
                     >
                       {item.companyName}
                     </Link>

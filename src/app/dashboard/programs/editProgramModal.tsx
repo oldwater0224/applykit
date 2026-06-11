@@ -79,7 +79,7 @@ export function EditProgramModal() {
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-(--brand-500)"
               style={modalInputStyle}
             />
           </div>

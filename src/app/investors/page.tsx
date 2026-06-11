@@ -31,7 +31,7 @@ const TYPE_COLORS: Record<string, string> = {
   PE: " text-amber-700",
   Accelerator: " text-emerald-700",
   Angel: " text-pink-700",
-  Government: " text-gray-700",
+  Government: " text-gray-500",
 };
 
 export default function InvestorsPage() {
@@ -67,22 +67,22 @@ export default function InvestorsPage() {
       {/* 헤더 */}
       <div>
         <p
-            className="text-[11px] font-medium uppercase tracking-widest"
-            style={{ color: "var(--gray-400)" }}
-          >
-            Investors
-          </p>
-      <div className="mb-6">
-        <h1
-          className="text-2xl font-bold tracking-tight"
-          style={{ color: "#fff" }}
+          className="text-[11px] font-medium uppercase tracking-widest"
+          style={{ color: "var(--gray-400)" }}
         >
-          투자자
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          VC · 액셀러레이터 · CVC {totalCount.toLocaleString()}곳
+          Investors
         </p>
-      </div>
+        <div className="mb-6">
+          <h1
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: "#fff" }}
+          >
+            투자자
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            VC · 액셀러레이터 · CVC {totalCount.toLocaleString()}곳
+          </p>
+        </div>
       </div>
 
       {/* 검색 */}
@@ -92,7 +92,8 @@ export default function InvestorsPage() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="투자자명으로 검색..."
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-white text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 rounded-lg border px-4 py-2 text-gray-100 text-[13px]  focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--gray-100)" }}
         />
         <button
           type="submit"
@@ -109,11 +110,18 @@ export default function InvestorsPage() {
             setType("전체");
             setPage(1);
           }}
-          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            type === "전체"
-              ? "bg-gray-900 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
+          className={
+            "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+          }
+          style={{
+            backgroundColor:
+              type === "전체" ? "var(--navy-900)" : "transparent",
+            border:
+              type === "전체"
+                ? "1px solid var(--brand-500)"
+                : "1px solid var(--gray-400)",
+            color: type === "전체" ? "var(--gray-100)" : "var(--gray-400)",
+          }}
         >
           전체
         </button>
@@ -124,11 +132,18 @@ export default function InvestorsPage() {
               setType(t.name);
               setPage(1);
             }}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              type === t.name
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={
+              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+            }
+            style={{
+              backgroundColor:
+                type === t.name ? "var(--navy-900)" : "transparent",
+              border:
+                type === t.name
+                  ? "1px solid var(--brand-500)"
+                  : "1px solid var(--gray-400)",
+              color: type === t.name ? "var(--gray-100)" : "var(--gray-400)",
+            }}
           >
             {getTypeLabel(t.name)} ({t.count})
           </button>
@@ -153,7 +168,7 @@ export default function InvestorsPage() {
       {!isLoading && !isError && (
         <>
           {investors.length === 0 ? (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 ">
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300">
               <p className="text-sm text-gray-400">
                 {search
                   ? `"${search}" 검색 결과가 없습니다.`
@@ -167,7 +182,6 @@ export default function InvestorsPage() {
                   key={inv.id}
                   href={`/investors/${inv.id}`}
                   className="block rounded-xl border  border-gray-200  p-5 transition-all hover:border-blue-300 hover:shadow-md"
-                  
                 >
                   <div className="mb-3 flex items-start justify-between">
                     <h3 className="font-semibold text-gray-300">{inv.name}</h3>

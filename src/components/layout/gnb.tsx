@@ -29,6 +29,7 @@ export default function GNB() {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isOrgAdmin, setIsOrgAdmin] = useState(false);
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -61,14 +62,38 @@ export default function GNB() {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
-    });
+
+      if (user) {
+        const { data: orgMember } = await supabase
+          .from("org_members")
+          .select("org_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setIsOrgAdmin(!!orgMember);
+      } else {
+        setIsOrgAdmin(false);
+      }
+    }
+
+    checkAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session?.user);
+      if (!session?.user) {
+        setIsOrgAdmin(false);
+      } else {
+        supabase
+          .from("org_members")
+          .select("org_id")
+          .eq("user_id", session.user.id)
+          .maybeSingle()
+          .then(({ data }) => setIsOrgAdmin(!!data));
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -230,7 +255,7 @@ export default function GNB() {
                             <button
                               key={r.id}
                               onClick={() => handleResultClick(r)}
-                              className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition hover:bg-slate-50"
+                              className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition "
                             >
                               <span
                                 className="flex size-6 shrink-0 items-center justify-center rounded text-[10px] font-bold"
@@ -244,7 +269,7 @@ export default function GNB() {
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-800)" }}
+                                  style={{ color: "var(--gray-100)" }}
                                 >
                                   {r.name}
                                 </p>
@@ -276,7 +301,7 @@ export default function GNB() {
                             <button
                               key={r.id}
                               onClick={() => handleResultClick(r)}
-                              className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition hover:bg-slate-50"
+                              className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition"
                             >
                               <span
                                 className="flex size-6 shrink-0 items-center justify-center rounded text-[10px] font-bold"
@@ -290,7 +315,7 @@ export default function GNB() {
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-800)" }}
+                                  style={{ color: "var(--gray-100)" }}
                                 >
                                   {r.name}
                                 </p>
@@ -312,6 +337,19 @@ export default function GNB() {
               </div>
             )}
           </div>
+          {isOrgAdmin && (
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+              style={{
+                backgroundColor: "var(--brand-500)",
+                color: "#fff",
+              }}
+            >
+              <DashboardIcon />
+              대시보드
+            </Link>
+          )}
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
@@ -407,10 +445,46 @@ export default function GNB() {
                 </Link>
               </li>
             ))}
+            {isOrgAdmin && (
+              <li>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-1.5 rounded-md px-3 py-2 text-[13px] font-medium transition-colors"
+                  style={{
+                    color: "#fff",
+                    backgroundColor: "var(--brand-500)",
+                  }}
+                >
+                  <DashboardIcon />
+                  대시보드
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
     </header>
+  );
+}
+
+function DashboardIcon() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
   );
 }
 

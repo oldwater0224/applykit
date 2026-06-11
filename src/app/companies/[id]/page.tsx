@@ -212,12 +212,12 @@ export default function CompanyDetailPage() {
                     href={d.dart_url ?? "#"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-start gap-3 rounded-md px-2 py-2 transition hover:bg-slate-50/60"
+                    className="group flex items-start gap-3 rounded-md px-2 py-2 transition "
                   >
-                    <span className="mt-0.5 shrink-0 whitespace-nowrap text-[11px] tabular-nums" style={{ color: "var(--gray-400)" }}>
+                    <span className="mt-0.5 shrink-0 whitespace-nowrap text-[11px] tabular-nums" style={{ color: "var(--gray-300)" }}>
                       {formatDate(d.disclosure_date)}
                     </span>
-                    <span className="text-[12px] transition group-hover:underline" style={{ color: "var(--gray-700)" }}>
+                    <span className="text-[12px] transition group-hover:underline" style={{ color: "var(--gray-500)" }}>
                       {d.title}
                     </span>
                   </a>

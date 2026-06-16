@@ -25,7 +25,7 @@ function getTypeLabel(type: string | null) {
   return TYPE_LABELS[type] ?? type;
 }
 
-const TYPE_COLORS: Record<string, string> = {
+ const TYPE_COLORS: Record<string, string> = {
   VC: "text-blue-700",
   CVC: " text-purple-700",
   PE: " text-amber-700",

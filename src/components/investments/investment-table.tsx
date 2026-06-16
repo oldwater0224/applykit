@@ -20,7 +20,7 @@ function formatDate(dateStr: string | null) {
 }
 
 function formatAmount(amount: number | null) {
-  if (!amount) return "—";
+  if (!amount) return "비공개";
   if (amount >= 10000) return `${(amount / 10000).toFixed(1)}조`;
   return `${amount.toLocaleString()}억`;
 }
@@ -116,7 +116,7 @@ export default function InvestmentTable({
                     className="hidden px-3 py-2.5 md:table-cell"
                     style={{ color: "var(--gray-300)" }}
                   >
-                    {item.sector ?? "—"}
+                    {item.sector ?? "-"}
                   </td>
                   <td className="px-3 py-2.5">
                     <span

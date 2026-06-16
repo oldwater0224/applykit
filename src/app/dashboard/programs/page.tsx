@@ -101,9 +101,9 @@ function ProgramCard({
   onDelete: () => void;
 }) {
   const statusStyle: Record<string, { bg: string; color: string; label: string }> = {
-    draft: { bg: "var(--gray-100)", color: "var(--gray-600)", label: "작성 중" },
-    open: { bg: "#ecfdf5", color: "var(--accent-emerald)", label: "모집 중" },
-    closed: { bg: "#fff1f2", color: "var(--accent-rose)", label: "마감" },
+    draft: { bg: "var(--gray-500)", color: "var(--gray-600)", label: "작성 중" },
+    active: { bg: "var(--gray-500)", color: "var(--accent-emerald)", label: "모집 중" },
+    closed: { bg: "var(--gray-500)", color: "var(--accent-rose)", label: "마감" },
   };
 
   const s = statusStyle[program.status || "draft"] ?? statusStyle.draft;
@@ -152,7 +152,7 @@ function ProgramCard({
           <button
             onClick={onEdit}
             className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
-            style={{ borderColor: "var(--gray-200)", color: "var(--gray-600)" }}
+            style={{ borderColor: "var(--gray-200)", color: "var(--gray-300)" }}
           >
             수정
           </button>

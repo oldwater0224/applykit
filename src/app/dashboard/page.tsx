@@ -35,13 +35,13 @@ export default function DashboardPage() {
             href="/dashboard/archive"
             label="심사 아카이브"
             value="검색"
-            desc="과거 심사 이력 조회"
+            desc="심사 이력 조회"
           />
           <DashCard
             href="/"
-            label="메인 사이트"
+            label="홈으로"
             value="이동"
-            desc="투자 데이터베이스 홈"
+            desc="한국 스타트업 투자"
           />
         </div>
       </div>

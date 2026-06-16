@@ -13,6 +13,7 @@ export default async function HomePage() {
             100
         )
       : null;
+      
 
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">

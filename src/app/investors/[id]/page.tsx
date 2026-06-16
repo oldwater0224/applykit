@@ -5,9 +5,20 @@ import { useInvestorDetail } from "@/src/hooks/useInvestor";
 import Link from "next/link";
 import { normalizeRoundName } from "@/src/types/funding";
 
+
 const TYPE_LABELS: Record<string, string> = {
   VC: "벤처캐피탈", CVC: "기업벤처캐피탈", PE: "사모펀드",
   Accelerator: "액셀러레이터", Angel: "엔젤", Government: "정부/공공",
+};
+
+// app/investors/page.tsx의 TYPE_COLORS(text-*-700)에 대응하는 색상 값
+const TYPE_COLORS: Record<string, string> = {
+  VC: "#1d4ed8", // text-blue-700
+  CVC: "#7e22ce", // text-purple-700
+  PE: "#b45309", // text-amber-700
+  Accelerator: "#047857", // text-emerald-700
+  Angel: "#be185d", // text-pink-700
+  Government: "#6b7280", // text-gray-500
 };
 
 const ROUND_DOT_COLORS: Record<string, string> = {
@@ -81,7 +92,7 @@ export default function InvestorDetailPage() {
             )}
           </div>
           {investor.investor_type && (
-            <span className="shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: "var(--brand-50)", color: "var(--brand-700)" }}>
+            <span className="shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{  color: TYPE_COLORS[investor.investor_type] ?? "var(--gray-500)" }}>
               {TYPE_LABELS[investor.investor_type] ?? investor.investor_type}
             </span>
           )}

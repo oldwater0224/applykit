@@ -291,7 +291,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
         <div className="border-t pt-4 space-y-2" style={{ borderColor: "var(--navy-700)" }}>
           <p className="text-sm font-medium" style={{ color: "var(--gray-300)" }}>파일 업로드 설정</p>
           <p className="text-xs" style={{ color: "var(--gray-500)" }}>
-            MVP에서는 {ALLOWED_FILES_LABEL} 파일만 허용되며, 최대 10MB까지
+            {ALLOWED_FILES_LABEL} 파일만 허용되며, 최대 10MB까지
             업로드 가능합니다.
           </p>
         </div>

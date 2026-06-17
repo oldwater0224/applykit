@@ -46,11 +46,14 @@ export default function ProgramsContent() {
       {companyParam && (
         <div
           className="mb-6 rounded-lg border px-4 py-3"
-          style={{ borderColor: "var(--brand-500)", backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+          style={{
+            borderColor: "var(--brand-500)",
+            backgroundColor: "rgba(59, 130, 246, 0.1)",
+          }}
         >
           <p className="text-sm" style={{ color: "var(--brand-500)" }}>
-            기업 프로필에서 이동했습니다. 아래 프로그램 중 원하는 공고를 선택하여
-            지원하세요.
+            기업 프로필에서 이동했습니다. 아래 프로그램 중 원하는 공고를
+            선택하여 지원하세요.
           </p>
         </div>
       )}
@@ -62,8 +65,12 @@ export default function ProgramsContent() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="프로그램명, 기관명으로 검색..."
-          className="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] sm:max-w-md"
-          style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--gray-100)" }}
+          className="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
+          style={{
+            backgroundColor: "var(--navy-800)",
+            borderColor: "var(--navy-600)",
+            color: "var(--gray-100)",
+          }}
         />
       </div>
 
@@ -79,8 +86,11 @@ export default function ProgramsContent() {
 
       {/* 에러 */}
       {error && (
-        <div className="py-20 text-center" style={{ color: "var(--accent-rose)" }}>
-          공고 목록을 불러오지 못했습니다.
+        <div
+          className="py-20 text-center"
+          style={{ color: "var(--accent-rose)" }}
+        >
+          로그인 후 이용 가능합니다.
         </div>
       )}
 
@@ -129,9 +139,7 @@ function ProgramCard({
   const isDeadlinePassed = deadline !== null && deadline < now;
   const daysRemaining =
     deadline !== null
-      ? Math.ceil(
-          (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-        )
+      ? Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
       : null;
 
   const hasFormSchema =
@@ -146,15 +154,23 @@ function ProgramCard({
       href={href}
       className="block rounded-xl border p-6 transition-all"
       style={{ borderColor: "var(--card-border)" }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--brand-500)")}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--card-border)")}
+      onMouseEnter={(e) =>
+        (e.currentTarget.style.borderColor = "var(--brand-500)")
+      }
+      onMouseLeave={(e) =>
+        (e.currentTarget.style.borderColor = "var(--card-border)")
+      }
     >
       {/* 뱃지 */}
       <div className="mb-3 flex items-center gap-2">
         {!hasFormSchema && (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{ borderColor: "var(--accent-amber)", color: "var(--accent-amber)", backgroundColor: "rgba(245, 158, 11, 0.1)" }}
+            style={{
+              borderColor: "var(--accent-amber)",
+              color: "var(--accent-amber)",
+              backgroundColor: "rgba(245, 158, 11, 0.1)",
+            }}
           >
             양식 준비 중
           </span>
@@ -162,21 +178,33 @@ function ProgramCard({
         {isDeadlinePassed ? (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{ borderColor: "var(--accent-rose)", color: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)" }}
+            style={{
+              borderColor: "var(--accent-rose)",
+              color: "var(--accent-rose)",
+              backgroundColor: "rgba(244, 63, 94, 0.1)",
+            }}
           >
             접수 마감
           </span>
         ) : daysRemaining !== null && daysRemaining <= 7 ? (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{ borderColor: "var(--accent-rose)", color: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)" }}
+            style={{
+              borderColor: "var(--accent-rose)",
+              color: "var(--accent-rose)",
+              backgroundColor: "rgba(244, 63, 94, 0.1)",
+            }}
           >
             D-{daysRemaining}
           </span>
         ) : daysRemaining !== null ? (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)", backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+            style={{
+              borderColor: "var(--brand-500)",
+              color: "var(--brand-500)",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+            }}
           >
             D-{daysRemaining}
           </span>
@@ -191,13 +219,19 @@ function ProgramCard({
       )}
 
       {/* 제목 */}
-      <h2 className="line-clamp-2 text-lg font-semibold" style={{ color: "var(--gray-100)" }}>
+      <h2
+        className="line-clamp-2 text-lg font-semibold"
+        style={{ color: "var(--gray-100)" }}
+      >
         {program.title}
       </h2>
 
       {/* 설명 */}
       {program.description && (
-        <p className="mt-2 line-clamp-2 text-sm" style={{ color: "var(--gray-500)" }}>
+        <p
+          className="mt-2 line-clamp-2 text-sm"
+          style={{ color: "var(--gray-500)" }}
+        >
           {program.description}
         </p>
       )}

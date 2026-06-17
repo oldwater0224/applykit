@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "@/src/lib/actions/auth";
 
@@ -8,6 +9,8 @@ const initialState = { error: "" };
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, initialState);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") ?? "";
 
   return (
     <main className=" min-h-screen flex items-center justify-center px-4">
@@ -18,6 +21,7 @@ export default function LoginPage() {
           </h1>
 
           <form action={formAction} className="space-y-4">
+            <input type="hidden" name="redirect" value={redirectTo} />
             <div>
               <label
                 htmlFor="email"

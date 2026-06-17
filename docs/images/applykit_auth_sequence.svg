@@ -1,0 +1,99 @@
+<svg viewBox="0 0 780 520" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 16px; font-weight: bold; fill: #1e293b; }
+      .actor { font-size: 13px; font-weight: 600; fill: #fff; }
+      .msg { font-size: 11px; fill: #334155; }
+      .note { font-size: 10px; fill: #475569; }
+      .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6,4; }
+      .arrow { stroke: #3b82f6; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-return { stroke: #94a3b8; stroke-width: 1.2; fill: none; stroke-dasharray: 5,3; marker-end: url(#arrowhead-gray); }
+      .arrow-red { stroke: #ef4444; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead-red); }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <text x="390" y="30" text-anchor="middle" class="title">역할 기반 인증 및 라우팅</text>
+
+  <!-- Actors -->
+  <rect x="20" y="50" width="100" height="36" rx="6" fill="#1e293b"/>
+  <text x="70" y="73" text-anchor="middle" class="actor">사용자</text>
+
+  <rect x="210" y="50" width="110" height="36" rx="6" fill="#2563eb"/>
+  <text x="265" y="73" text-anchor="middle" class="actor">Middleware</text>
+
+  <rect x="420" y="50" width="120" height="36" rx="6" fill="#7c3aed"/>
+  <text x="480" y="73" text-anchor="middle" class="actor">Auth Action</text>
+
+  <rect x="640" y="50" width="120" height="36" rx="6" fill="#059669"/>
+  <text x="700" y="73" text-anchor="middle" class="actor">Supabase Auth</text>
+
+  <!-- Lifelines -->
+  <line x1="70" y1="86" x2="70" y2="500" class="lifeline"/>
+  <line x1="265" y1="86" x2="265" y2="500" class="lifeline"/>
+  <line x1="480" y1="86" x2="480" y2="500" class="lifeline"/>
+  <line x1="700" y1="86" x2="700" y2="500" class="lifeline"/>
+
+  <!-- Section 1: Unauthenticated access -->
+  <rect x="15" y="100" width="520" height="100" rx="4" fill="#fef2f2" fill-opacity="0.5" stroke="#fecaca" stroke-width="1"/>
+  <text x="30" y="116" class="note" font-weight="600" fill="#ef4444">비로그인 사용자 — 보호 경로 접근</text>
+
+  <line x1="70" y1="135" x2="257" y2="135" class="arrow"/>
+  <text x="163" y="129" text-anchor="middle" class="msg">/applications 또는 /dashboard 접근</text>
+
+  <line x1="265" y1="155" x2="692" y2="155" class="arrow"/>
+  <text x="478" y="149" text-anchor="middle" class="msg">getUser() — 세션 확인</text>
+
+  <line x1="692" y1="170" x2="273" y2="170" class="arrow-return"/>
+  <text x="478" y="167" text-anchor="middle" class="note">user: null</text>
+
+  <line x1="257" y1="188" x2="78" y2="188" class="arrow-red"/>
+  <text x="163" y="182" text-anchor="middle" class="msg">302 → /login?redirect=/applications</text>
+
+  <!-- Section 2: Login flow -->
+  <rect x="15" y="215" width="750" height="175" rx="4" fill="#eff6ff" fill-opacity="0.5" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="30" y="231" class="note" font-weight="600" fill="#2563eb">로그인 처리</text>
+
+  <line x1="70" y1="250" x2="472" y2="250" class="arrow"/>
+  <text x="271" y="244" text-anchor="middle" class="msg">signIn(email, password, redirect=/applications)</text>
+
+  <line x1="480" y1="275" x2="692" y2="275" class="arrow"/>
+  <text x="586" y="269" text-anchor="middle" class="msg">signInWithPassword()</text>
+
+  <line x1="692" y1="293" x2="488" y2="293" class="arrow-return"/>
+  <text x="586" y="287" text-anchor="middle" class="note">authData (user, session)</text>
+
+  <line x1="480" y1="318" x2="692" y2="318" class="arrow"/>
+  <text x="586" y="312" text-anchor="middle" class="msg">org_members.select() — 역할 확인</text>
+
+  <line x1="692" y1="336" x2="488" y2="336" class="arrow-return"/>
+  <text x="586" y="330" text-anchor="middle" class="note">orgMember 또는 null</text>
+
+  <!-- Decision -->
+  <rect x="360" y="350" width="240" height="28" rx="4" fill="#f1f5f9"/>
+  <text x="480" y="368" text-anchor="middle" class="note">redirect 파라미터 있으면 → redirect 경로로 이동</text>
+
+  <!-- Section 3: Role routing -->
+  <rect x="15" y="405" width="750" height="85" rx="4" fill="#ecfdf5" fill-opacity="0.5" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="30" y="421" class="note" font-weight="600" fill="#059669">역할 기반 라우팅 (redirect 없을 때)</text>
+
+  <!-- Org admin path -->
+  <line x1="472" y1="440" x2="78" y2="440" class="arrow-return"/>
+  <text x="271" y="434" text-anchor="middle" class="msg">운영기관 (orgMember) → redirect("/dashboard")</text>
+
+  <!-- Applicant path -->
+  <line x1="472" y1="470" x2="78" y2="470" class="arrow-return"/>
+  <text x="271" y="464" text-anchor="middle" class="msg">지원자 (null) → redirect("/programs")</text>
+
+  <!-- Footer -->
+  <rect x="180" y="495" width="420" height="20" rx="4" fill="#f1f5f9"/>
+  <text x="390" y="509" text-anchor="middle" class="note">보호 경로: /dashboard, /applications — middleware.ts에서 일괄 관리</text>
+</svg>

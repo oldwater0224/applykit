@@ -74,20 +74,24 @@ export async function signIn(
     return { error: "이메일 또는 비밀번호가 올바르지 않습니다." };
   }
 
+  const redirectTo = (formData.get("redirect") as string) || "";
+
   // 운영기관 멤버 확인
   const {data : orgMember} = await supabase
   .from("org_members")
   .select("org_id")
   .eq("user_id", authData.user.id)
-  //결과 없어도 에러가 아닌 Null 반환 - maybeSingle
   .maybeSingle()
-  // 운영기관 멤버는 대시보드로 , 아니면 지원자 화면으로
-  if(orgMember){
-    revalidatePath("/", "layout");
-    redirect("/dashboard")
-  }else {
+
   revalidatePath("/", "layout");
-  redirect("/programs")};
+
+  if (redirectTo && redirectTo.startsWith("/")) {
+    redirect(redirectTo);
+  } else if (orgMember) {
+    redirect("/dashboard");
+  } else {
+    redirect("/programs");
+  }
 }
 
 export async function signOut(): Promise<void> {

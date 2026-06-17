@@ -224,7 +224,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
           type="text"
           value={field.label}
           onChange={(e) => updateField(fieldId, { label: e.target.value })}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-(--brand-500)"
           style={inputStyle}
         />
       </div>
@@ -237,7 +237,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
           onChange={(e) =>
             updateField(fieldId, { placeholder: e.target.value })
           }
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-(--brand-500)"
           style={inputStyle}
         />
       </div>
@@ -331,7 +331,7 @@ function OptionsEditor({
               type="text"
               value={opt}
               onChange={(e) => handleChange(index, e.target.value)}
-              className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)]"
+              className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-(--brand-500)"
               style={inputStyle}
             />
             <button

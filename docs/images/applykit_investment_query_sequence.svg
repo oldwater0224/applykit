@@ -1,0 +1,86 @@
+<svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <style>
+      .title { font-size: 16px; font-weight: bold; fill: #1e293b; }
+      .actor { font-size: 13px; font-weight: 600; fill: #fff; }
+      .msg { font-size: 11px; fill: #334155; }
+      .note { font-size: 10px; fill: #475569; }
+      .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 6,4; }
+      .arrow { stroke: #3b82f6; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-return { stroke: #94a3b8; stroke-width: 1.2; fill: none; stroke-dasharray: 5,3; marker-end: url(#arrowhead-gray); }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <text x="390" y="30" text-anchor="middle" class="title">투자 데이터 조회 흐름</text>
+
+  <!-- Actors -->
+  <rect x="20" y="50" width="110" height="36" rx="6" fill="#1e293b"/>
+  <text x="75" y="73" text-anchor="middle" class="actor">Client (Browser)</text>
+
+  <rect x="220" y="50" width="130" height="36" rx="6" fill="#2563eb"/>
+  <text x="285" y="73" text-anchor="middle" class="actor">Next.js Server</text>
+
+  <rect x="450" y="50" width="130" height="36" rx="6" fill="#7c3aed"/>
+  <text x="515" y="73" text-anchor="middle" class="actor">Server Action</text>
+
+  <rect x="650" y="50" width="110" height="36" rx="6" fill="#059669"/>
+  <text x="705" y="73" text-anchor="middle" class="actor">Supabase</text>
+
+  <!-- Lifelines -->
+  <line x1="75" y1="86" x2="75" y2="450" class="lifeline"/>
+  <line x1="285" y1="86" x2="285" y2="450" class="lifeline"/>
+  <line x1="515" y1="86" x2="515" y2="450" class="lifeline"/>
+  <line x1="705" y1="86" x2="705" y2="450" class="lifeline"/>
+
+  <!-- Section 1: Investor List -->
+  <rect x="15" y="100" width="740" height="130" rx="4" fill="#eff6ff" fill-opacity="0.5" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="30" y="116" class="note" font-weight="600" fill="#2563eb">투자자 목록 (/investors)</text>
+
+  <line x1="75" y1="130" x2="277" y2="130" class="arrow"/>
+  <text x="176" y="124" text-anchor="middle" class="msg">useInvestors() — React Query</text>
+
+  <line x1="285" y1="155" x2="507" y2="155" class="arrow"/>
+  <text x="396" y="149" text-anchor="middle" class="msg">getInvestors({ type, search, page })</text>
+
+  <line x1="515" y1="178" x2="697" y2="178" class="arrow"/>
+  <text x="606" y="172" text-anchor="middle" class="msg">investors + funding_investors COUNT</text>
+
+  <line x1="697" y1="196" x2="523" y2="196" class="arrow-return"/>
+  <text x="606" y="190" text-anchor="middle" class="note">투자자 목록 + 투자건수</text>
+
+  <line x1="507" y1="214" x2="83" y2="214" class="arrow-return"/>
+  <text x="290" y="208" text-anchor="middle" class="note">{ data: investors[], totalCount }</text>
+
+  <!-- Section 2: Investor Detail -->
+  <rect x="15" y="245" width="740" height="185" rx="4" fill="#f5f3ff" fill-opacity="0.5" stroke="#ddd6fe" stroke-width="1"/>
+  <text x="30" y="261" class="note" font-weight="600" fill="#7c3aed">투자자 상세 (/investors/[id])</text>
+
+  <line x1="75" y1="280" x2="277" y2="280" class="arrow"/>
+  <text x="176" y="274" text-anchor="middle" class="msg">useInvestorDetail(investorId)</text>
+
+  <line x1="285" y1="305" x2="507" y2="305" class="arrow"/>
+  <text x="396" y="299" text-anchor="middle" class="msg">getInvestorDetail(investorId)</text>
+
+  <line x1="515" y1="328" x2="697" y2="328" class="arrow"/>
+  <text x="606" y="322" text-anchor="middle" class="msg">investors.select(*) — 기본정보</text>
+
+  <line x1="515" y1="353" x2="697" y2="353" class="arrow"/>
+  <text x="606" y="347" text-anchor="middle" class="msg">funding_investors JOIN funding_rounds</text>
+  <text x="606" y="360" text-anchor="middle" class="note">JOIN companies — 포트폴리오</text>
+
+  <line x1="697" y1="380" x2="523" y2="380" class="arrow-return"/>
+  <text x="606" y="374" text-anchor="middle" class="note">portfolio + uniqueCompanies + totalInvestments</text>
+
+  <line x1="507" y1="410" x2="83" y2="410" class="arrow-return"/>
+  <text x="290" y="404" text-anchor="middle" class="note">{ investor, portfolio[], uniqueCompanies, totalInvestments }</text>
+
+  <!-- Footer -->
+  <rect x="200" y="440" width="380" height="24" rx="4" fill="#f1f5f9"/>
+  <text x="390" y="456" text-anchor="middle" class="note">TanStack React Query 캐싱으로 중복 요청 방지 (staleTime 적용)</text>
+</svg>

@@ -92,13 +92,16 @@ export async function getInvestorDetail(investorId: string) {
     }
 
     // 투자 이력 (funding_investors → funding_rounds → companies JOIN)
-    const { data: fiData } = await supabase
+    const { data: fiData , error: fiError} = await supabase
       .from("funding_investors")
       .select(
         "id, is_lead, funding_round_id, funding_rounds(id, round_name, amount, announced_date, company_id, companies(id, corp_name, sector, logo_url))"
       )
       .eq("investor_id", investorId)
-      .order("created_at", { ascending: false });
+      
+      if(fiError){
+        console.error("funding_investors query error:" , fiError.message);
+      }
 
     // 포트폴리오 정리
     interface PortfolioRow {

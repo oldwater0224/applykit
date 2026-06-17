@@ -155,15 +155,15 @@ export default function InvestorDetailPage() {
                           {p.companySector ?? "—"}
                         </td>
                         <td className="px-3 py-2">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--gray-700)" }}>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--gray-500)" }}>
                             <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
                             {roundName}
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-right tabular-nums font-medium" style={{ color: "var(--gray-800)" }}>
+                        <td className="px-3 py-2 text-right tabular-nums font-medium" style={{ color: "var(--gray-500)" }}>
                           {formatAmount(p.amount)}
                         </td>
-                        <td className="py-2 pl-3 tabular-nums" style={{ color: "var(--gray-400)" }}>
+                        <td className="py-2 pl-3 tabular-nums" style={{ color: "var(--gray-700)" }}>
                           {formatDate(p.announcedDate)}
                         </td>
                       </tr>

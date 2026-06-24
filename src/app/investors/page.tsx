@@ -25,7 +25,7 @@ function getTypeLabel(type: string | null) {
   return TYPE_LABELS[type] ?? type;
 }
 
- const TYPE_COLORS: Record<string, string> = {
+const TYPE_COLORS: Record<string, string> = {
   VC: "text-blue-700",
   CVC: " text-purple-700",
   PE: " text-amber-700",
@@ -90,10 +90,20 @@ export default function InvestorsPage() {
         <input
           type="text"
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => {
+            setSearchInput(e.target.value);
+            if (!e.target.value.trim()) {
+              setSearch("");
+              setPage(1);
+            }
+          }}
           placeholder="투자자명으로 검색..."
           className="flex-1 rounded-lg border px-4 py-2 text-gray-100 text-[13px]  focus:outline-none focus:ring-2 focus:ring-blue-500"
-          style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--gray-100)" }}
+          style={{
+            backgroundColor: "var(--navy-800)",
+            borderColor: "var(--navy-600)",
+            color: "var(--gray-100)",
+          }}
         />
         <button
           type="submit"

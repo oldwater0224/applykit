@@ -83,7 +83,8 @@ export default async function InvestmentsPage({
     data = result.data;
     total = result.total;
   }
-
+  
+  
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       <div className="mb-1">

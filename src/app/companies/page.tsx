@@ -81,12 +81,12 @@ export default function CompaniesPage() {
       </div>
 
       {/* 검색 + 정렬 */}
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <form onSubmit={handleSearch} className="flex gap-2 sm:max-w-sm sm:flex-1">
           <input
             type="text"
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            onChange={(e) => { setSearchInput(e.target.value); if (!e.target.value.trim()) { setSearch(""); setPage(1); } }}
             placeholder="기업명으로 검색..."
             className="flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none  focus:ring-2 text-gray-100  focus:ring-blue-500"
             style={{
@@ -145,11 +145,12 @@ export default function CompaniesPage() {
       {/* 로딩/에러 */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
-          <div className="size-6 animate-spin rounded-full border-2 border-t-transparent" style={{ borderColor: "var(--brand-500)" }} />
+          <div className="size-8 animate-spin rounded-full border-2 
+          border-blue-600 border-t-transparent"  />
         </div>
       )}
       {isError && (
-        <div className="py-20 text-center text-[13px]" style={{ color: "var(--accent-rose)" }}>
+        <div className="py-20 text-center text-[13px] text-red-500" >
           데이터를 불러오는 중 오류가 발생했습니다.
         </div>
       )}

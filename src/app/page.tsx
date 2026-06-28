@@ -6,7 +6,7 @@ export default async function HomePage() {
   const stats = await getDashboardStats();
 
   const monthlyGrowth =
-    stats.prevYearMonthlyRounds > 0
+    stats.monthlyRounds > 0 && stats.prevYearMonthlyRounds > 0
       ? Math.round(
           ((stats.monthlyRounds - stats.prevYearMonthlyRounds) /
             stats.prevYearMonthlyRounds) *
@@ -50,13 +50,13 @@ export default async function HomePage() {
         <StatBig
           label="총 투자 금액"
           value={formatLargeAmount(stats.totalAmount)}
-          sub="억 원"
+          sub="원"
         />
         <div className="h-8 w-px" style={{ backgroundColor: "var(--navy-700)" }} />
         <StatBig
           label="전년대비 금액"
           value={
-            monthlyGrowth !== null
+            monthlyGrowth !== null 
               ? `${monthlyGrowth >= 0 ? "+" : ""}${monthlyGrowth}%`
               : "—"
           }

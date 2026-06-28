@@ -6,6 +6,7 @@ import Pagination from "@/src/components/ui/pagination";
 import { createClient } from "@/src/lib/supabase/server";
 import { normalizeRoundName } from "@/src/types/funding";
 
+
 const PAGE_SIZE = 20;
 
 export const metadata = {
@@ -44,6 +45,7 @@ export default async function InvestmentsPage({
   const page = Math.max(1, Number(params.page ?? 1));
   const offset = (page - 1) * PAGE_SIZE;
   const roundNames = expandRoundFilter(roundFilter);
+
 
   let data;
   let total;

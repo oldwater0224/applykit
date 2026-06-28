@@ -165,7 +165,7 @@ export default function InvestmentTable({
                 <div>
                   <p
                     className="text-[13px] font-medium"
-                    style={{ color: "var(--gray-800)" }}
+                    style={{ color: "var(--gray-100)" }}
                   >
                     {item.companyName}
                   </p>

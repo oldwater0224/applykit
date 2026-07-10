@@ -63,7 +63,8 @@ export default function GNB() {
     const supabase = createClient();
 
     async function checkAuth() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user ?? null;
       setIsLoggedIn(!!user);
 
       if (user) {

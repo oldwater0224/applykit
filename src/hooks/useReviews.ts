@@ -39,7 +39,7 @@ export const reviewKeys = {
   resultsByProgram: (programId: string) =>
     [...reviewKeys.results(), "by-program", programId] as const,
 
-  // 아카이브 검색 (Day 9에서 주로 사용)
+  // 아카이브 검색
   archive: (query: string) =>
     [...reviewKeys.all, "archive", query] as const,
 };
@@ -114,8 +114,7 @@ export function useProgramReviews(programId: string | undefined) {
  * - query가 빈 문자열이면 전체 최신순 반환
  * - query를 queryKey에 포함 - 검색어 바뀔 때마다 새 캐시 엔트리
  *
- * 참고: 실시간 검색이면 useDebouncedValue 등으로 디바운싱 권장
- *       (Day 9에서 구현)
+ * 
  */
 export function useArchiveSearch(query: string) {
   return useQuery({

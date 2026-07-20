@@ -77,10 +77,7 @@ export default function ProgramsContent() {
       {/* 로딩 */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
-          <div
-            className="size-8 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: "var(--brand-500)" }}
-          />
+          <div className="size-8 animate-spin rounded-full border-2 border-t-transparent border-blue-500" />
         </div>
       )}
 
@@ -91,6 +88,8 @@ export default function ProgramsContent() {
           style={{ color: "var(--accent-rose)" }}
         >
           로그인 후 이용 가능합니다.
+          <br />
+          현재 로그인은 PC 버전만 지원.
         </div>
       )}
 

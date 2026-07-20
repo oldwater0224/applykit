@@ -17,6 +17,8 @@ import { syncCompany, syncFinancials, syncDisclosures } from "@/src/lib/dart/syn
 import { delay } from "@/src/lib/dart/client";
 import { parseFundingFromDisclosures } from "@/src/lib/dart/disclosureFundingParser";
 
+
+
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;

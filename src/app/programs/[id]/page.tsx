@@ -2,8 +2,7 @@
 
 // ============================================================
 // src/app/programs/[id]/page.tsx
-// 프로그램 상세 페이지 — 새 디자인 + 기업 연결
-// ============================================================
+
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -26,12 +25,13 @@ export default function ProgramPublicDetailPage() {
   const { data: existingApplication, isLoading: isAppLoading } =
     useMyApplicationByProgram(programId);
 
+    // Loading
   if (isProgramLoading || isAppLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div
-          className="size-8 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--brand-500)" }}
+          className="size-8 animate-spin rounded-full border-2 border-t-transparent bg-blue-500" 
+          
         />
       </div>
     );

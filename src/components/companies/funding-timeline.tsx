@@ -102,7 +102,7 @@ export default function FundingTimeline({
                 {formatAmount(round.amount)}
               </span>
 
-              {/* 뉴스 링크 */}
+              {/* 링크 */}
               {round.news_url && (
                 <a
                   href={round.news_url}
@@ -111,7 +111,7 @@ export default function FundingTimeline({
                   className="ml-auto text-[11px]"
                   style={{ color: "var(--brand-600)" }}
                 >
-                  기사 →
+                  내용 →
                 </a>
               )}
             </div>

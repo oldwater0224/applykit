@@ -44,10 +44,7 @@ export default function CompanyDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div
-          className="size-6 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--brand-500)" }}
-        />
+        <div className="size-8 animate-spin rounded-full border-2 border-t-transparent border-blue-500" />
       </div>
     );
   }

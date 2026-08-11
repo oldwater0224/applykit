@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { syncAll, syncCompany, syncFinancials, syncDisclosures } from '@/src/lib/dart/sync';
 import { delay } from '@/src/lib/dart/client';
 
-// 간단한 관리자 인증 (환경변수에 설정한 시크릿 키)
+// 관리자 인증
 function isAuthorized(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
   const adminKey = process.env.DART_SYNC_SECRET;

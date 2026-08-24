@@ -16,7 +16,7 @@ const config: Config = {
 
   // @/* 경로 별칭을 jest에서도 인식하도록 매핑
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   },
 }
 

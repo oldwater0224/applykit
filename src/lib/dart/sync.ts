@@ -27,14 +27,14 @@ function getSupabaseAdmin() {
 // ============================================================
 // DART 날짜 → ISO 날짜 변환
 // ============================================================
-function dartDateToISO(dartDate: string): string | undefined {
+export function dartDateToISO(dartDate: string): string | undefined {
   // "19690113" → "1969-01-13"
   if (!dartDate || dartDate.length !== 8) return undefined;
   return `${dartDate.slice(0, 4)}-${dartDate.slice(4, 6)}-${dartDate.slice(6, 8)}`;
 }
 
 // DART 금액 문자열 → 숫자 변환
-function parseAmount(amount: string): number | undefined {
+export function parseAmount(amount: string): number | undefined {
   if (!amount || amount === '') return undefined;
   const cleaned = amount.replace(/,/g, '').trim();
   const num = Number(cleaned);
@@ -43,7 +43,7 @@ function parseAmount(amount: string): number | undefined {
 
 // 업종코드 → 분야 매핑 (TheVC 스타일)
 // 실제로는 더 세분화해야 하지만, MVP에서는 대분류만
-function mapSector(industryCode: string): string {
+export function mapSector(industryCode: string): string {
   const code = industryCode?.slice(0, 2); // 앞 2자리 = 대분류
   const sectorMap: Record<string, string> = {
     '58': '미디어/콘텐츠',

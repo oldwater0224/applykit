@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/src/lib/supabase/server";
 import { extractCompanyName } from "@/src/lib/review/extractCompanyName";
+import { calculateTotalScore } from "@/src/lib/review/calculateScore";
 import type {
   ReviewChecklist,
   ReviewResult,
@@ -23,19 +24,6 @@ type ActionResult<T = null> =
 // ============================================
 // 내부 헬퍼
 // ============================================
-
-// 점수 합산 - items에 정의된 항목만 카운트
-// scores에 노이즈 키가 들어와도 무시, max_score 초과는 클램프 (악의적 입력 방어)
-function calculateTotalScore(
-  items: ChecklistItem[],
-  scores: Record<string, number>,
-): number {
-  return items.reduce((sum, item) => {
-    const score = scores[item.id];
-    if (typeof score !== "number" || score < 0) return sum;
-    return sum + Math.min(score, item.max_score);
-  }, 0);
-}
 
 // 운영기관 멤버십 검증 - 프로그램 id로 현재 사용자의 권한 체크
 // RLS가 1차 방어선이지만 앱 레벨에서도 체크해서 친절한 에러 메시지 제공

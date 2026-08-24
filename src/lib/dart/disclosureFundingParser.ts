@@ -31,7 +31,7 @@ const FUNDING_PATTERNS: { pattern: RegExp; signal: FundingSignal }[] = [
 // 정정보고서, 기재정정 등 제외 패턴
 const EXCLUDE_PATTERNS = [/정정/, /기재정정/, /취소/, /철회/];
 
-function detectFundingSignal(title: string): FundingSignal | null {
+export function detectFundingSignal(title: string): FundingSignal | null {
   if (EXCLUDE_PATTERNS.some((p) => p.test(title))) {
     return null;
   }

@@ -40,9 +40,7 @@ politics.md
 !.env.example
 
 
-# vercel
-.vercel
-vercel.json
+
 
 # claude
 .claude 

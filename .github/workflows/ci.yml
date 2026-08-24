@@ -46,8 +46,41 @@ jobs:
       - name: Test
         run: npm test -- --passWithNoTests
 
-      # 7. Next.js 빌드
-      # 실제 배포 전 빌드 오류 미리 확인
+      # 7. vercel.json cron 등록 확인
+      # vercel.json이 .gitignore에 포함되거나 crons 설정이 누락되면 배포 시 cron job이 등록되지 않음
+      - name: Verify vercel.json crons
+        run: |
+          # vercel.json이 .gitignore에 포함되어 있는지 확인
+          if grep -qE '^\s*vercel\.json\s*$' .gitignore 2>/dev/null; then
+            echo "::error::vercel.json이 .gitignore에 포함되어 있습니다. 배포 시 cron job이 등록되지 않습니다."
+            exit 1
+          fi
+
+          # vercel.json 파일 존재 확인
+          if [ ! -f vercel.json ]; then
+            echo "::error::vercel.json 파일이 존재하지 않습니다. cron job이 등록되지 않습니다."
+            exit 1
+          fi
+
+          # crons 배열이 존재하고 비어있지 않은지 확인
+          CRON_COUNT=$(node -e "const v = require('./vercel.json'); console.log(Array.isArray(v.crons) ? v.crons.length : 0)")
+          if [ "$CRON_COUNT" -eq 0 ]; then
+            echo "::error::vercel.json에 crons 설정이 비어있습니다."
+            exit 1
+          fi
+
+          # 각 cron 항목에 path와 schedule이 있는지 확인
+          node -e "
+            const v = require('./vercel.json');
+            for (const [i, c] of v.crons.entries()) {
+              if (!c.path) { console.error('::error::crons[' + i + ']에 path가 없습니다.'); process.exit(1); }
+              if (!c.schedule) { console.error('::error::crons[' + i + ']에 schedule이 없습니다.'); process.exit(1); }
+            }
+            console.log('vercel.json crons 검증 통과: ' + v.crons.length + '개 cron job 확인');
+            v.crons.forEach(c => console.log('  - ' + c.path + ' (' + c.schedule + ')'));
+          "
+
+      # 8. Next.js 빌드
       - name: Build
         run: npm run build
         env:

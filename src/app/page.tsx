@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDashboardStats } from "@/src/app/actions/dashboardAction";
+import NewsSection from "@/src/app/components/home/NewsSection";
 // import { ROUND_COLORS, normalizeRoundName } from "@/src/types/funding";
 
 export default async function HomePage() {
@@ -77,6 +78,9 @@ export default async function HomePage() {
           />
         </div>
       </div>
+
+      {/* 스타트업 투자 뉴스 */}
+      <NewsSection />
 
       {/* 라운드별 카드 그리드 */}
       <section className="mb-8">

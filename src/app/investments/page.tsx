@@ -91,7 +91,7 @@ export default async function InvestmentsPage({
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       <div className="mb-1">
         <p
-          className="text-[11px] font-medium uppercase tracking-widest"
+          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
           style={{ color: "var(--gray-400)" }}
         >
           Investment & M&A

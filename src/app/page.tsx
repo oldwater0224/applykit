@@ -19,10 +19,10 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       {/* 헤더 영역 */}
-      <div className="mb-6 flex items-end justify-between">
+      <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p
-            className="text-[11px] font-medium uppercase tracking-widest"
+            className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
             style={{ color: "var(--gray-400)" }}
           >
             Korea Startup Investment
@@ -34,8 +34,8 @@ export default async function HomePage() {
             한국 스타트업 투자
           </h1>
         </div>
-        <div className="text-right">
-          <p className="text-[11px]" style={{ color: "var(--gray-400)" }}>
+        <div className="sm:text-right">
+          <p className="text-xs sm:text-[11px]" style={{ color: "var(--gray-400)" }}>
             DART 공시 기반 · 자동 업데이트
           </p>
         </div>
@@ -123,14 +123,14 @@ export default async function HomePage() {
                     >
                       {count}
                       <span
-                        className="ml-0.5 text-[11px] font-normal"
+                        className="ml-0.5 text-xs sm:text-[11px] font-normal"
                         style={{ color: "var(--gray-400)" }}
                       >
                         건
                       </span>
                     </p>
                     <p
-                      className="mt-0.5 text-[11px] tabular-nums"
+                      className="mt-0.5 text-xs sm:text-[11px] tabular-nums"
                       style={{ color: "var(--gray-400)" }}
                     >
                       {amount.toLocaleString()}억
@@ -171,12 +171,12 @@ export default async function HomePage() {
                     <div key={sector.sector}>
                       <div className="mb-1 flex items-center justify-between">
                         <span className="text-[12px] font-medium" style={{ color: "var(--gray-100)" }}>
-                          <span className="mr-1.5 inline-block w-4 text-center text-[11px]" style={{ color: "var(--gray-100)" }}>
+                          <span className="mr-1.5 inline-block w-4 text-center text-xs sm:text-[11px]" style={{ color: "var(--gray-100)" }}>
                             {i + 1}
                           </span>
                           {sector.sector}
                         </span>
-                        <span className="text-[11px] tabular-nums" style={{ color: "var(--gray-400)" }}>
+                        <span className="text-xs sm:text-[11px] tabular-nums" style={{ color: "var(--gray-400)" }}>
                           {sector.count}건 · {sector.amount.toLocaleString()}억
                         </span>
                       </div>
@@ -319,7 +319,7 @@ function StatBig({
 }) {
   return (
     <div>
-      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-500)" }}>
+      <p className="whitespace-nowrap text-xs sm:text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-500)" }}>
         {label}
       </p>
       <p className="mt-0.5 flex items-baseline gap-1">
@@ -337,7 +337,7 @@ function StatBig({
           {value}
         </span>
         {sub && (
-          <span className="text-[11px]" style={{ color: "var(--gray-500)" }}>
+          <span className="text-xs sm:text-[11px]" style={{ color: "var(--gray-500)" }}>
             {sub}
           </span>
         )}
@@ -367,7 +367,7 @@ function RoundBadge({ name, small }: { name: string; small?: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-1 font-semibold ${
-        small ? "text-[11px]" : "text-[11px]"
+        small ? "text-xs sm:text-[11px]" : "text-xs sm:text-[11px]"
       }`}
       style={{ color: "#fff" }}
     >

@@ -76,7 +76,7 @@ export default function FundingTimeline({
 
               {/* 날짜 */}
               <span
-                className="w-16 shrink-0 text-[11px] tabular-nums"
+                className="w-16 shrink-0 text-xs sm:text-[11px] tabular-nums"
                 style={{ color: "var(--gray-100)" }}
               >
                 {formatDate(round.announced_date)}
@@ -108,7 +108,7 @@ export default function FundingTimeline({
                   href={round.news_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto text-[11px]"
+                  className="ml-auto text-xs sm:text-[11px]"
                   style={{ color: "var(--brand-600)" }}
                 >
                   내용 →

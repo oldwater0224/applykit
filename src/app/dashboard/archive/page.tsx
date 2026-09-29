@@ -54,7 +54,7 @@ export default function ArchivePage() {
             autoComplete="off"
           />
           <p
-            className="mt-1.5 text-[11px]"
+            className="mt-1.5 text-xs sm:text-[11px]"
             style={{ color: "var(--gray-400)" }}
           >
             빈 상태에서는 최근 심사 이력이 표시됩니다
@@ -125,7 +125,7 @@ export default function ArchivePage() {
               </span>
               {isTyping && (
                 <span
-                  className="text-[10px]"
+                  className="text-xs sm:text-[10px]"
                   style={{ color: "var(--gray-400)" }}
                 >
                   입력 중...
@@ -224,7 +224,7 @@ function ArchiveRow({ result }: { result: ReviewResultWithProgram }) {
       <td className="p-0">
         {renderCell(
           <span
-            className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-medium ${REVIEW_RESULT_STYLE[resultKey]}`}
+            className={`inline-block rounded-full border px-2 py-0.5 text-xs sm:text-[10px] font-medium ${REVIEW_RESULT_STYLE[resultKey]}`}
           >
             {REVIEW_RESULT_LABEL[resultKey]}
           </span>,
@@ -236,7 +236,7 @@ function ArchiveRow({ result }: { result: ReviewResultWithProgram }) {
           <span style={{ color: "var(--gray-400)" }}>
             {new Date(result.reviewed_at).toLocaleDateString("ko-KR")}
           </span>,
-          "text-right tabular-nums text-[11px]",
+          "text-right tabular-nums text-xs sm:text-[11px]",
         )}
       </td>
     </tr>

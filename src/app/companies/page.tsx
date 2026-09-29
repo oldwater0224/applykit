@@ -87,7 +87,7 @@ export default function CompaniesPage() {
       {/* 헤더 */}
       <div className="mb-5">
         <p
-          className="text-[11px] font-medium uppercase tracking-widest"
+          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
           style={{ color: "var(--gray-400)" }}
         >
           Startups
@@ -120,7 +120,7 @@ export default function CompaniesPage() {
               }
             }}
             placeholder="기업명으로 검색..."
-            className="flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none  focus:ring-2 text-gray-100  focus:ring-blue-500"
+            className="min-w-0 flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none  focus:ring-2 text-gray-100  focus:ring-blue-500"
             style={{
               backgroundColor: "var(--navy-800)",
               borderColor: "var(--navy-600)",
@@ -129,7 +129,7 @@ export default function CompaniesPage() {
           />
           <button
             type="submit"
-            className="rounded-md px-4 py-1.5 text-[12px] font-medium text-white transition"
+            className="shrink-0 whitespace-nowrap rounded-md px-4 py-1.5 text-[12px] font-medium text-white transition"
             style={{ backgroundColor: "var(--brand-600)" }}
           >
             검색
@@ -304,7 +304,7 @@ function CompanyCard({ company }: { company: Company }) {
           </h3>
           {company.corp_name_eng && (
             <p
-              className="mt-0.5 truncate text-[11px]"
+              className="mt-0.5 truncate text-xs sm:text-[11px]"
               style={{ color: "var(--gray-400)" }}
             >
               {company.corp_name_eng}
@@ -313,7 +313,7 @@ function CompanyCard({ company }: { company: Company }) {
         </div>
         {company.sector && (
           <span
-            className="ml-2 shrink-0 rounded px-2 py-0.5 text-[10px] font-medium"
+            className="ml-2 shrink-0 rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
             style={{ backgroundColor: "", color: "var(--brand-700)" }}
           >
             {company.sector}
@@ -354,7 +354,7 @@ function CompanyCard({ company }: { company: Company }) {
         style={{ borderColor: "var(--gray-100)" }}
       >
         <span
-          className="inline-flex items-center gap-1 text-[10px] font-medium"
+          className="inline-flex items-center gap-1 text-xs sm:text-[10px] font-medium"
           style={{ color: clsColor }}
         >
           <span
@@ -378,7 +378,7 @@ function FilterRow({
   return (
     <div className="flex items-start gap-2">
       <span
-        className="mt-1 w-14 shrink-0 text-[11px] font-medium"
+        className="mt-1 w-14 shrink-0 text-xs sm:text-[11px] font-medium"
         style={{ color: "var(--gray-400)" }}
       >
         {label}
@@ -400,7 +400,7 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className="rounded-md px-2.5 py-1 text-[11px] font-medium transition-all"
+      className="min-h-9 rounded-md px-3 py-1 text-xs font-medium transition-all sm:min-h-0 sm:px-2.5 sm:text-[11px]"
       style={{
         backgroundColor: active ? "var(--navy-900)" : "transparent",
         border: active

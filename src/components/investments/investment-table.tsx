@@ -120,7 +120,7 @@ export default function InvestmentTable({
                   </td>
                   <td className="px-3 py-2.5">
                     <span
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold"
+                      className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-semibold"
                       style={{ color: "var(--gray-400)" }}
                     >
                       <span
@@ -170,14 +170,14 @@ export default function InvestmentTable({
                     {item.companyName}
                   </p>
                   <p
-                    className="mt-0.5 text-[11px]"
+                    className="mt-0.5 text-xs sm:text-[11px]"
                     style={{ color: "var(--gray-400)" }}
                   >
                     {item.sector ?? "—"} · {formatDate(item.announcedDate)}
                   </p>
                 </div>
                 <span
-                  className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold"
+                  className="inline-flex shrink-0 items-center gap-1 text-xs sm:text-[11px] font-semibold"
                   style={{ color: "var(--gray-100)" }}
                 >
                   <span

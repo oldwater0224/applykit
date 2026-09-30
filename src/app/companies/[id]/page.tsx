@@ -130,7 +130,7 @@ export default function CompanyDetailPage() {
           </div>
           <div className="flex gap-1.5">
             <span
-              className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium"
+              className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
               style={{
                 color: clsColor,
                 backgroundColor: `color-mix(in srgb, ${clsColor} 10%)`,
@@ -144,7 +144,7 @@ export default function CompanyDetailPage() {
             </span>
             {company.sector && (
               <span
-                className="rounded px-2 py-0.5 text-[10px] font-medium"
+                className="rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
                 style={{ backgroundColor: "", color: "var(--brand-700)" }}
               >
                 {company.sector}
@@ -233,7 +233,7 @@ export default function CompanyDetailPage() {
               <>
                 <div className="mb-5">
                   <h3
-                    className="mb-2 text-[11px] font-medium uppercase tracking-wide"
+                    className="mb-2 text-xs sm:text-[11px] font-medium uppercase tracking-wide"
                     style={{ color: "var(--gray-400)" }}
                   >
                     연도별 추이
@@ -299,7 +299,7 @@ export default function CompanyDetailPage() {
                             >
                               {growth && (
                                 <span
-                                  className="ml-1 text-[10px] mr-1"
+                                  className="ml-1 text-xs sm:text-[10px] mr-1"
                                   style={{
                                     color: growth.startsWith("+")
                                       ? "var(--accent-rose)"
@@ -365,7 +365,7 @@ export default function CompanyDetailPage() {
                     className="group flex items-start gap-3 rounded-md px-2 py-2 transition "
                   >
                     <span
-                      className="mt-0.5 shrink-0 whitespace-nowrap text-[11px] tabular-nums"
+                      className="mt-0.5 shrink-0 whitespace-nowrap text-xs sm:text-[11px] tabular-nums"
                       style={{ color: "var(--gray-300)" }}
                     >
                       {formatDate(d.disclosure_date)}
@@ -399,7 +399,7 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
       }}
     >
       <p
-        className="text-[10px] font-medium uppercase tracking-wide"
+        className="text-xs sm:text-[10px] font-medium uppercase tracking-wide"
         style={{ color: "var(--gray-200)" }}
       >
         {label}

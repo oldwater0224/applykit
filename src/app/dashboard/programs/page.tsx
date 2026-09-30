@@ -124,7 +124,7 @@ function ProgramCard({
               {program.title || "제목 없음"}
             </Link>
             <span
-              className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+              className="rounded px-1.5 py-0.5 text-xs sm:text-[10px] font-medium"
               style={{ backgroundColor: s.bg, color: s.color }}
             >
               {s.label}
@@ -136,7 +136,7 @@ function ProgramCard({
             </p>
           )}
           {program.deadline && (
-            <p className="mt-1 text-[11px]" style={{ color: "var(--gray-400)" }}>
+            <p className="mt-1 text-xs sm:text-[11px]" style={{ color: "var(--gray-400)" }}>
               마감: {new Date(program.deadline).toLocaleDateString("ko-KR")}
             </p>
           )}
@@ -144,21 +144,21 @@ function ProgramCard({
         <div className="ml-4 flex shrink-0 gap-1.5">
           <Link
             href={`/dashboard/programs/${program.id}`}
-            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            className="rounded-md border px-2.5 py-1 text-xs sm:text-[11px] font-medium transition hover:shadow-sm"
             style={{ borderColor: "var(--brand-500)", color: "var(--brand-600)" }}
           >
             양식 편집
           </Link>
           <button
             onClick={onEdit}
-            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            className="rounded-md border px-2.5 py-1 text-xs sm:text-[11px] font-medium transition hover:shadow-sm"
             style={{ borderColor: "var(--gray-200)", color: "var(--gray-300)" }}
           >
             수정
           </button>
           <button
             onClick={onDelete}
-            className="rounded-md border px-2.5 py-1 text-[11px] font-medium transition hover:shadow-sm"
+            className="rounded-md border px-2.5 py-1 text-xs sm:text-[11px] font-medium transition hover:shadow-sm"
             style={{ borderColor: "var(--accent-rose)", color: "var(--accent-rose)" }}
           >
             삭제

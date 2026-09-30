@@ -70,7 +70,7 @@ function DashCard({
       }}
     >
       <p
-        className="text-[11px] font-medium uppercase tracking-wide"
+        className="text-xs sm:text-[11px] font-medium uppercase tracking-wide"
         style={{ color: "var(--gray-400)" }}
       >
         {label}
@@ -81,7 +81,7 @@ function DashCard({
       >
         {value}
       </p>
-      <p className="mt-1 text-[11px]" style={{ color: "var(--gray-500)" }}>
+      <p className="mt-1 text-xs sm:text-[11px]" style={{ color: "var(--gray-500)" }}>
         {desc}
       </p>
     </Link>

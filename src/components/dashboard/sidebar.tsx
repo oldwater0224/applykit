@@ -37,7 +37,7 @@ export function DashboardSidebar() {
               Apply<span style={{ color: "var(--brand-500)" }}>Kit</span>
             </span>
             <span
-              className="ml-1.5 rounded px-1.5 py-0.5 text-[9px] font-medium"
+              className="ml-1.5 rounded px-1.5 py-0.5 text-xs sm:text-[9px] font-medium"
               style={{
                 backgroundColor: "var(--navy-700)",
                 color: "var(--gray-400)",
@@ -80,7 +80,7 @@ export function DashboardSidebar() {
           <Link
             key={href}
             href={href}
-            className="flex items-center rounded-md px-3 py-2 text-[11px] font-medium transition-colors"
+            className="flex items-center rounded-md px-3 py-2 text-xs sm:text-[11px] font-medium transition-colors"
             style={{ color: "var(--gray-500)" }}
           >
             {label}

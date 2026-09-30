@@ -39,7 +39,7 @@ export function TabList({
           {tab.label}
           {tab.count !== undefined && (
             <span
-              className="ml-1 text-[10px]"
+              className="ml-1 text-xs sm:text-[10px]"
               style={{ color: "var(--gray-400)" }}
             >
               {tab.count}

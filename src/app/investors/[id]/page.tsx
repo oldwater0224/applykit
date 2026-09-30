@@ -92,7 +92,7 @@ export default function InvestorDetailPage() {
             )}
           </div>
           {investor.investor_type && (
-            <span className="shrink-0 rounded px-2 py-0.5 text-[10px] font-medium" style={{  color: TYPE_COLORS[investor.investor_type] ?? "var(--gray-500)" }}>
+            <span className="shrink-0 rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium" style={{  color: TYPE_COLORS[investor.investor_type] ?? "var(--gray-500)" }}>
               {TYPE_LABELS[investor.investor_type] ?? investor.investor_type}
             </span>
           )}
@@ -146,7 +146,7 @@ export default function InvestorDetailPage() {
                             {p.companyName}
                           </Link>
                           {p.isLead && (
-                            <span className="ml-1 rounded px-1 py-0.5 text-[9px] font-medium" style={{ backgroundColor: "var(--accent-amber)", color: "#ffffff" }}>
+                            <span className="ml-1 rounded px-1 py-0.5 text-xs sm:text-[9px] font-medium" style={{ backgroundColor: "var(--accent-amber)", color: "#ffffff" }}>
                               리드
                             </span>
                           )}
@@ -155,7 +155,7 @@ export default function InvestorDetailPage() {
                           {p.companySector ?? "—"}
                         </td>
                         <td className="px-3 py-2">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--gray-500)" }}>
+                          <span className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-semibold" style={{ color: "var(--gray-500)" }}>
                             <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
                             {roundName}
                           </span>
@@ -181,7 +181,7 @@ export default function InvestorDetailPage() {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border p-3 text-center" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
-      <p className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-100)" }}>{label}</p>
+      <p className="text-xs sm:text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-100)" }}>{label}</p>
       <p className="mt-1 text-[15px] font-bold" style={{ color: "var(--gray-300)" }}>{value}</p>
     </div>
   );

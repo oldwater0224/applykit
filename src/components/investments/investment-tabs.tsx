@@ -38,7 +38,7 @@ export default function InvestmentTabs() {
           <button
             key={value}
             onClick={() => handleTab(value)}
-            className="shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors sm:min-h-0"
             style={{
               backgroundColor: isActive ? "var(--navy-900)" : "transparent",
               border: isActive ? "1px solid var(--brand-500)" : "1px solid var(--gray-400)",

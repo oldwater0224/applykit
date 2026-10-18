@@ -67,7 +67,7 @@ export default function InvestorsPage() {
       {/* 헤더 */}
       <div>
         <p
-          className="text-[11px] font-medium uppercase tracking-widest"
+          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
           style={{ color: "var(--gray-400)" }}
         >
           Investors
@@ -98,7 +98,7 @@ export default function InvestorsPage() {
             }
           }}
           placeholder="투자자명으로 검색..."
-          className="flex-1 rounded-lg border px-4 py-2 text-gray-100 text-[13px]  focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="min-w-0 flex-1 rounded-lg border px-4 py-2 text-gray-100 text-[13px]  focus:outline-none focus:ring-2 focus:ring-blue-500"
           style={{
             backgroundColor: "var(--navy-800)",
             borderColor: "var(--navy-600)",
@@ -107,7 +107,7 @@ export default function InvestorsPage() {
         />
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+          className="shrink-0 whitespace-nowrap rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
         >
           검색
         </button>
@@ -121,7 +121,7 @@ export default function InvestorsPage() {
             setPage(1);
           }}
           className={
-            "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+            "min-h-9 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:min-h-0"
           }
           style={{
             backgroundColor:
@@ -143,7 +143,7 @@ export default function InvestorsPage() {
               setPage(1);
             }}
             className={
-              "rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+              "min-h-9 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:min-h-0"
             }
             style={{
               backgroundColor:

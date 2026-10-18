@@ -16,7 +16,7 @@ export default async function NewsSection() {
           스타트업 뉴스
         </h2>
         <span
-          className="text-[11px]"
+          className="text-xs sm:text-[11px]"
           style={{ color: "var(--gray-500)" }}
         >
           7초마다 자동 갱신

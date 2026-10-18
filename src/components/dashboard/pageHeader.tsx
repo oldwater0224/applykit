@@ -26,7 +26,7 @@ export function DashboardPageHeader({
       {backHref && (
         <Link
           href={backHref}
-          className="mb-1 inline-block text-[11px] transition"
+          className="mb-1 inline-block text-xs sm:text-[11px] transition"
           style={{ color: "var(--gray-400)" }}
         >
           {backLabel ?? "← 뒤로"}

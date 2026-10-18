@@ -205,7 +205,7 @@ export default function GNB() {
                 <>
                   <span>통합검색</span>
                   <kbd
-                    className="ml-auto rounded px-1 py-0.5 text-[10px]"
+                    className="ml-auto rounded px-1 py-0.5 text-xs sm:text-[10px]"
                     style={{
                       backgroundColor: "var(--navy-700)",
                       color: "var(--gray-500)",
@@ -245,7 +245,7 @@ export default function GNB() {
                     {results.filter((r) => r.type === "company").length > 0 && (
                       <>
                         <div
-                          className="px-3 py-1.5 text-[11px] font-medium"
+                          className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
                           style={{ color: "var(--gray-400)" }}
                         >
                           스타트업
@@ -259,7 +259,7 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition "
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-[10px] font-bold"
+                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
                                 style={{
                                   backgroundColor: "var(--brand-50)",
                                   color: "var(--brand-600)",
@@ -276,7 +276,7 @@ export default function GNB() {
                                 </p>
                                 {r.subtitle && (
                                   <p
-                                    className="truncate text-[11px]"
+                                    className="truncate text-xs sm:text-[11px]"
                                     style={{ color: "var(--gray-400)" }}
                                   >
                                     {r.subtitle}
@@ -291,7 +291,7 @@ export default function GNB() {
                       0 && (
                       <>
                         <div
-                          className="px-3 py-1.5 text-[11px] font-medium"
+                          className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
                           style={{ color: "var(--gray-400)" }}
                         >
                           투자자
@@ -305,7 +305,7 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition"
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-[10px] font-bold"
+                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
                                 style={{
                                   backgroundColor: "#ecfdf5",
                                   color: "var(--accent-emerald)",
@@ -322,7 +322,7 @@ export default function GNB() {
                                 </p>
                                 {r.subtitle && (
                                   <p
-                                    className="truncate text-[11px]"
+                                    className="truncate text-xs sm:text-[11px]"
                                     style={{ color: "var(--gray-400)" }}
                                   >
                                     {r.subtitle}
@@ -416,7 +416,7 @@ export default function GNB() {
                     style={{ color: "var(--gray-300)" }}
                   >
                     <span
-                      className="text-[10px]"
+                      className="text-xs sm:text-[10px]"
                       style={{ color: "var(--gray-500)" }}
                     >
                       {r.type === "company" ? "기업" : "투자"}

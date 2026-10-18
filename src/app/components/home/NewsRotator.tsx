@@ -103,7 +103,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
         >
           {item.roundName && (
             <span
-              className="mb-1.5 inline-flex items-center gap-1 text-[10px] font-semibold"
+              className="mb-1.5 inline-flex items-center gap-1 text-xs sm:text-[10px] font-semibold"
               style={{ color: "var(--gray-400)" }}
             >
               <span
@@ -139,7 +139,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
           )}
 
           <div
-            className="mt-2 flex items-center gap-1.5 text-[11px]"
+            className="mt-2 flex items-center gap-1.5 text-xs sm:text-[11px]"
             style={{ color: "var(--gray-500)" }}
           >
             {item.press && <span>{item.press}</span>}

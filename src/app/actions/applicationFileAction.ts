@@ -7,6 +7,11 @@ import {
   ALLOWED_FILES_LABEL,
   isAllowedFile,
 } from "@/src/lib/file/allowedTypes";
+import {
+  checkProgramAcceptingApplications,
+  pickEmbeddedProgram,
+  PROGRAM_AVAILABILITY_ERROR,
+} from "@/src/lib/application/deadline";
 
 // 다른 Action들과 동일한 응답 패턴
 type ActionResult<T = null> =
@@ -59,7 +64,7 @@ export async function uploadApplicationFile(
   // - 안 그러면 다른 사람 지원서에 파일을 붙일 수 있음
   const { data: application, error: appError } = await supabase
     .from("applications")
-    .select("id, user_id, is_complete")
+    .select("id, user_id, is_complete, programs(status, deadline)")
     .eq("id", applicationId)
     .single();
 
@@ -76,6 +81,19 @@ export async function uploadApplicationFile(
     return {
       success: false,
       error: "제출된 지원서에는 파일을 추가할 수 없습니다.",
+    };
+  }
+
+  // 마감/모집 상태 확인 - 마감 후에는 파일 추가도 거부
+  // 공고 정보는 위 지원서 조회에 임베드해서 가져옴 (추가 쿼리 없음)
+  const availability = checkProgramAcceptingApplications(
+    pickEmbeddedProgram(application.programs),
+    new Date(),
+  );
+  if (!availability.ok) {
+    return {
+      success: false,
+      error: PROGRAM_AVAILABILITY_ERROR[availability.reason],
     };
   }
 

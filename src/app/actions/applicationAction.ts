@@ -9,6 +9,11 @@ import type {
   Application,
   ApplicationWithProgram,
 } from '@/src/types/applications';
+import {
+  checkProgramAcceptingApplications,
+  pickEmbeddedProgram,
+  PROGRAM_AVAILABILITY_ERROR,
+} from '@/src/lib/application/deadline';
 
 // Server Action의 공통 응답 타입
 // 디스크리미네이티드 유니온으로 success 플래그에 따라 타입이 좁혀짐
@@ -37,25 +42,47 @@ export async function createApplication(
     return { success: false, error: '로그인이 필요합니다.' };
   }
 
-  // 2. 중복 지원 방지 - 같은 프로그램에 이미 지원서가 있으면 차단
+  // 2. 대상 공고 + 내 기존 지원서를 한 번에 조회
+  // - 공고의 status/deadline은 마감 판정용 (클라이언트 판정은 신뢰하지 않음)
+  // - applications 임베드는 user_id로 필터해 "내 지원서"만 가져옴 (중복 지원 확인용)
+  //   임베드 필터라 지원서가 없어도 공고 row는 그대로 반환됨
+  const { data: program, error: programError } = await supabase
+    .from('programs')
+    .select('id, status, deadline, applications(id)')
+    .eq('id', input.program_id)
+    .eq('applications.user_id', user.id)
+    .maybeSingle();
+
+  if (programError || !program) {
+    if (programError) console.error('[createApplication] program', programError);
+    return { success: false, error: PROGRAM_AVAILABILITY_ERROR.not_found };
+  }
+
+  // 3. 중복 지원 방지 - 같은 프로그램에 이미 지원서가 있으면 차단
   // (임시저장 중인 것도 포함. 기존 것을 수정해야 함)
   // 주의: 앱 레벨 체크라 동시 요청 race condition 가능 -
   // 나중에 DB에 UNIQUE(program_id, user_id) 제약 추가 권장
-  const { data: existing } = await supabase
-    .from('applications')
-    .select('id')
-    .eq('program_id', input.program_id)
-    .eq('user_id', user.id)
-    .maybeSingle();
+  const existing = Array.isArray(program.applications)
+    ? program.applications
+    : [];
 
-  if (existing) {
+  if (existing.length > 0) {
     return {
       success: false,
       error: '이미 해당 공고에 작성 중인 지원서가 있습니다.',
     };
   }
 
-  // 3. 실제 insert
+  // 4. 마감/모집 상태 확인 - 임시저장(is_complete=false)도 거부
+  const availability = checkProgramAcceptingApplications(program, new Date());
+  if (!availability.ok) {
+    return {
+      success: false,
+      error: PROGRAM_AVAILABILITY_ERROR[availability.reason],
+    };
+  }
+
+  // 5. 실제 insert
   // is_complete=true면 submitted_at과 status를 원자적으로 함께 세팅
   // 임시저장이면 status=draft, submitted_at=null 유지
   const isSubmitting = input.is_complete === true;
@@ -79,7 +106,7 @@ export async function createApplication(
     return { success: false, error: '지원서 생성에 실패했습니다.' };
   }
 
-  // 4. 캐시 무효화 - 목록 페이지와 프로그램 상세 페이지 모두 갱신 필요
+  // 6. 캐시 무효화 - 목록 페이지와 프로그램 상세 페이지 모두 갱신 필요
   revalidatePath('/applications');
   revalidatePath(`/programs/${input.program_id}`);
 
@@ -107,9 +134,10 @@ export async function updateApplication(
 
   // 기존 지원서 조회 - 소유권/상태 확인용
   // program_id는 revalidatePath에서 필요해서 함께 가져옴
+  // 공고 status/deadline은 마감 판정용 - 임베드로 같은 쿼리에서 가져옴
   const { data: existing, error: fetchError } = await supabase
     .from('applications')
-    .select('id, user_id, is_complete, program_id')
+    .select('id, user_id, is_complete, program_id, programs(status, deadline)')
     .eq('id', id)
     .single();
 
@@ -127,6 +155,19 @@ export async function updateApplication(
   // (비즈니스 요구사항에 따라 변경 가능 - 현재는 엄격하게 차단)
   if (existing.is_complete) {
     return { success: false, error: '제출된 지원서는 수정할 수 없습니다.' };
+  }
+
+  // 마감/모집 상태 확인 - 임시저장과 최종 제출 모두 거부
+  // (인증 → 소유권 → 제출 여부 → 마감 순서. 앞선 검증의 에러 메시지는 그대로 유지)
+  const availability = checkProgramAcceptingApplications(
+    pickEmbeddedProgram(existing.programs),
+    new Date(),
+  );
+  if (!availability.ok) {
+    return {
+      success: false,
+      error: PROGRAM_AVAILABILITY_ERROR[availability.reason],
+    };
   }
 
   // 업데이트 페이로드 구성

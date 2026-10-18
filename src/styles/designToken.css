@@ -51,6 +51,34 @@
     --header-text: #e2e8f0;
     --max-width: 1280px;
 
+    /* 관리자 대시보드 (셸 + 본문) — TheVC 스타일 다크
+       셸(사이드바·헤더)은 본문(--page-bg: navy-900)보다 한 단계 어둡게 */
+    --dash-surface: var(--navy-950);
+    --dash-border: var(--navy-700);          /* 셸 구분선, 입력창·버튼 테두리 */
+    --dash-border-subtle: var(--navy-800);   /* 테이블 행 구분선 */
+    --dash-text: var(--gray-100);
+    --dash-text-secondary: var(--gray-300);  /* 비활성 메뉴, 본문 보조 */
+    --dash-text-muted: var(--gray-400);
+    --dash-text-subtle: var(--gray-500);
+    --dash-hover-bg: var(--navy-800);
+    --dash-input-bg: var(--navy-900);
+    --dash-focus-ring: rgb(59 130 246 / 0.35);
+    --dash-active-bg: rgb(59 130 246 / 0.14);
+    --dash-active-text: #bfdbfe;
+    --dash-active-indicator: var(--brand-500);
+    --dash-panel-bg: #121a2e;                /* 본문 섹션 패널 (page-bg보다 살짝 밝게) */
+    --dash-panel-header-bg: rgb(255 255 255 / 0.02);
+    --dash-row-hover: rgb(255 255 255 / 0.035);
+    --dash-skeleton: var(--navy-800);
+    --dash-chart-bar: var(--brand-500);
+    --dash-chart-bar-today: #93c5fd;
+    --dash-chart-grid: var(--navy-800);
+    --dash-positive-text: #6ee7b7;           /* 합격·모집 중 등 긍정 배지/수치 글씨 (emerald-300) */
+    --dash-warning-text: #fcd34d;            /* 심사 대기·임박 등 주의 글씨 (amber-300) */
+    --dash-negative-text: #fda4af;           /* 불합격·오늘 마감 등 부정 글씨 (rose-300) */
+    --dash-topbar-height: 52px;
+    --dash-sidebar-width: 232px;
+
     /* 라운드 뱃지 컬러 */
     --round-seed: #059669;
     --round-pre-a: #0d9488;

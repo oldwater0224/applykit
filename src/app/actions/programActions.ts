@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/src/lib/supabase/server";
+import { normalizeDeadlineForStorage } from "@/src/lib/datetime/kst";
 import type {
   Program,
   CreateProgramData,
@@ -89,6 +90,13 @@ export async function createProgram(
     return { success: false, error: "로그인이 필요합니다." };
   }
 
+  // 마감일: datetime-local 값(오프셋 없음)은 KST로 해석해 UTC ISO로 저장
+  // (그대로 보내면 timestamptz가 UTC로 해석해 9시간 늦게 저장됨)
+  const deadline = normalizeDeadlineForStorage(programData.deadline);
+  if (!deadline.ok) {
+    return { success: false, error: "마감일 형식이 올바르지 않습니다." };
+  }
+
   // jsonb 컬럼은 undefined를 보내면 Supabase가 혼동할 수 있으므로
   // 명시적으로 null 처리
   const { data, error } = await supabase
@@ -99,7 +107,7 @@ export async function createProgram(
       description: programData.description,
       status: programData.status || "active",
       slug: programData.slug,
-      deadline: programData.deadline,
+      deadline: deadline.value ?? null,
       form_schema: programData.form_schema ?? null,
     })
     .select()
@@ -143,6 +151,15 @@ export async function updateProgram(
     if (value !== undefined) {
       payload[key] = value;
     }
+  }
+
+  // 마감일 정규화 (createProgram과 동일 규칙). 미전달(undefined)이면 건드리지 않음
+  if (fields.deadline !== undefined) {
+    const deadline = normalizeDeadlineForStorage(fields.deadline);
+    if (!deadline.ok) {
+      return { success: false, error: "마감일 형식이 올바르지 않습니다." };
+    }
+    payload.deadline = deadline.value ?? null;
   }
 
   const { data, error } = await supabase

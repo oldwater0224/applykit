@@ -2,132 +2,169 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  DASHBOARD_NAV_GROUPS,
+  SERVICE_HOME_HREF,
+  isNavItemActive,
+} from "@/src/components/dashboard/navConfig";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "대시보드", icon: "grid" },
-  { href: "/dashboard/programs", label: "공고 관리", icon: "doc" },
-  { href: "/dashboard/archive", label: "심사 아카이브", icon: "search" },
-] as const;
+export interface DashboardOrgInfo {
+  /** 운영기관명. 조회 실패 시 null → "운영기관"으로 표시 */
+  orgName: string | null;
+  /** org_members.role */
+  role: "admin" | "member" | null;
+}
 
-const BOTTOM_ITEMS = [
-  { href: "/", label: "← 메인으로" },
-] as const;
+export const ROLE_LABEL: Record<"admin" | "member", string> = {
+  admin: "관리자",
+  member: "멤버",
+};
 
-export function DashboardSidebar() {
-  const pathname = usePathname();
+/* ------------------------------------------------------------------ */
+/* 로고                                                                */
+/* ------------------------------------------------------------------ */
 
-  const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
-  };
-
+export function DashboardBrand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <aside
-      className="hidden w-52 shrink-0 flex-col justify-between border-r md:flex"
-      style={{
-        backgroundColor: "var(--navy-900)",
-        borderColor: "var(--navy-700)",
-      }}
+    <Link
+      href="/dashboard"
+      onClick={onNavigate}
+      className="flex items-center gap-2"
+      aria-label="ApplyKit 관리자 콘솔 홈"
     >
-      <div>
-        {/* 로고 */}
-        <div className="px-4 py-4">
-          <Link href="/dashboard">
-            <span className="text-[14px] font-bold text-white">
-              Apply<span style={{ color: "var(--brand-500)" }}>Kit</span>
-            </span>
-            <span
-              className="ml-1.5 rounded px-1.5 py-0.5 text-xs sm:text-[9px] font-medium"
-              style={{
-                backgroundColor: "var(--navy-700)",
-                color: "var(--gray-400)",
-              }}
-            >
-              관리자
-            </span>
-          </Link>
-        </div>
-
-        {/* 네비 */}
-        <nav className="mt-2 px-2">
-          <ul className="space-y-0.5">
-            {NAV_ITEMS.map(({ href, label, icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="flex items-center gap-2 rounded-md px-3 py-2 text-[12px] font-medium transition-colors"
-                  style={{
-                    backgroundColor: isActive(href)
-                      ? "var(--navy-800)"
-                      : "transparent",
-                    color: isActive(href)
-                      ? "#ffffff"
-                      : "var(--gray-400)",
-                  }}
-                >
-                  <NavIcon type={icon} />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-
-      {/* 하단 */}
-      <div className="px-2 pb-4">
-        {BOTTOM_ITEMS.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center rounded-md px-3 py-2 text-xs sm:text-[11px] font-medium transition-colors"
-            style={{ color: "var(--gray-500)" }}
-          >
-            {label}
-          </Link>
-        ))}
-      </div>
-    </aside>
+      <span className="text-[15px] font-bold tracking-tight text-(--dash-text)">
+        Apply<span className="text-(--brand-500)">Kit</span>
+      </span>
+      <span className="rounded border border-(--dash-border) px-1.5 py-px text-xs sm:text-[10px] font-semibold text-(--dash-text-muted)">
+        ADMIN
+      </span>
+    </Link>
   );
 }
 
-function NavIcon({ type }: { type: string }) {
-  const props = {
-    width: 14,
-    height: 14,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
+/* ------------------------------------------------------------------ */
+/* 그룹형 메뉴 (데스크톱 사이드바 + 모바일 시트 공용)                    */
+/* ------------------------------------------------------------------ */
 
-  switch (type) {
-    case "grid":
-      return (
-        <svg {...props}>
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-        </svg>
-      );
-    case "doc":
-      return (
-        <svg {...props}>
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-        </svg>
-      );
-    case "search":
-      return (
-        <svg {...props}>
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-      );
-    default:
-      return null;
-  }
+export function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+
+  return (
+    <nav aria-label="관리자 메뉴" className="px-3">
+      {DASHBOARD_NAV_GROUPS.map((group) => (
+        <div key={group.label} className="mt-5 first:mt-3">
+          <p className="mb-1 px-2.5 text-xs sm:text-[11px] font-semibold tracking-wide text-(--dash-text-subtle)">
+            {group.label}
+          </p>
+          <ul className="space-y-0.5">
+            {group.items.map(({ href, label, icon: Icon }) => {
+              const active = isNavItemActive(pathname, href);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    onClick={onNavigate}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "relative flex h-9 items-center gap-2.5 rounded-md px-2.5 text-[13px] transition-colors",
+                      "focus-visible:outline-2 focus-visible:outline-(--brand-500)",
+                      active
+                        ? "bg-(--dash-active-bg) font-semibold text-(--dash-active-text)"
+                        : "font-medium text-(--dash-text-secondary) hover:bg-(--dash-hover-bg) hover:text-(--dash-text)"
+                    )}
+                  >
+                    {active && (
+                      <span
+                        aria-hidden
+                        className="absolute top-1.5 bottom-1.5 -left-3 w-[3px] rounded-r bg-(--dash-active-indicator)"
+                      />
+                    )}
+                    <Icon
+                      className={cn(
+                        "size-4 shrink-0",
+                        active
+                          ? "text-(--dash-active-indicator)"
+                          : "text-(--dash-text-subtle)"
+                      )}
+                      strokeWidth={active ? 2.25 : 2}
+                      aria-hidden
+                    />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 하단: 기관 정보 + 서비스 홈 바로가기                                 */
+/* ------------------------------------------------------------------ */
+
+export function DashboardOrgFooter({
+  orgName,
+  role,
+  onNavigate,
+}: DashboardOrgInfo & { onNavigate?: () => void }) {
+  const name = orgName ?? "운영기관";
+
+  return (
+    <div className="border-t border-(--dash-border) p-3">
+      <Link
+        href={SERVICE_HOME_HREF}
+        onClick={onNavigate}
+        className="flex h-9 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-(--dash-text-secondary) transition-colors hover:bg-(--dash-hover-bg) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+      >
+        <ArrowUpRight
+          className="size-4 shrink-0 text-(--dash-text-muted)"
+          aria-hidden
+        />
+        서비스 홈 바로가기
+      </Link>
+
+      <div className="mt-2 flex items-center gap-2.5 rounded-md border border-(--dash-border) bg-(--dash-input-bg) px-2.5 py-2">
+        <span
+          aria-hidden
+          className="flex size-7 shrink-0 items-center justify-center rounded-md bg-(--brand-600) text-[12px] font-bold text-white"
+        >
+          {name.charAt(0)}
+        </span>
+        <div className="min-w-0">
+          <p
+            className="truncate text-[12px] font-semibold text-(--dash-text)"
+            title={name}
+          >
+            {name}
+          </p>
+          <p className="text-xs sm:text-[11px] text-(--dash-text-muted)">
+            운영기관{role ? ` · ${ROLE_LABEL[role]}` : ""}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 데스크톱 사이드바 (md 이상)                                          */
+/* ------------------------------------------------------------------ */
+
+export function DashboardSidebar({ orgName, role }: DashboardOrgInfo) {
+  return (
+    <aside className="hidden w-(--dash-sidebar-width) shrink-0 flex-col border-r border-(--dash-border) bg-(--dash-surface) md:flex">
+      <div className="flex h-(--dash-topbar-height) shrink-0 items-center border-b border-(--dash-border) px-5">
+        <DashboardBrand />
+      </div>
+      <div className="flex-1 overflow-y-auto pb-4">
+        <DashboardNav />
+      </div>
+      <DashboardOrgFooter orgName={orgName} role={role} />
+    </aside>
+  );
 }

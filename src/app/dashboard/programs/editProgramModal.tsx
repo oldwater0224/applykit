@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useProgramStore } from "@/src/stores/programstore";
 import { useUpdateProgram } from "@/src/hooks/usePrograms";
+import { isoToKstLocalInput } from "@/src/lib/datetime/kst";
 
 const modalInputStyle: React.CSSProperties = {
   backgroundColor: "var(--navy-800)",
@@ -28,7 +29,8 @@ export function EditProgramModal() {
     setFormData({
       title: selectedProgram.title,
       description: selectedProgram.description ?? "",
-      deadline: selectedProgram.deadline ?? "",
+      // DB 값('...+00:00')은 datetime-local에 그대로 넣으면 무효값이라 칸이 비므로 KST 로컬 형식으로 변환
+      deadline: isoToKstLocalInput(selectedProgram.deadline),
       status: selectedProgram.status,
     });
   }, [selectedProgram]);

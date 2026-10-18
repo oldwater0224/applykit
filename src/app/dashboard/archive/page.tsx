@@ -1,15 +1,55 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 import { useDebouncedValue } from "@/src/hooks/useDebouncedValue";
 import { useArchiveSearch } from "@/src/hooks/useReviews";
-import { REVIEW_RESULT_LABEL, REVIEW_RESULT_STYLE } from "@/src/types/review";
 import type { ReviewResultWithProgram } from "@/src/types/review";
 import { DashboardPageHeader } from "@/src/components/dashboard/pageHeader";
+import {
+  DashboardPanel,
+  SkeletonBlock,
+} from "@/src/components/dashboard/dashboardPanel";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/src/components/dashboard/dataTable";
+import { VerdictBadge } from "@/src/components/dashboard/statusBadge";
+import { formatKstIso } from "@/src/components/dashboard/formatters";
 
 export default function ArchivePage() {
-  const [query, setQuery] = useState("");
+  return (
+    <div>
+      <DashboardPageHeader
+        title="심사 아카이브"
+        subtitle="과거에 심사한 회사를 검색합니다"
+      />
+
+      <div className="mx-auto w-full max-w-(--max-width) space-y-4 p-4 lg:p-6">
+        {/* useSearchParams는 Suspense 경계가 필요 (정적 프리렌더 시 CSR bailout) */}
+        <Suspense fallback={<ArchiveFallback />}>
+          <ArchiveSearchFromParams />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * ?q= 값을 검색 초기값으로 넘김.
+ * q가 바뀌면(헤더 검색으로 다시 이동) key로 리마운트해서 새 초기값을 반영
+ * → useEffect 안 setState 없이 URL과 동기화
+ */
+function ArchiveSearchFromParams() {
+  const searchParams = useSearchParams();
+  const initialQuery = (searchParams.get("q") ?? "").trim();
+  return <ArchiveSearch key={initialQuery} initialQuery={initialQuery} />;
+}
+
+function ArchiveSearch({ initialQuery }: { initialQuery: string }) {
+  const [query, setQuery] = useState(initialQuery);
+  // useDebouncedValue는 초기값을 그대로 쓰므로 q가 있으면 진입 즉시 검색됨
   const debouncedQuery = useDebouncedValue(query, 300);
   const {
     data: results = [],
@@ -19,226 +59,182 @@ export default function ArchivePage() {
   const isTyping = query !== debouncedQuery;
 
   return (
-    <div>
-      <DashboardPageHeader
-        backHref="/dashboard"
-        backLabel="← 대시보드"
-        title="심사 아카이브"
-        subtitle="과거에 심사한 회사를 검색합니다"
-      />
+    <>
+      <SearchBox value={query} onChange={setQuery} />
 
-      <div className="p-6 space-y-4">
-        {/* 검색 */}
+      {error ? (
         <div
-          className="rounded-lg  p-4"
-          style={{
-            backgroundColor: "var(--card-bg)",
-            borderColor: "var(--card-border)",
-          }}
+          role="alert"
+          className="rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
         >
-          <label
-            htmlFor="archive-search"
-            className="mb-2 block text-[12px] font-medium"
-            style={{ color: "var(--gray-300)" }}
-          >
-            회사명 검색
-          </label>
-          <input
-            id="archive-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="예: 스타트업, 테크, 엘앤에스"
-            className="w-full rounded-md border px-3 py-2 text-[13px] outline-none transition focus:ring-2 text-white"
-            style={{ borderColor: "var(--gray-200)" }}
-            autoComplete="off"
-          />
-          <p
-            className="mt-1.5 text-[11px]"
-            style={{ color: "var(--gray-400)" }}
-          >
-            빈 상태에서는 최근 심사 이력이 표시됩니다
-          </p>
+          {error instanceof Error ? error.message : "검색에 실패했습니다."}
         </div>
-
-        {/* 결과 */}
-        {isLoading ? (
-          <div
-            className="flex items-center justify-center rounded-lg border py-12"
-            style={{
-              backgroundColor: "var(--card-bg)",
-              borderColor: "var(--card-border)",
-            }}
-          >
-            <div
-              className="size-5 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: "var(--brand-500)" }}
-            />
-          </div>
-        ) : error ? (
-          <div
-            className="rounded-lg border p-8 text-center text-[13px]"
-            style={{
-              backgroundColor: "var(--card-bg)",
-              borderColor: "var(--card-border)",
-              color: "var(--accent-rose)",
-            }}
-          >
-            {error instanceof Error ? error.message : "검색에 실패했습니다."}
-          </div>
-        ) : results.length === 0 ? (
-          <div
-            className="rounded-lg border p-12 text-center text-[12px]"
-            style={{
-              backgroundColor: "var(--card-bg)",
-              borderColor: "var(--card-border)",
-              color: "var(--gray-400)",
-            }}
-          >
-            {debouncedQuery
-              ? `"${debouncedQuery}"에 해당하는 심사 이력이 없습니다.`
-              : "아직 심사한 지원서가 없습니다."}
-          </div>
-        ) : (
-          <div
-            className="overflow-hidden rounded-lg border"
-            style={{
-              backgroundColor: "var(--card-bg)",
-              borderColor: "var(--card-border)",
-            }}
-          >
-            <div
-              className="flex items-center justify-between px-4 py-2.5"
-              style={{ borderBottom: "1px solid var(--gray-100)" }}
-            >
-              <span
-                className="text-[12px]"
-                style={{ color :"var(--gray-100)"}}
-              >
-                총 <b>{results.length}</b>건
+      ) : (
+        <DashboardPanel
+          title={debouncedQuery ? "검색 결과" : "최근 심사 이력"}
+          meta={
+            isLoading ? undefined : (
+              <>
+                총 {results.length.toLocaleString("ko-KR")}건
                 {debouncedQuery && (
-                  <span style={{ color: "var(--gray-400)" }}>
+                  <span className="text-(--dash-text-subtle)">
                     {" "}
                     · &ldquo;{debouncedQuery}&rdquo;
                   </span>
                 )}
+              </>
+            )
+          }
+          action={
+            isTyping ? (
+              <span
+                className="text-[11px] text-(--dash-text-subtle)"
+                aria-live="polite"
+              >
+                입력 중...
               </span>
-              {isTyping && (
-                <span
-                  className="text-[10px]"
-                  style={{ color: "var(--gray-400)" }}
-                >
-                  입력 중...
-                </span>
-              )}
-            </div>
-            <table className="w-full text-[12px]">
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--gray-100)" }}>
-                  <th
-                    className="px-3 py-2 text-left font-medium"
-                    style={{ color: "var(--gray-400)" }}
-                  >
-                    회사명
-                  </th>
-                  <th
-                    className="px-3 py-2 text-left font-medium"
-                    style={{ color: "var(--gray-400)" }}
-                  >
-                    공고
-                  </th>
-                  <th
-                    className="px-3 py-2 text-right font-medium"
-                    style={{ color: "var(--gray-400)" }}
-                  >
-                    총점
-                  </th>
-                  <th
-                    className="px-3 py-2 text-center font-medium"
-                    style={{ color: "var(--gray-400)" }}
-                  >
-                    판정
-                  </th>
-                  <th
-                    className="px-3 py-2 text-right font-medium"
-                    style={{ color: "var(--gray-400)" }}
-                  >
-                    심사일
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((r) => (
-                  <ArchiveRow key={r.id} result={r} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+            ) : undefined
+          }
+          flush
+        >
+          <DataTable
+            caption="심사 아카이브 검색 결과"
+            columns={archiveColumns}
+            rows={results}
+            getRowKey={(r) => r.id}
+            getRowHref={(r) =>
+              r.programs
+                ? `/dashboard/programs/${r.programs.id}/applications/${r.application_id}`
+                : ""
+            }
+            loading={isLoading}
+            minWidth="600px"
+            emptyMessage={
+              debouncedQuery
+                ? `"${debouncedQuery}"에 해당하는 심사 이력이 없습니다.`
+                : "아직 심사한 지원서가 없습니다."
+            }
+          />
+        </DashboardPanel>
+      )}
+    </>
+  );
+}
+
+function SearchBox({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div role="search" className="flex flex-col gap-1.5">
+      <label
+        htmlFor="archive-search"
+        className="text-[12px] font-medium text-(--dash-text-secondary)"
+      >
+        회사명 검색
+      </label>
+      <div className="relative w-full max-w-xl">
+        <Search
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-(--dash-text-subtle)"
+          aria-hidden
+        />
+        <input
+          id="archive-search"
+          type="search"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="예: 스타트업, 테크, 엘앤에스"
+          autoComplete="off"
+          aria-describedby="archive-search-hint"
+          className="h-9 w-full rounded-md border border-(--dash-border) bg-(--dash-input-bg) pr-3 pl-9 text-[13px] text-(--dash-text) outline-none transition placeholder:text-(--dash-text-subtle) focus:border-(--brand-500) focus:ring-2 focus:ring-(--dash-focus-ring)"
+        />
       </div>
+      <p
+        id="archive-search-hint"
+        className="text-[11px] text-(--dash-text-subtle)"
+      >
+        입력하면 자동으로 검색됩니다 · 빈 상태에서는 최근 심사 이력이 표시됩니다
+      </p>
     </div>
   );
 }
 
-function ArchiveRow({ result }: { result: ReviewResultWithProgram }) {
-  const program = result.programs;
-  const href = program
-    ? `/dashboard/programs/${program.id}/applications/${result.application_id}`
-    : null;
-  const resultKey = result.is_passed ? "passed" : "failed";
-
-  function renderCell(children: React.ReactNode, className = "") {
-    const inner = <div className={`px-3 py-2.5 ${className}`}>{children}</div>;
-    if (href)
-      return (
-        <Link href={href} className="block transition text-white">
-          {inner}
-        </Link>
-      );
-    return <div className="opacity-50">{inner}</div>;
-  }
+/** Suspense 대기 중 표시 (검색창 + 테이블 자리) */
+function ArchiveFallback() {
   return (
-    <tr style={{ borderBottom: "1px solid var(--gray-50)" }}>
-      <td className="p-0">
-        {renderCell(
-          result.company_name ?? (
-            <span style={{ color: "var(--gray-400)" }}>(이름 없음)</span>
-          ),
-        )}
-      </td>
-      <td className="p-0">
-        {renderCell(
-          program ? (
-            program.title
-          ) : (
-            <span style={{ color: "var(--gray-400)" }}>(삭제됨)</span>
-          ),
-        )}
-      </td>
-      <td className="p-0">
-        {renderCell(
-          `${result.total_score}점`,
-          "text-right tabular-nums font-medium",
-        )}
-      </td>
-      <td className="p-0">
-        {renderCell(
-          <span
-            className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-medium ${REVIEW_RESULT_STYLE[resultKey]}`}
-          >
-            {REVIEW_RESULT_LABEL[resultKey]}
-          </span>,
-          "text-center",
-        )}
-      </td>
-      <td className="p-0">
-        {renderCell(
-          <span style={{ color: "var(--gray-400)" }}>
-            {new Date(result.reviewed_at).toLocaleDateString("ko-KR")}
-          </span>,
-          "text-right tabular-nums text-[11px]",
-        )}
-      </td>
-    </tr>
+    <div aria-hidden className="space-y-4">
+      <div className="space-y-1.5">
+        <SkeletonBlock className="h-3 w-16" />
+        <SkeletonBlock className="h-9 w-full max-w-xl" />
+      </div>
+      <SkeletonBlock className="h-64 w-full rounded-lg" />
+    </div>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* 테이블 열 정의                                                       */
+/* ------------------------------------------------------------------ */
+
+const archiveColumns: DataTableColumn<ReviewResultWithProgram>[] = [
+  {
+    key: "company",
+    header: "회사명",
+    primary: true,
+    cell: (r) =>
+      r.company_name ? (
+        <span className="line-clamp-1 break-all">{r.company_name}</span>
+      ) : (
+        <span className="font-normal text-(--dash-text-subtle)">(이름 없음)</span>
+      ),
+  },
+  {
+    key: "program",
+    header: "공고",
+    cell: (r) =>
+      r.programs ? (
+        <span className="line-clamp-1 break-all">{r.programs.title || "제목 없음"}</span>
+      ) : (
+        <span
+          className="text-(--dash-text-subtle)"
+          title="공고가 삭제되어 지원서로 이동할 수 없습니다"
+        >
+          (삭제됨)
+        </span>
+      ),
+  },
+  {
+    key: "score",
+    header: "총점",
+    numeric: true,
+    width: "80px",
+    cell: (r) => (
+      <span className="font-medium text-(--dash-text)">
+        {r.total_score.toLocaleString("ko-KR")}
+        <span className="ml-0.5 text-[11px] font-normal text-(--dash-text-muted)">점</span>
+      </span>
+    ),
+  },
+  {
+    key: "verdict",
+    header: "판정",
+    align: "center",
+    width: "80px",
+    cell: (r) => <VerdictBadge verdict={r.is_passed ? "passed" : "failed"} />,
+  },
+  {
+    key: "reviewed",
+    header: "심사일",
+    align: "right",
+    nowrap: true,
+    width: "112px",
+    cell: (r) => (
+      <time dateTime={r.reviewed_at} className="tabular-nums text-(--dash-text-muted)">
+        {formatKstIso(r.reviewed_at, { withYear: true })}
+      </time>
+    ),
+  },
+];

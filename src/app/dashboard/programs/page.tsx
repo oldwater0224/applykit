@@ -51,7 +51,7 @@ export default function ProgramsPage() {
         <span className="block min-w-0">
           <span className="line-clamp-1 break-all">{p.title || "제목 없음"}</span>
           {p.description && (
-            <span className="mt-0.5 line-clamp-1 text-[11px] font-normal break-all text-(--dash-text-subtle)">
+            <span className="mt-0.5 line-clamp-1 text-xs sm:text-[11px] font-normal break-all text-(--dash-text-subtle)">
               {p.description}
             </span>
           )}

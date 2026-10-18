@@ -137,7 +137,7 @@ export function DashboardTopbar({
           </p>
           {userEmail && (
             <p
-              className="truncate text-[11px] text-(--dash-text-muted)"
+              className="truncate text-xs sm:text-[11px] text-(--dash-text-muted)"
               title={userEmail}
             >
               {userEmail}

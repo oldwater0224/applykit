@@ -117,7 +117,7 @@ export function DataTable<T>({
                 key={col.key}
                 scope="col"
                 className={cn(
-                  "h-8 px-4 text-[11px] font-medium whitespace-nowrap text-(--dash-text-subtle)",
+                  "h-8 px-4 text-xs sm:text-[11px] font-medium whitespace-nowrap text-(--dash-text-subtle)",
                   ALIGN_CLASS[alignOf(col)],
                   col.headerClassName
                 )}

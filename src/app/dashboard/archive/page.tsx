@@ -88,7 +88,7 @@ function ArchiveSearch({ initialQuery }: { initialQuery: string }) {
           action={
             isTyping ? (
               <span
-                className="text-[11px] text-(--dash-text-subtle)"
+                className="text-xs sm:text-[11px] text-(--dash-text-subtle)"
                 aria-live="polite"
               >
                 입력 중...
@@ -154,7 +154,7 @@ function SearchBox({
       </div>
       <p
         id="archive-search-hint"
-        className="text-[11px] text-(--dash-text-subtle)"
+        className="text-xs sm:text-[11px] text-(--dash-text-subtle)"
       >
         입력하면 자동으로 검색됩니다 · 빈 상태에서는 최근 심사 이력이 표시됩니다
       </p>
@@ -214,7 +214,7 @@ const archiveColumns: DataTableColumn<ReviewResultWithProgram>[] = [
     cell: (r) => (
       <span className="font-medium text-(--dash-text)">
         {r.total_score.toLocaleString("ko-KR")}
-        <span className="ml-0.5 text-[11px] font-normal text-(--dash-text-muted)">점</span>
+        <span className="ml-0.5 text-xs sm:text-[11px] font-normal text-(--dash-text-muted)">점</span>
       </span>
     ),
   },

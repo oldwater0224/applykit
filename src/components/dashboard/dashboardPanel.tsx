@@ -55,7 +55,7 @@ export function DashboardPanel({
             )}
           </h2>
           {description && (
-            <p className="mt-0.5 text-[11px] text-(--dash-text-subtle)">
+            <p className="mt-0.5 text-xs sm:text-[11px] text-(--dash-text-subtle)">
               {description}
             </p>
           )}

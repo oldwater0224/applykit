@@ -115,7 +115,7 @@ function KpiCell({ item, loading }: { item: KpiItem; loading: boolean }) {
             )}
           </p>
           {item.sub != null && (
-            <p className="mt-2 truncate text-[11px] text-(--dash-text-subtle) tabular-nums">
+            <p className="mt-2 truncate text-xs sm:text-[11px] text-(--dash-text-subtle) tabular-nums">
               {item.sub}
             </p>
           )}

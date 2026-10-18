@@ -37,7 +37,7 @@ export function DashboardBrand({ onNavigate }: { onNavigate?: () => void }) {
       <span className="text-[15px] font-bold tracking-tight text-(--dash-text)">
         Apply<span className="text-(--brand-500)">Kit</span>
       </span>
-      <span className="rounded border border-(--dash-border) px-1.5 py-px text-[10px] font-semibold text-(--dash-text-muted)">
+      <span className="rounded border border-(--dash-border) px-1.5 py-px text-xs sm:text-[10px] font-semibold text-(--dash-text-muted)">
         ADMIN
       </span>
     </Link>
@@ -55,7 +55,7 @@ export function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
     <nav aria-label="관리자 메뉴" className="px-3">
       {DASHBOARD_NAV_GROUPS.map((group) => (
         <div key={group.label} className="mt-5 first:mt-3">
-          <p className="mb-1 px-2.5 text-[11px] font-semibold tracking-wide text-(--dash-text-subtle)">
+          <p className="mb-1 px-2.5 text-xs sm:text-[11px] font-semibold tracking-wide text-(--dash-text-subtle)">
             {group.label}
           </p>
           <ul className="space-y-0.5">
@@ -142,7 +142,7 @@ export function DashboardOrgFooter({
           >
             {name}
           </p>
-          <p className="text-[11px] text-(--dash-text-muted)">
+          <p className="text-xs sm:text-[11px] text-(--dash-text-muted)">
             운영기관{role ? ` · ${ROLE_LABEL[role]}` : ""}
           </p>
         </div>

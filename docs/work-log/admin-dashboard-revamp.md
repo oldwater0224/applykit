@@ -17,6 +17,9 @@
 | 5 | debugger | lint 스크립트 수정, tsc / lint / test / build 검증, 실제 DB로 렌더링 확인 | 완료 |
 | 6 | 메인 | 검토, 보고, 승인 후 커밋 | 사용자 브라우저 확인·커밋 승인 대기 |
 | 7 | logic-builder | 마감일 저장 시간대 버그 수정 (R8) | 완료 (기존 데이터 보정은 결정 대기) |
+| 8 | 메인 | 단계별 커밋, origin/develop 머지(충돌 4개는 개편 버전 유지) | 완료 |
+| 9 | debugger | 최종 검증 + develop의 모바일 가독성 규칙(`text-xs sm:text-[Npx]`)을 새 대시보드에 적용 | 완료 |
+| 10 | 메인 | master PR·머지, develop 동기화, 작업 브랜치 삭제 | 진행 중 |
 
 ## 사용자 결정 (2026-10-15)
 
@@ -58,6 +61,25 @@
 | R20 | 작업 4 | 공고 관리의 "모집 중" 배지는 status만 봐서 마감이 지나도 "모집 중"으로 보임 (R10 연관). 공고 목록에 접수 수 열은 데이터가 없어 미추가 | 후속 후보 |
 
 ## 단계별 결과
+
+### 작업 8·9 — 머지 준비와 최종 검증 (완료, 머지 차단 사항 없음)
+
+**작업 8 (메인)**
+- 커밋 7개: lint → 마감일 KST → 집계 로직 → 레이아웃 → 홈 → 목록 통일 → 작업 기록
+- 로컬 develop이 origin/develop보다 뒤처져 있었음 (`ccaeeb0 fix: 모바일 화면 가독성과 터치 영역 개선`). origin/develop을 머지, 충돌 4개(대시보드 홈, 공고 관리, 아카이브, 사이드바)는 개편 버전 유지
+
+**작업 9 (debugger)**
+- 머지 검증: develop 쪽 14개 파일 변경이 모두 들어옴, 유실 없음, 충돌 마커 0
+- 모바일 가독성 규칙 적용: 8개 파일 12곳 `text-[Npx]` → `text-xs sm:text-[Npx]` (archive, programs, sidebar, dataTable, statusBadge, kpiStrip, dashboardPanel, topbar). 배지 20px·테이블 헤더 32px 높이 안에 들어감을 확인
+- `npx tsc --noEmit` 에러 0 / `npm run lint` 에러 0, 기존 경고 1 / `npm test` 10 스위트 161 통과 / `npm run build` 성공
+- 런타임: `/dashboard*` → 307 `/login`, `/`, `/programs`, `/login` → 200, 새 에러 로그 없음
+- 브랜치 diff 점검: console.log·TODO·비밀값·.env·빌드 산출물 0건
+
+**남은 참고 사항**
+- 차트 눈금 글씨는 recharts SVG 속성이라 10px 유지 (반응형 적용하려면 JS 폭 감지 필요)
+- 64px·80px 테이블 열 헤더가 모바일 12px에서 몇 px 넓어질 수 있음 (가로 스크롤 영역 안이라 깨지지 않음)
+- 포트 3001에 사용자가 띄워 둔 dev 서버(10/16 시작)가 있어 종료하지 않음
+- 모바일 360px 화면과 로그인 상태 렌더링(RLS)은 여전히 브라우저 확인 필요
 
 ### 작업 7 — logic-builder: 마감일 시간대 버그 수정 (완료)
 

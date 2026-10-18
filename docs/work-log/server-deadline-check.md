@@ -8,13 +8,11 @@
 ## 다음 작업 이어하기 (다른 컴퓨터용)
 
 현재 상태 (2026-10-18 기준)
-- PR #59 (`fix/58-server-deadline-check` → `master`) 생성, 머지 대기. 머지하면 배포되고 `develop`를 `master`와 맞춘 뒤 작업 브랜치 삭제
+- PR #59 (`fix/58-server-deadline-check` → `master`) 생성. 남은 일도 **같은 브랜치 `fix/58-server-deadline-check`에서 이어서 작업·커밋** (사용자 결정). 브랜치는 남은 일이 끝날 때까지 삭제하지 않음
 - 이슈 #58은 아래 남은 일 때문에 열어 둠
 
 시작 순서
-1. `git fetch && git checkout develop && git pull` (PR #59 머지·develop 동기화가 끝났다면 develop에 반영되어 있음. 아직이면 `git checkout fix/58-server-deadline-check`)
-2. 이 문서와 `docs/work-log/admin-dashboard-revamp.md`의 R23·작업 7 섹션 읽기
-3. 새 브랜치 `fix/58-...`에서 작업, 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
+루트 `CLAUDE.md`의 "이전 작업 불러와" 절차를 따른다 (브랜치 `fix/58-server-deadline-check` 체크아웃·pull, PR #59 상태 확인, 이 문서 읽기, 남은 일 보고 후 승인 받고 착수). 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
 
 남은 일
 - [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. SQL은 `admin-dashboard-revamp.md` 작업 7 섹션. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인

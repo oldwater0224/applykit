@@ -5,6 +5,26 @@
 - 시작일: 2026-10-18
 - 배경: 관리자 대시보드 개편(PR #57) 중 발견 (`docs/work-log/admin-dashboard-revamp.md` R24). 마감 판정이 클라이언트에만 있어 서버 액션으로 마감 후 제출이 가능함
 
+## 다음 작업 이어하기 (다른 컴퓨터용)
+
+현재 상태 (2026-10-18 기준)
+- PR #59 (`fix/58-server-deadline-check` → `master`) 생성, 머지 대기. 머지하면 배포되고 `develop`를 `master`와 맞춘 뒤 작업 브랜치 삭제
+- 이슈 #58은 아래 남은 일 때문에 열어 둠
+
+시작 순서
+1. `git fetch && git checkout develop && git pull` (PR #59 머지·develop 동기화가 끝났다면 develop에 반영되어 있음. 아직이면 `git checkout fix/58-server-deadline-check`)
+2. 이 문서와 `docs/work-log/admin-dashboard-revamp.md`의 R23·작업 7 섹션 읽기
+3. 새 브랜치 `fix/58-...`에서 작업, 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
+
+남은 일
+- [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. SQL은 `admin-dashboard-revamp.md` 작업 7 섹션. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인
+- [ ] **DB 차원 강제 (S5)**: 지원자용 RLS `with check` 또는 BEFORE INSERT/UPDATE 트리거로 `status = 'active'` + 마감 확인, `UNIQUE(program_id, user_id)` (적용 전 중복 행 존재 여부 SELECT 확인). 마이그레이션 파일로 작성
+- [ ] **삭제 경로 정책 (S6)**: `deleteApplication`, `deleteApplicationFile`에 마감 확인을 넣을지 결정
+- [ ] **로그인 상태 브라우저 확인**: 아래 작업 1·4의 체크리스트, 로그인 사용자 기준 RLS
+- [ ] (선택) N1~N4 정리: 작성 중 마감 시 입력 유실, 상세/apply 문구 순서 차이, `programAvailability.ts` 단위 테스트
+
+참고: 서브에이전트 정의는 `.claude/agents/` (ui-builder, logic-builder, debugger). 메인이 조율하고 위임, 결과는 이 문서에 기록. `gh pr merge`는 사용자가 직접 실행.
+
 ## 작업 순서와 상태
 
 | 순서 | 담당 | 작업 | 상태 |

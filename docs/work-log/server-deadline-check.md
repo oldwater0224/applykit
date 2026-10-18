@@ -1,0 +1,88 @@
+# 지원서 제출 시 서버 마감 확인 작업 기록
+
+- 이슈: #58 (https://github.com/oldwater0224/applykit/issues/58)
+- 브랜치: `fix/58-server-deadline-check` (`develop`에서 분기)
+- 시작일: 2026-10-18
+- 배경: 관리자 대시보드 개편(PR #57) 중 발견 (`docs/work-log/admin-dashboard-revamp.md` R24). 마감 판정이 클라이언트에만 있어 서버 액션으로 마감 후 제출이 가능함
+
+## 작업 순서와 상태
+
+| 순서 | 담당 | 작업 | 상태 |
+|---|---|---|---|
+| 0 | 메인 | 이슈 #58 생성, 브랜치 생성 | 완료 |
+| 1 | logic-builder | 서버 마감 확인 로직 + 테스트 | 완료 |
+| 2 | debugger | 검증 (새 임베드 쿼리 실제 DB 확인 포함) | 완료 (커밋 차단 없음) |
+| 3 | 메인 | 커밋(`Refs #58`), 푸시, 이슈에 커밋 연결 | 진행 중 |
+
+## 보고가 필요한 사항
+
+| # | 내용 | 상태 |
+|---|---|---|
+| S1 | **기존에는 closed/draft 공고에도 지원 가능했음 → 이제 서버가 거부 (동작 변경).** ① 공고 상세(`programs/[id]/page.tsx:60`)가 `status !== "closed"`로 판정해 draft 공고에도 "접수 중"·지원하기 버튼 노출 ② `apply/page.tsx`는 마감·status를 전혀 보지 않아 `/programs/{closed}/apply` 직접 접근 시 제출됐음 ③ 기존 draft 지원서는 마감·closed 공고에서도 "이어서 작성하기" 버튼 노출 → 이제 저장·제출·파일 추가 시 서버 거부(에러 표시됨) ④ `getPublicPrograms`는 `.neq("status","draft")`라 closed도 목록에 나옴 (주석과 코드 불일치) | 확인됨, UI 정리는 후속 후보 |
+| S2 | **클라이언트 판정이 서버와 다름.** 클라이언트는 `new Date(deadline) < now`, status는 `!== 'closed'`. 서버는 `parseDeadlineMs`(KST), `=== 'active'`. timestamptz 응답이라 운영 데이터에선 마감 시각 판정은 같고 status 기준만 다름. 클라이언트에서 `checkProgramAcceptingApplications` 재사용 권장 | 후속 후보 (ui-builder) |
+| S3 | `createApplication`의 새 역방향 임베드 쿼리 `programs.select('id, status, deadline, applications(id)').eq('applications.user_id', uid)` | 작업 2에서 실제 DB 확인됨 (service role, RLS 미검증) |
+| S7 | 중복 지원 확인이 기존 `.maybeSingle()`(2건 이상이면 에러로 통과) → `length > 0`으로 더 엄격해짐 | 확인됨 (퇴행 아님) |
+| S4 | RLS가 지원자에게 draft 공고를 숨기면 해당 경우 메시지는 "공고를 찾을 수 없습니다." | 참고 |
+| S5 | 레이스(판정~insert 사이 수 ms)는 허용. DB 강제가 필요하면 지원자용 RLS `with check` 또는 BEFORE 트리거, `UNIQUE(program_id, user_id)` 제안 (마이그레이션 미작성) | 후속 후보 |
+| S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 참고 |
+
+## 단계별 결과
+
+### 작업 2 — debugger: 검증 (완료, 커밋 차단 없음)
+
+- 정적 검증: `npx tsc --noEmit` 통과 / `npm run lint` 에러 0, 기존 경고 1 / `npm test` 12 스위트 198 통과 / `npm run build` 성공
+- 코드 리뷰
+  - create: 인증 → 공고+내 지원서 조회 → 중복 → 마감/상태 → insert. 비로그인이면 쿼리 0. 거부 시 모두 insert 전에 return
+  - 임베드에 `!inner` 없음 → `applications.user_id` 필터는 임베드 행만 거르고 공고 행은 유지
+  - update: 인증 → 조회 → 소유권 → 제출 여부 → 마감. 거부 시 update 전 return
+  - upload: 마감 확인이 Storage 경로 생성·업로드보다 먼저. 거부 시 Storage·DB 모두 미접촉
+  - `parseDeadlineMs` 이동: 본문 동일, aggregate 재export로 기존 import 경로 유지
+  - 테스트: insert/update/Storage 호출 횟수, `eq('applications.user_id', ...)`, `applications(id)` 문자열을 단언 → 마감 확인 삭제나 `!inner` 추가 시 실패. 마감 정각/+1ms 경계, 대시보드 `isProgramActive`와 교차 확인
+- 실제 DB (SELECT만, 스크립트 실행 후 삭제)
+  - service role: create 임베드 쿼리 에러 없음, 임의 uuid → 공고 행 반환 + `applications` 빈 배열. 지원서 2건 공고에서 소유자 필터 → 1건, 임의 uuid → 0건 (다른 사용자 지원서 섞이지 않음)
+  - update/upload의 `programs(status, deadline)` 임베드는 객체로 응답 → `pickEmbeddedProgram` 가정과 일치
+  - anon: programs·applications 0행 (RLS로 숨김), 문법 에러 없음. authenticated 권한은 미검증
+- 런타임 (3001 기존 dev 서버): `/`, `/programs`, `/programs/[id]`, `/programs/[id]/apply` 200, 새 에러 로그 없음
+- diff 위생: console.log·TODO·비밀값·의도치 않은 파일 없음
+- 남은 위험: RLS 미검증(로그인 E2E 필요), RLS로 공고가 숨겨지면 메시지가 "공고를 찾을 수 없습니다."로 바뀜, 중복 지원 race(기존과 같음, UNIQUE 제약 권장), 삭제 경로 마감 확인 정책 미정
+
+### 작업 1 — logic-builder: 서버 마감 확인 (완료)
+
+**판정 규칙** (`checkProgramAcceptingApplications(program, now)`)
+| 조건 | 결과 | 메시지 |
+|---|---|---|
+| 공고 없음 | `not_found` | 공고를 찾을 수 없습니다. |
+| `status !== 'active'` (draft, closed, null) | `not_active` (마감보다 우선) | 현재 모집 중인 공고가 아닙니다. |
+| 마감일 null/빈 값 | 통과 | |
+| `now > 마감` | `deadline_passed` (정각은 통과, 대시보드 `isProgramActive`와 동일) | 마감된 공고입니다. 지원서를 제출할 수 없습니다. |
+- 마감 해석은 `parseDeadlineMs` (날짜만 → KST 23:59:59.999, 오프셋 없음 → KST, 오프셋 있음 → 그대로)
+
+**적용 액션과 검증 순서** (기존 메시지·시그니처 유지)
+- `createApplication`: 인증 → 공고·내 지원서 조회 → 공고 없음 → 중복 지원 → 마감/상태 → insert (임시저장 포함 거부)
+- `updateApplication`: 인증 → 지원서 없음 → 소유권 → 이미 제출됨 → 마감/상태 → update
+- `uploadApplicationFile`: 인증 → FormData → 지원서 없음 → 소유권 → 이미 제출됨 → 마감/상태 → 파일 형식·크기 → Storage 업로드
+
+**쿼리 수**: 변화 없음 (create 2→2, 중복 확인을 공고 조회 임베드로 합침 / update·upload는 기존 조회에 임베드)
+
+**클라이언트 에러 표시**: 훅이 `throw new Error(result.error)`로 넘기고 `apply/page.tsx` 하단 rose 박스에 표시됨 → 클라이언트 수정 없음
+
+**변경/추가 파일**
+| 파일 | 내용 |
+|---|---|
+| `src/lib/application/deadline.ts` | 신규. 판정 함수, `PROGRAM_AVAILABILITY_ERROR`, `pickEmbeddedProgram` |
+| `src/lib/datetime/kst.ts` | `parseDeadlineMs` 이동 (로직 동일, 입력 타입만 확장) |
+| `src/lib/adminDashboard/aggregate.ts` | 자체 `parseDeadlineMs` 제거, kst.ts에서 import·재export |
+| `src/app/actions/applicationAction.ts` | create/update에 판정 적용 |
+| `src/app/actions/applicationFileAction.ts` | upload에 판정 적용 (Storage 업로드 전 거부) |
+| `src/__tests__/lib/application/deadline.test.ts` | 신규 13개 |
+| `src/__tests__/app/actions/applicationAction.test.ts` | 신규 24개 (create/update/upload 목) |
+
+**검증**: `npx tsc --noEmit` 통과 / `npm run lint` 에러 0, 기존 경고 1 / `npm test` 12 스위트 198 통과 (LA·UTC 시간대 통과) / `npm run build` 성공
+
+**브라우저 확인 항목**
+- [ ] 마감 전 active 공고에서 파일 업로드·임시저장·제출 정상 (새 임베드 쿼리 실제 동작)
+- [ ] draft가 이미 있는 공고 재생성 시 "이미 해당 공고에 작성 중인 지원서가 있습니다."
+- [ ] 지원 페이지를 열어 둔 채 운영자 화면에서 마감일을 과거로/closed로 바꾼 뒤 제출·업로드 → 하단 에러 메시지
+- [ ] `/programs/{closed id}/apply` 직접 접근 후 제출 → 거부
+- [ ] draft 공고 상세 URL 직접 접근 후 지원하기 → 거부 메시지
+- [ ] 관리자 대시보드 진행 중·마감 임박 표시 회귀 없음

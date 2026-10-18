@@ -13,14 +13,17 @@
 | 1 | logic-builder | 서버 마감 확인 로직 + 테스트 | 완료 |
 | 2 | debugger | 검증 (새 임베드 쿼리 실제 DB 확인 포함) | 완료 (커밋 차단 없음) |
 | 3 | 메인 | 커밋(`Refs #58`), 푸시, 이슈에 커밋 연결 | 완료 — 커밋 `05ea8e5`, `9ac196a`, `cef2dea`, `efb7fe7` / 이슈 댓글 https://github.com/oldwater0224/applykit/issues/58#issuecomment-6245552869 |
-| 4 | 사용자 | PR·머지 여부 결정 (이슈는 열린 상태 유지) | 대기 |
+| 4 | ui-builder | 지원자 UI를 서버 판정과 일치 (S1·S2) | 완료 |
+| 5 | debugger | UI 검증 | 완료 (커밋 차단 없음, 경미 N1~N4) |
+| 6 | 메인 | 커밋·푸시, master PR (`Refs #58`, 이슈 열린 상태 유지) → 사용자 머지·배포 → develop 동기화 | 진행 중 |
+| 7 | 다음 작업 (다른 컴퓨터) | 기존 마감 데이터 보정(R23), DB 강제(S5: RLS with check/트리거, `UNIQUE(program_id, user_id)`), 삭제 경로 정책(S6) | 대기 |
 
 ## 보고가 필요한 사항
 
 | # | 내용 | 상태 |
 |---|---|---|
-| S1 | **기존에는 closed/draft 공고에도 지원 가능했음 → 이제 서버가 거부 (동작 변경).** ① 공고 상세(`programs/[id]/page.tsx:60`)가 `status !== "closed"`로 판정해 draft 공고에도 "접수 중"·지원하기 버튼 노출 ② `apply/page.tsx`는 마감·status를 전혀 보지 않아 `/programs/{closed}/apply` 직접 접근 시 제출됐음 ③ 기존 draft 지원서는 마감·closed 공고에서도 "이어서 작성하기" 버튼 노출 → 이제 저장·제출·파일 추가 시 서버 거부(에러 표시됨) ④ `getPublicPrograms`는 `.neq("status","draft")`라 closed도 목록에 나옴 (주석과 코드 불일치) | 확인됨, UI 정리는 후속 후보 |
-| S2 | **클라이언트 판정이 서버와 다름.** 클라이언트는 `new Date(deadline) < now`, status는 `!== 'closed'`. 서버는 `parseDeadlineMs`(KST), `=== 'active'`. timestamptz 응답이라 운영 데이터에선 마감 시각 판정은 같고 status 기준만 다름. 클라이언트에서 `checkProgramAcceptingApplications` 재사용 권장 | 후속 후보 (ui-builder) |
+| S1 | **기존에는 closed/draft 공고에도 지원 가능했음 → 이제 서버가 거부 (동작 변경).** ① 공고 상세(`programs/[id]/page.tsx:60`)가 `status !== "closed"`로 판정해 draft 공고에도 "접수 중"·지원하기 버튼 노출 ② `apply/page.tsx`는 마감·status를 전혀 보지 않아 `/programs/{closed}/apply` 직접 접근 시 제출됐음 ③ 기존 draft 지원서는 마감·closed 공고에서도 "이어서 작성하기" 버튼 노출 → 이제 저장·제출·파일 추가 시 서버 거부(에러 표시됨) ④ `getPublicPrograms`는 `.neq("status","draft")`라 closed도 목록에 나옴 (주석과 코드 불일치) | 작업 4에서 UI 정리 완료 |
+| S2 | **클라이언트 판정이 서버와 다름.** 클라이언트는 `new Date(deadline) < now`, status는 `!== 'closed'`. 서버는 `parseDeadlineMs`(KST), `=== 'active'`. timestamptz 응답이라 운영 데이터에선 마감 시각 판정은 같고 status 기준만 다름. 클라이언트에서 `checkProgramAcceptingApplications` 재사용 권장 | 작업 4에서 해결 (클라이언트도 `checkProgramAcceptingApplications` 사용) |
 | S3 | `createApplication`의 새 역방향 임베드 쿼리 `programs.select('id, status, deadline, applications(id)').eq('applications.user_id', uid)` | 작업 2에서 실제 DB 확인됨 (service role, RLS 미검증) |
 | S7 | 중복 지원 확인이 기존 `.maybeSingle()`(2건 이상이면 에러로 통과) → `length > 0`으로 더 엄격해짐 | 확인됨 (퇴행 아님) |
 | S4 | RLS가 지원자에게 draft 공고를 숨기면 해당 경우 메시지는 "공고를 찾을 수 없습니다." | 참고 |
@@ -28,6 +31,40 @@
 | S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 참고 |
 
 ## 단계별 결과
+
+### 작업 5 — debugger: UI 검증 (완료, 커밋 차단 없음)
+
+- 판정 일치: 모든 UI 판정이 `getProgramAvailabilityView` → `checkProgramAcceptingApplications`. 규칙 중복 없음. 남은 `new Date(deadline)`는 D-day 표시 계산용
+- 클라이언트 번들 안전: `kst.ts` import 없음, `deadline.ts`는 kst만 import
+- hooks: apply 페이지 모든 훅이 조기 return 전. 4개 페이지 모두 "use client" + React Query라 하이드레이션 불일치 없음
+- 회귀 없음: 접수 중 공고는 폼·지원하기 유지, 제출된 지원서 화면 유지, "마감됨" 배지는 미제출 카드에만
+- 실제 DB (SELECT만): `useMyApplications`의 `programs(..., status, ...)` 임베드 정상 (service role 2행, anon 0행). 현재 DB 공고는 1건(closed)
+- tsc 통과 / lint 에러 0 (기존 경고 1) / 테스트 198 통과 / build 성공 / dev 서버 `/`, `/programs`, 상세, apply 200, `/applications`는 비로그인 307(정상)
+- 경미 (차단 아님)
+  - N1: 작성 중 마감 시각이 지나면 다음 렌더에서 폼이 안내로 바뀌어 저장 안 한 입력이 화면에서 사라짐 (서버도 어차피 거부)
+  - N2: closed + 양식 없음일 때 상세는 "지원 양식 준비 중", apply는 마감 안내 (apply 쪽이 서버 순서와 일치)
+  - N3: `programAvailability.ts` 단위 테스트 없음
+  - N4: 목록은 draft 제외라 "모집 전" 배지는 목록에서 나오지 않음
+- 미검증: 로그인 상태 브라우저 확인, 로그인 사용자 RLS
+
+### 작업 4 — ui-builder: 지원자 UI 정리 (완료)
+
+| 파일 | 내용 |
+|---|---|
+| `src/components/programs/programAvailability.ts` | 신규. `getProgramAvailabilityView` — 판정 결과를 라벨·배지 스타일로 변환 (접수 중 / 접수 마감 / 모집 전 / 모집 중 아님) |
+| `src/app/programs/[id]/page.tsx` | 기존 `status !== "closed"`·`deadline < now` 제거, 헬퍼로 `canApply`. 접수 불가면 비활성 버튼과 사유, 접수 불가 공고의 작성 중 지원서는 "마감됨" |
+| `src/app/programs/[id]/apply/page.tsx` | 로딩 → 없음 → 제출됨 → **접수 불가 안내(신규)** → 양식 없음 → 폼. 안내에 서버 메시지와 "공고로 돌아가기"·"내 지원목록 보기" |
+| `src/app/applications/page.tsx` | 접수 불가 공고의 미제출 카드에 "마감됨" 배지 |
+| `src/components/programs/programsContent.tsx` | 목록 카드 마감 판정을 헬퍼로 교체 (`getPublicPrograms` 쿼리는 그대로) |
+| `src/hooks/useApplication.ts` | `useMyApplications`가 `programs.status`도 조회 (select 추가만) |
+| `src/types/applications.ts` | `ApplicationWithProgram.programs.status?` 선택 필드 추가 |
+
+**동작 변경**: draft 공고 URL 접근 시 "모집 전" + 비활성 버튼 / 접수 불가 공고의 apply 페이지는 폼 대신 안내 (작성 중 지원서 포함) / 목록에서 closed 공고는 마감일이 미래여도 "접수 마감"
+
+**브라우저 확인 항목**
+- [ ] 접수 중·closed·draft·마감 지난 공고의 상세·목록 표시
+- [ ] closed 공고 apply 페이지 안내 (작성 중 지원서 있을 때/없을 때)
+- [ ] `/applications` "마감됨" 배지
 
 ### 작업 2 — debugger: 검증 (완료, 커밋 차단 없음)
 

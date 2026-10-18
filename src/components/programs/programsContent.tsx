@@ -10,6 +10,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePublicPrograms } from "@/src/hooks/usePrograms";
 import type { Program } from "@/src/types/program";
+import {
+  AVAILABILITY_BADGE_STYLE,
+  getProgramAvailabilityView,
+} from "@/src/components/programs/programAvailability";
 
 export default function ProgramsContent() {
   const searchParams = useSearchParams();
@@ -135,7 +139,8 @@ function ProgramCard({
 }) {
   const now = new Date();
   const deadline = program.deadline ? new Date(program.deadline) : null;
-  const isDeadlinePassed = deadline !== null && deadline < now;
+  // 서버와 같은 기준으로 접수 가능 여부 판정 (closed 공고도 목록에 나오므로 상태까지 반영)
+  const availability = getProgramAvailabilityView(program, now);
   const daysRemaining =
     deadline !== null
       ? Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
@@ -174,16 +179,12 @@ function ProgramCard({
             양식 준비 중
           </span>
         )}
-        {isDeadlinePassed ? (
+        {!availability.accepting ? (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{
-              borderColor: "var(--accent-rose)",
-              color: "var(--accent-rose)",
-              backgroundColor: "rgba(244, 63, 94, 0.1)",
-            }}
+            style={AVAILABILITY_BADGE_STYLE[availability.tone]}
           >
-            접수 마감
+            {availability.label}
           </span>
         ) : daysRemaining !== null && daysRemaining <= 7 ? (
           <span

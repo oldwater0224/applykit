@@ -8,6 +8,12 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
+import {
+  AVAILABILITY_BADGE_STYLE,
+  getProgramAvailabilityView,
+  type ProgramAvailabilityView,
+} from "@/src/components/programs/programAvailability";
+import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
 
 export default function ProgramPublicDetailPage() {
   const params = useParams();
@@ -56,9 +62,9 @@ export default function ProgramPublicDetailPage() {
 
   const now = new Date();
   const deadline = program.deadline ? new Date(program.deadline) : null;
-  const isDeadlinePassed = deadline !== null && deadline < now;
-  const isPublished = program.status !== "closed";
-  const canApply = isPublished && !isDeadlinePassed;
+  // 서버(checkProgramAcceptingApplications)와 같은 기준으로 접수 가능 여부 판정
+  const availability = getProgramAvailabilityView(program, now);
+  const canApply = availability.accepting;
 
   const daysRemaining =
     deadline !== null
@@ -95,31 +101,15 @@ export default function ProgramPublicDetailPage() {
       >
         {/* 상태 뱃지 */}
         <div className="mb-4 flex items-center gap-2">
-          {isDeadlinePassed ? (
-            <span
-              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              style={{ borderColor: "var(--accent-rose)", color: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)" }}
-            >
-              접수 마감
-            </span>
-          ) : isPublished ? (
-            <span
-              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              style={{ borderColor: "var(--accent-emerald)", color: "var(--accent-emerald)", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
-            >
-              접수 중
-            </span>
-          ) : (
-            <span
-              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              style={{ borderColor: "var(--navy-600)", color: "var(--gray-400)", backgroundColor: "var(--navy-800)" }}
-            >
-              마감
-            </span>
-          )}
+          <span
+            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+            style={AVAILABILITY_BADGE_STYLE[availability.tone]}
+          >
+            {availability.label}
+          </span>
           {daysRemaining !== null &&
             daysRemaining >= 0 &&
-            !isDeadlinePassed && (
+            canApply && (
               <span
                 className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
                 style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)", backgroundColor: "rgba(59, 130, 246, 0.1)" }}
@@ -177,8 +167,7 @@ export default function ProgramPublicDetailPage() {
           <ApplyButton
             canApply={canApply}
             hasFormSchema={!!hasFormSchema}
-            isDeadlinePassed={isDeadlinePassed}
-            isPublished={isPublished}
+            availability={availability}
             existingApplication={existingApplication}
             onApply={handleApply}
           />
@@ -191,15 +180,13 @@ export default function ProgramPublicDetailPage() {
 function ApplyButton({
   canApply,
   hasFormSchema,
-  isDeadlinePassed,
-  isPublished,
+  availability,
   existingApplication,
   onApply,
 }: {
   canApply: boolean;
   hasFormSchema: boolean;
-  isDeadlinePassed: boolean;
-  isPublished: boolean;
+  availability: ProgramAvailabilityView;
   existingApplication: { id: string; is_complete: boolean } | null | undefined;
   onApply: () => void;
 }) {
@@ -221,6 +208,25 @@ function ApplyButton({
   }
 
   if (existingApplication && !existingApplication.is_complete) {
+    // 접수가 끝난 공고의 작성 중 지원서는 서버가 저장·제출을 거부하므로 이어서 작성 불가
+    if (!canApply) {
+      return (
+        <div className="space-y-3">
+          <p className="text-sm" style={{ color: "var(--gray-400)" }}>
+            작성 중인 지원서가 있지만 더 이상 작성할 수 없습니다.{" "}
+            {!availability.availability.ok &&
+              PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
+          </p>
+          <button
+            disabled
+            className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+            style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
+          >
+            마감됨
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="space-y-3">
         <p className="text-sm" style={{ color: "var(--accent-amber)" }}>
@@ -249,41 +255,25 @@ function ApplyButton({
     );
   }
 
-  if (!isPublished) {
+  if (!canApply) {
     return (
       <button
         disabled
         className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
-        접수가 마감되었습니다
+        {availability.disabledLabel}
       </button>
     );
   }
 
-  if (isDeadlinePassed) {
-    return (
-      <button
-        disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
-        style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
-      >
-        접수 기간이 지났습니다
-      </button>
-    );
-  }
-
-  if (canApply) {
-    return (
-      <button
-        onClick={onApply}
-        className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
-        style={{ backgroundColor: "var(--brand-600)" }}
-      >
-        지원하기
-      </button>
-    );
-  }
-
-  return null;
+  return (
+    <button
+      onClick={onApply}
+      className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+      style={{ backgroundColor: "var(--brand-600)" }}
+    >
+      지원하기
+    </button>
+  );
 }

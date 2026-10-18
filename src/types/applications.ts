@@ -59,6 +59,8 @@ export interface ApplicationWithProgram extends Application {
   programs: {
     id: string;
     title: string;
+    // 내 지원서 목록(useMyApplications)에서만 조회 - 접수 가능 여부 표시용
+    status?: string | null;
     deadline: string | null;
     org_id: string | null;
     form_schema: FormSchema | null;

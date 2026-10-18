@@ -72,6 +72,7 @@ export function useMyApplications() {
           programs (
             id,
             title,
+            status,
             deadline,
             org_id,
             form_schema

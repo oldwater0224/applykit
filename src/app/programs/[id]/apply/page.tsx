@@ -17,6 +17,8 @@ import {
 import { ApplicationFormRenderer } from "@/src/components/application/applicationFormRenderer";
 import { ApplicationFormData } from "@/src/types/applications";
 import { FormSchema } from "@/src/types/form";
+import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
+import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
 
 export default function ApplyPage() {
   const params = useParams();
@@ -246,6 +248,51 @@ export default function ApplyPage() {
           >
             내 지원목록 보기
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // 서버와 같은 기준으로 접수 가능 여부 판정 - 접수 중이 아니면 작성 폼을 보여주지 않는다
+  // (작성 중 지원서가 있어도 서버가 저장·제출·파일 추가를 거부하므로 동일하게 막음)
+  const availability = getProgramAvailabilityView(program, new Date());
+  if (!availability.availability.ok) {
+    return (
+      <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
+        <div
+          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+        >
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+            {availability.tone === "closed"
+              ? "접수가 마감된 공고입니다"
+              : "지원할 수 없는 공고입니다"}
+          </h1>
+          <p className="mb-6" style={{ color: "var(--gray-400)" }}>
+            {PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
+            {existingApplication && (
+              <>
+                <br />
+                작성 중이던 지원서는 더 이상 수정하거나 제출할 수 없습니다.
+              </>
+            )}
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link
+              href={`/programs/${programId}`}
+              className="inline-block px-4 py-2 rounded-md border transition"
+              style={{ borderColor: "var(--navy-600)", color: "var(--gray-300)" }}
+            >
+              공고로 돌아가기
+            </Link>
+            <Link
+              href="/applications"
+              className="inline-block px-4 py-2 text-white rounded-md transition"
+              style={{ backgroundColor: "var(--brand-600)" }}
+            >
+              내 지원목록 보기
+            </Link>
+          </div>
         </div>
       </div>
     );

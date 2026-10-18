@@ -19,11 +19,12 @@ import type {
 import {
   DAY_MS,
   KST_OFFSET_MS,
-  parseKstDateTimeMs,
+  parseDeadlineMs,
 } from "@/src/lib/datetime/kst";
 
 // 기존 import 경로 호환을 위해 재export
-export { DAY_MS, KST_OFFSET_MS };
+// parseDeadlineMs는 지원서 서버 마감 판정(#58)과 규칙을 공유하려고 kst.ts로 옮김
+export { DAY_MS, KST_OFFSET_MS, parseDeadlineMs };
 
 export const DAILY_RANGE_DAYS = 30;
 export const UPCOMING_DEADLINE_DAYS = 7;
@@ -76,26 +77,6 @@ export function kstWeekStartMs(ms: number): number {
   const dow = new Date(ms + KST_OFFSET_MS).getUTCDay();
   const daysSinceMonday = (dow + 6) % 7;
   return dayStart - daysSinceMonday * DAY_MS;
-}
-
-const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-// 마감일 문자열 → UTC epoch ms. 해석 불가면 null
-// - 'YYYY-MM-DD'        : KST 그날 23:59:59.999 (그날 하루 종일 마감 전으로 간주)
-// - 오프셋 없는 일시     : KST로 해석
-// - 오프셋/Z 있는 일시   : 그대로 해석
-// 일시 해석은 공통 유틸(parseKstDateTimeMs)에 위임하고, 날짜만 있는 값의 '그날 끝' 규칙만 여기서 적용
-export function parseDeadlineMs(value: string | null): number | null {
-  if (!value) return null;
-  const s = value.trim();
-  if (!s) return null;
-
-  if (DATE_ONLY_RE.test(s)) {
-    const start = parseKstDateTimeMs(s);
-    return start === null ? null : start + DAY_MS - 1;
-  }
-
-  return parseKstDateTimeMs(s);
 }
 
 // KST 달력 기준 남은 일수 (마감일 날짜 - 오늘 날짜)

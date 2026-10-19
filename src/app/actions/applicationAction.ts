@@ -251,6 +251,7 @@ export async function deleteApplication(
 
   // 제출 완료된 지원서는 물리 삭제 금지
   // 감사 추적을 위해 제출 이력은 보존해야 함
+  // 작성 중(draft) 지원서는 공고 마감·종료 후에도 삭제 허용 - 지원자의 정리 동작이라 마감 확인 안 함 (#58 S6)
   if (existing.is_complete) {
     return {
       success: false,

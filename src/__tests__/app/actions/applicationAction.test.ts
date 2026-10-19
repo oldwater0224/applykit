@@ -1,4 +1,5 @@
 // createApplication / updateApplication / uploadApplicationFile 의 서버 마감 확인(#58)
+// deleteApplication / deleteApplicationFile 은 마감과 무관하게 작성 중이면 삭제 허용(#58 S6)
 // Supabase 클라이언트는 목으로 대체하고, 테이블별 응답과 호출 기록만 다룬다.
 
 type Result = { data: unknown; error: unknown };
@@ -32,6 +33,11 @@ function chain(table: string) {
       record("update", args);
       return c;
     },
+    delete: (...args: unknown[]) => {
+      isWrite = true;
+      record("delete", args);
+      return c;
+    },
     eq: (...args: unknown[]) => {
       record("eq", args);
       return c;
@@ -49,6 +55,7 @@ const storageUpload = jest.fn(async () => ({
   data: { path: "stored/path" },
   error: null,
 }));
+const storageRemove = jest.fn(async () => ({ data: null, error: null }));
 
 jest.mock("@/src/lib/supabase/server", () => ({
   createClient: async () => ({
@@ -58,7 +65,7 @@ jest.mock("@/src/lib/supabase/server", () => ({
       return chain(table);
     },
     storage: {
-      from: () => ({ upload: storageUpload, remove: jest.fn() }),
+      from: () => ({ upload: storageUpload, remove: storageRemove }),
     },
   }),
 }));
@@ -67,9 +74,13 @@ jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 
 import {
   createApplication,
+  deleteApplication,
   updateApplication,
 } from "@/src/app/actions/applicationAction";
-import { uploadApplicationFile } from "@/src/app/actions/applicationFileAction";
+import {
+  deleteApplicationFile,
+  uploadApplicationFile,
+} from "@/src/app/actions/applicationFileAction";
 
 // 현재 시각: 2026-10-20 18:00 KST
 const NOW = new Date("2026-10-20T09:00:00Z");
@@ -79,7 +90,7 @@ const FUTURE = "2026-10-20T09:00:01+00:00"; // 1초 뒤 마감
 const DEADLINE_ERROR = "마감된 공고입니다. 지원서를 제출할 수 없습니다.";
 const NOT_ACTIVE_ERROR = "현재 모집 중인 공고가 아닙니다.";
 
-const writes = (op: "insert" | "update", table = "applications") =>
+const writes = (op: "insert" | "update" | "delete", table = "applications") =>
   state.calls.filter((c) => c.table === table && c.op === op);
 
 beforeAll(() => {
@@ -94,6 +105,7 @@ beforeEach(() => {
   state.fetch = {};
   state.calls = [];
   storageUpload.mockClear();
+  storageRemove.mockClear();
 });
 
 // ============================================
@@ -345,5 +357,78 @@ describe("uploadApplicationFile 마감 확인", () => {
     app({ status: "active", deadline: PAST }, { user_id: "other" });
     const res = await uploadApplicationFile(form());
     expect(res).toEqual({ success: false, error: "권한이 없습니다." });
+  });
+});
+
+// ============================================
+// 삭제 경로 (S6): 작성 중이면 마감·종료와 무관하게 허용
+// ============================================
+const touchesPrograms = () =>
+  state.calls.some(
+    (c) => c.table === "programs" || String(c.args[0] ?? "").includes("programs"),
+  );
+
+describe("deleteApplication 마감 무관", () => {
+  function app(is_complete: boolean, user_id = "u1") {
+    state.fetch.applications = {
+      data: { id: "a1", user_id, is_complete, program_id: "p1" },
+      error: null,
+    };
+  }
+
+  it("작성 중 지원서는 공고 조회 없이 삭제 (마감 확인 안 함)", async () => {
+    app(false);
+    const res = await deleteApplication("a1");
+    expect(res).toEqual({ success: true, data: null });
+    expect(writes("delete")).toHaveLength(1);
+    expect(touchesPrograms()).toBe(false);
+  });
+
+  it("제출된 지원서는 기존대로 삭제 거부", async () => {
+    app(true);
+    const res = await deleteApplication("a1");
+    expect(res).toEqual({ success: false, error: "제출된 지원서는 삭제할 수 없습니다." });
+    expect(writes("delete")).toHaveLength(0);
+  });
+
+  it("남의 지원서는 삭제 거부", async () => {
+    app(false, "other");
+    const res = await deleteApplication("a1");
+    expect(res).toEqual({ success: false, error: "삭제 권한이 없습니다." });
+    expect(writes("delete")).toHaveLength(0);
+  });
+});
+
+describe("deleteApplicationFile 마감 무관", () => {
+  function file(is_complete: boolean, user_id = "u1") {
+    state.fetch.application_files = {
+      data: {
+        id: "f1",
+        storage_path: "u1/a1/f1.pdf",
+        application_id: "a1",
+        applications: { user_id, is_complete },
+      },
+      error: null,
+    };
+  }
+
+  it("작성 중 지원서의 파일은 공고 조회 없이 삭제", async () => {
+    file(false);
+    const res = await deleteApplicationFile("f1");
+    expect(res).toEqual({ success: true, data: null });
+    expect(writes("delete", "application_files")).toHaveLength(1);
+    expect(storageRemove).toHaveBeenCalledWith(["u1/a1/f1.pdf"]);
+    expect(touchesPrograms()).toBe(false);
+  });
+
+  it("제출된 지원서의 파일은 기존대로 삭제 거부", async () => {
+    file(true);
+    const res = await deleteApplicationFile("f1");
+    expect(res).toEqual({
+      success: false,
+      error: "제출된 지원서의 파일은 삭제할 수 없습니다.",
+    });
+    expect(writes("delete", "application_files")).toHaveLength(0);
+    expect(storageRemove).not.toHaveBeenCalled();
   });
 });

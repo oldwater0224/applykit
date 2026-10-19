@@ -229,6 +229,7 @@ export async function deleteApplicationFile(
     return { success: false, error: "권한이 없습니다." };
   }
 
+  // 작성 중 지원서의 파일은 공고 마감·종료 후에도 삭제 허용 (#58 S6, 업로드와 달리 마감 확인 안 함)
   if (application.is_complete) {
     return {
       success: false,

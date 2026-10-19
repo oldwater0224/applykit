@@ -243,18 +243,7 @@ function ApplyButton({
     );
   }
 
-  if (!hasFormSchema) {
-    return (
-      <button
-        disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
-        style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
-      >
-        지원 양식 준비 중
-      </button>
-    );
-  }
-
+  // 접수 불가 안내가 양식 준비 중보다 먼저 (apply 페이지·서버 판정 순서와 동일)
   if (!canApply) {
     return (
       <button
@@ -263,6 +252,18 @@ function ApplyButton({
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
         {availability.disabledLabel}
+      </button>
+    );
+  }
+
+  if (!hasFormSchema) {
+    return (
+      <button
+        disabled
+        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+        style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
+      >
+        지원 양식 준비 중
       </button>
     );
   }

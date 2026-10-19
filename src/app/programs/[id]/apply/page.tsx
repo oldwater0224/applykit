@@ -53,6 +53,8 @@ export default function ApplyPage() {
 
   const [formData, setFormData] = useState<ApplicationFormData>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // 폼을 한 번이라도 보여줬는지 - 작성 중 마감되면 입력이 사라지지 않게 폼을 유지하는 데 씀
+  const [formShown, setFormShown] = useState(false);
 
   useEffect(() => {
     if (existingApplication) {
@@ -255,8 +257,14 @@ export default function ApplyPage() {
 
   // 서버와 같은 기준으로 접수 가능 여부 판정 - 접수 중이 아니면 작성 폼을 보여주지 않는다
   // (작성 중 지원서가 있어도 서버가 저장·제출·파일 추가를 거부하므로 동일하게 막음)
+  // 단, 폼을 연 뒤에 마감되면 입력을 옮겨 적을 수 있게 폼은 남기고 제출만 막는다
   const availability = getProgramAvailabilityView(program, new Date());
-  if (!availability.availability.ok) {
+  const accepting = availability.availability.ok;
+  if (accepting && !formShown && schema.fields.length > 0) {
+    setFormShown(true);
+  }
+  const closedWhileEditing = !accepting && formShown;
+  if (!accepting && !formShown) {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
@@ -363,6 +371,18 @@ export default function ApplyPage() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
+        {!availability.availability.ok && (
+          <div
+            role="alert"
+            className="mb-6 p-4 border rounded-md text-sm"
+            style={{ borderColor: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)", color: "var(--accent-rose)" }}
+          >
+            {PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
+            <br />
+            더 이상 저장·제출할 수 없으니 작성한 내용이 필요하면 따로 복사해 두세요.
+          </div>
+        )}
+
         <ApplicationFormRenderer
           schema={schema}
           value={formData}
@@ -398,7 +418,7 @@ export default function ApplyPage() {
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={handleSubmit}
-            disabled={isPending}
+            disabled={isPending || closedWhileEditing}
             className="px-6 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition"
             style={{ backgroundColor: "var(--brand-600)" }}
           >

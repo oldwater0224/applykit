@@ -1,18 +1,18 @@
 # 지원서 제출 시 서버 마감 확인 작업 기록
 
 - 이슈: #58 (https://github.com/oldwater0224/applykit/issues/58)
-- 브랜치: `fix/58-server-deadline-check` (`develop`에서 분기)
+- 브랜치: `fix/58-server-deadline-check` (`develop`에서 분기) → 2026-10-19 `develop`에 합치고 삭제
 - 시작일: 2026-10-18
 - 배경: 관리자 대시보드 개편(PR #57) 중 발견 (`docs/work-log/admin-dashboard-revamp.md` R24). 마감 판정이 클라이언트에만 있어 서버 액션으로 마감 후 제출이 가능함
 
 ## 다음 작업 이어하기 (다른 컴퓨터용)
 
 현재 상태 (2026-10-18 기준)
-- PR #59 (`fix/58-server-deadline-check` → `master`) 생성. 남은 일도 **같은 브랜치 `fix/58-server-deadline-check`에서 이어서 작업·커밋** (사용자 결정). 브랜치는 남은 일이 끝날 때까지 삭제하지 않음
+- 2026-10-19: 작업 9까지의 커밋을 `develop`에 합치고 `fix/58-server-deadline-check` 브랜치 삭제 (사용자 결정). PR #59는 브랜치 삭제로 닫힘, master 반영은 develop → master로 별도 진행. 남은 일은 **`develop`에서 이어서 작업**
 - 이슈 #58은 아래 남은 일 때문에 열어 둠
 
 시작 순서
-루트 `CLAUDE.md`의 "이전 작업 불러와" 절차를 따른다 (브랜치 `fix/58-server-deadline-check` 체크아웃·pull, PR #59 상태 확인, 이 문서 읽기, 남은 일 보고 후 승인 받고 착수). 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
+루트 `CLAUDE.md`의 "이전 작업 불러와" 절차를 따른다 (브랜치 `develop` 체크아웃·pull, 이슈 #58 확인, 이 문서 읽기, 남은 일 보고 후 승인 받고 착수). 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
 
 남은 일
 - [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인 → 스크립트 준비 완료, 실행 대기 (아래 작업 8)

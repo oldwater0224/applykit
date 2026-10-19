@@ -6,11 +6,11 @@
 
 1. 저장소 동기화
    - `git status` 로 커밋 안 된 변경이 없는지 확인 (있으면 멈추고 보고)
-   - `git fetch origin && git checkout fix/58-server-deadline-check && git pull`
+   - `git fetch origin && git checkout develop && git pull`
    - `npm install` (node_modules 없거나 package-lock 변경 시), `.env.local` 존재 확인 (없으면 사용자에게 요청, 값은 출력하지 않음)
 2. 상태 확인
-   - `gh pr view 59 --json state,mergedAt` , `gh issue view 58 --comments`
-   - PR #59가 이미 머지됐으면 `git merge origin/master` 로 브랜치를 최신화할지 사용자에게 확인
+   - `gh issue view 58 --comments`
+   - `git log origin/master..develop --oneline` 으로 master에 아직 안 들어간 커밋 확인
 3. 기록 읽기
    - `docs/work-log/server-deadline-check.md` (맨 위 "다음 작업 이어하기" 섹션)
    - `docs/work-log/admin-dashboard-revamp.md` 의 R23 항목과 작업 7 섹션 (마감 데이터 보정 SQL)

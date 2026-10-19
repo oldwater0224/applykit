@@ -15,7 +15,7 @@
 루트 `CLAUDE.md`의 "이전 작업 불러와" 절차를 따른다 (브랜치 `fix/58-server-deadline-check` 체크아웃·pull, PR #59 상태 확인, 이 문서 읽기, 남은 일 보고 후 승인 받고 착수). 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
 
 남은 일
-- [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. SQL은 `admin-dashboard-revamp.md` 작업 7 섹션. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인
+- [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인 → 스크립트 준비 완료, 실행 대기 (아래 작업 8)
 - [ ] **DB 차원 강제 (S5)**: 지원자용 RLS `with check` 또는 BEFORE INSERT/UPDATE 트리거로 `status = 'active'` + 마감 확인, `UNIQUE(program_id, user_id)` (적용 전 중복 행 존재 여부 SELECT 확인). 마이그레이션 파일로 작성
 - [ ] **삭제 경로 정책 (S6)**: `deleteApplication`, `deleteApplicationFile`에 마감 확인을 넣을지 결정
 - [ ] **로그인 상태 브라우저 확인**: 아래 작업 1·4의 체크리스트, 로그인 사용자 기준 RLS
@@ -49,6 +49,16 @@
 | S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 참고 |
 
 ## 단계별 결과
+
+### 작업 8 — 메인: 기존 마감 데이터 보정 스크립트 (준비 완료, 운영 DB 실행 대기)
+
+- 스크립트: `supabase/scripts/20261019_fix_legacy_deadline_kst.sql` (마이그레이션 아님, Supabase SQL Editor에서 단계별 실행)
+  - 1단계 SELECT: 마감일이 있는 공고 전체를 `shown_kst`(지금 보이는 값)·`intended_kst`(-9h)와 함께 조회. `created_after_merge`는 PR #57 머지(2026-10-18 12:56 KST) 이후 생성 여부
+  - 2단계: 확정한 id만 `programs_deadline_backup_20261019`에 백업 후 -9h. 이미 백업된 id는 건너뛰어 재실행해도 두 번 당겨지지 않음
+  - 되돌리기·백업 삭제 SQL 포함
+- 대상 판단: deadline을 쓰는 곳은 `programActions.ts`의 create/update뿐 (다른 쓰기 경로 없음). PR #57 배포 전 생성된 공고는 늦게 저장됨. 배포 후 수정 모달에서 마감일을 직접 고쳐 저장한 공고는 이미 맞으므로 제외해야 함 (`updated_at`이 없어 사람이 확인)
+- 검증: 로컬 PostgreSQL 16 임시 DB에서 실행 → 대상 행만 KST 18:21 → 09:21, 대상 아닌 행 그대로, 재실행 시 0행
+- 실행 안 함: 이 클라우드 세션에 운영 DB 접속 정보(`.env.local`)가 없음
 
 ### 작업 5 — debugger: UI 검증 (완료, 커밋 차단 없음)
 

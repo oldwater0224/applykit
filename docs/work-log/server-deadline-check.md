@@ -17,9 +17,9 @@
 남은 일
 - [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인 → 스크립트 준비 완료, 실행 대기 (아래 작업 8)
 - [ ] **DB 차원 강제 (S5)**: 지원자용 RLS `with check` 또는 BEFORE INSERT/UPDATE 트리거로 `status = 'active'` + 마감 확인, `UNIQUE(program_id, user_id)` (적용 전 중복 행 존재 여부 SELECT 확인). 마이그레이션 파일로 작성
-- [ ] **삭제 경로 정책 (S6)**: `deleteApplication`, `deleteApplicationFile`에 마감 확인을 넣을지 결정
+- [x] **삭제 경로 정책 (S6)**: 작성 중이면 마감·종료 후에도 삭제 허용으로 결정 (사용자 결정, 작업 9)
 - [ ] **로그인 상태 브라우저 확인**: 아래 작업 1·4의 체크리스트, 로그인 사용자 기준 RLS
-- [ ] (선택) N1~N4 정리: 작성 중 마감 시 입력 유실, 상세/apply 문구 순서 차이, `programAvailability.ts` 단위 테스트
+- [x] (선택) N1~N3 정리 (작업 9). N4는 목록이 draft를 제외하는 의도된 동작이라 그대로 둠
 
 참고: 서브에이전트 정의는 `.claude/agents/` (ui-builder, logic-builder, debugger). 메인이 조율하고 위임, 결과는 이 문서에 기록. `gh pr merge`는 사용자가 직접 실행.
 
@@ -35,6 +35,8 @@
 | 5 | debugger | UI 검증 | 완료 (커밋 차단 없음, 경미 N1~N4) |
 | 6 | 메인 | 커밋·푸시, master PR (`Refs #58`, 이슈 열린 상태 유지) → 사용자 머지·배포 → develop 동기화 | 진행 중 |
 | 7 | 다음 작업 (다른 컴퓨터) | 기존 마감 데이터 보정(R23), DB 강제(S5: RLS with check/트리거, `UNIQUE(program_id, user_id)`), 삭제 경로 정책(S6) | 대기 |
+| 8 | 메인 | 기존 마감 데이터 보정 스크립트 (R23) | 스크립트 완료, 운영 DB 실행 대기 |
+| 9 | 메인 | N3 테스트, N2 순서, N1 입력 유지, S6 삭제 허용 명시 | 완료 |
 
 ## 보고가 필요한 사항
 
@@ -46,9 +48,27 @@
 | S7 | 중복 지원 확인이 기존 `.maybeSingle()`(2건 이상이면 에러로 통과) → `length > 0`으로 더 엄격해짐 | 확인됨 (퇴행 아님) |
 | S4 | RLS가 지원자에게 draft 공고를 숨기면 해당 경우 메시지는 "공고를 찾을 수 없습니다." | 참고 |
 | S5 | 레이스(판정~insert 사이 수 ms)는 허용. DB 강제가 필요하면 지원자용 RLS `with check` 또는 BEFORE 트리거, `UNIQUE(program_id, user_id)` 제안 (마이그레이션 미작성) | 후속 후보 |
-| S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 참고 |
+| S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 삭제 허용으로 결정 (작업 9), 제출된 지원서·파일 삭제 거부는 기존대로 |
 
 ## 단계별 결과
+
+### 작업 9 — 메인: 코드 정리 N1~N3, S6 (완료)
+
+DB 없이 할 수 있는 코드 작업만 진행 (사용자 요청). 서브에이전트 대신 메인이 직접 처리.
+
+| 항목 | 파일 | 내용 |
+|---|---|---|
+| N3 | `src/__tests__/components/programs/programAvailability.test.ts` | 신규 10개. 라벨·문구·tone 전 경우, 마감 정각 경계, 서버 판정 함수와 결과 일치(공고 5종 × 시각 3개), 뱃지 스타일 |
+| N2 | `src/app/programs/[id]/page.tsx` | `ApplyButton`에서 접수 불가 안내를 "지원 양식 준비 중"보다 먼저 → closed + 양식 없음도 apply 페이지·서버와 같은 마감 안내 |
+| N1 | `src/app/programs/[id]/apply/page.tsx` | `formShown` 상태 추가. 폼을 한 번 보여준 뒤 마감·종료되면 폼과 입력은 유지, 위에 서버 메시지 + "복사해 두세요" 안내, 제출 버튼 비활성. 처음부터 접수 불가면 기존처럼 안내 화면 |
+| S6 | `applicationAction.ts`, `applicationFileAction.ts` | 동작 변경 없음. 작성 중이면 마감 후에도 삭제 허용한다는 결정을 주석으로 명시 |
+| S6 | `src/__tests__/app/actions/applicationAction.test.ts` | 신규 5개. 작성 중 지원서·파일 삭제 시 공고를 조회하지 않음, 제출된 지원서·파일과 남의 지원서는 거부 |
+
+- N1 참고: 화면은 마감 시각에 저절로 다시 그려지지 않고, 입력·포커스 갱신·데이터 재조회 같은 다음 렌더에서 안내로 바뀜. 그 사이 제출해도 서버가 거부하고 하단에 에러 표시 (기존과 같음)
+- 검증: `npx tsc --noEmit` 통과 / `npm run lint` 에러 0, 기존 경고 1 / `npm test` 13 스위트 213 통과 (`TZ=America/Los_Angeles`에서도 통과) / `npm run build` 성공
+- 미검증: 브라우저 확인 (이 세션에 DB 접속 정보 없음). 확인 항목
+  - [ ] 지원 페이지에서 작성 중 공고를 closed로 바꾸고 입력 → 폼 유지 + 상단 안내 + 제출 버튼 비활성
+  - [ ] closed + 양식 없는 공고 상세 → "접수가 마감되었습니다"
 
 ### 작업 8 — 메인: 기존 마감 데이터 보정 스크립트 (준비 완료, 운영 DB 실행 대기)
 

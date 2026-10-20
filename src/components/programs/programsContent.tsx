@@ -12,7 +12,8 @@ import { usePublicPrograms } from "@/src/hooks/usePrograms";
 import type { Program } from "@/src/types/program";
 import {
   AVAILABILITY_BADGE_STYLE,
-  getProgramAvailabilityView,
+  DDAY_BADGE_STYLE,
+  getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
 
 export default function ProgramsContent() {
@@ -137,17 +138,8 @@ function ProgramCard({
   program: Program;
   companyId: string | null;
 }) {
-  const now = new Date();
-  const deadline = program.deadline ? new Date(program.deadline) : null;
-  // 서버와 같은 기준으로 접수 가능 여부 판정 (closed 공고도 목록에 나오므로 상태까지 반영)
-  const availability = getProgramAvailabilityView(program, now);
-  const daysRemaining =
-    deadline !== null
-      ? Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      : null;
-
-  const hasFormSchema =
-    program.form_schema && program.form_schema.fields.length > 0;
+  // 상세 페이지와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
+  const display = getProgramDisplay(program, new Date());
 
   const href = companyId
     ? `/programs/${program.id}?company=${companyId}`
@@ -167,48 +159,20 @@ function ProgramCard({
     >
       {/* 뱃지 */}
       <div className="mb-3 flex items-center gap-2">
-        {!hasFormSchema && (
+        <span
+          className="rounded-full border px-2 py-0.5 text-xs"
+          style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
+        >
+          {display.statusLabel}
+        </span>
+        {display.dDayLabel && (
           <span
             className="rounded-full border px-2 py-0.5 text-xs"
-            style={{
-              borderColor: "var(--accent-amber)",
-              color: "var(--accent-amber)",
-              backgroundColor: "rgba(245, 158, 11, 0.1)",
-            }}
+            style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
           >
-            양식 준비 중
+            {display.dDayLabel}
           </span>
         )}
-        {!availability.accepting ? (
-          <span
-            className="rounded-full border px-2 py-0.5 text-xs"
-            style={AVAILABILITY_BADGE_STYLE[availability.tone]}
-          >
-            {availability.label}
-          </span>
-        ) : daysRemaining !== null && daysRemaining <= 7 ? (
-          <span
-            className="rounded-full border px-2 py-0.5 text-xs"
-            style={{
-              borderColor: "var(--accent-rose)",
-              color: "var(--accent-rose)",
-              backgroundColor: "rgba(244, 63, 94, 0.1)",
-            }}
-          >
-            D-{daysRemaining}
-          </span>
-        ) : daysRemaining !== null ? (
-          <span
-            className="rounded-full border px-2 py-0.5 text-xs"
-            style={{
-              borderColor: "var(--brand-500)",
-              color: "var(--brand-500)",
-              backgroundColor: "rgba(59, 130, 246, 0.1)",
-            }}
-          >
-            D-{daysRemaining}
-          </span>
-        ) : null}
       </div>
 
       {/* 기관명 */}
@@ -237,9 +201,9 @@ function ProgramCard({
       )}
 
       {/* 마감일 */}
-      {deadline && (
+      {display.deadlineLabel && (
         <p className="mt-3 text-xs" style={{ color: "var(--gray-500)" }}>
-          접수 마감: {deadline.toLocaleDateString("ko-KR")}
+          접수 마감: {display.deadlineLabel}
         </p>
       )}
     </Link>

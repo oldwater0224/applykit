@@ -19,6 +19,7 @@ import { ApplicationFormData } from "@/src/types/applications";
 import { FormSchema } from "@/src/types/form";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
 import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
+import { formatDeadlineKst } from "@/src/lib/datetime/kst";
 
 export default function ApplyPage() {
   const params = useParams();
@@ -349,7 +350,7 @@ export default function ApplyPage() {
           {program.deadline && (
             <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
               접수 마감:{" "}
-              {new Date(program.deadline).toLocaleDateString("ko-KR")}
+              {formatDeadlineKst(program.deadline)}
             </p>
           )}
           <div className="mt-3">

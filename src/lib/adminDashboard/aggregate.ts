@@ -19,12 +19,15 @@ import type {
 import {
   DAY_MS,
   KST_OFFSET_MS,
+  kstDayStartMs,
+  kstDaysLeft,
   parseDeadlineMs,
 } from "@/src/lib/datetime/kst";
 
 // 기존 import 경로 호환을 위해 재export
 // parseDeadlineMs는 지원서 서버 마감 판정(#58)과 규칙을 공유하려고 kst.ts로 옮김
-export { DAY_MS, KST_OFFSET_MS, parseDeadlineMs };
+// kstDayStartMs·kstDaysLeft는 지원자 화면 D-day와 공유하려고 kst.ts로 옮김
+export { DAY_MS, KST_OFFSET_MS, kstDayStartMs, kstDaysLeft, parseDeadlineMs };
 
 export const DAILY_RANGE_DAYS = 30;
 export const UPCOMING_DEADLINE_DAYS = 7;
@@ -60,11 +63,6 @@ export interface DashboardApplicationRow {
 // 날짜 유틸 (KST)
 // ============================================
 
-// 주어진 시각이 속한 KST 날짜의 00:00을 UTC epoch ms로 반환
-export function kstDayStartMs(ms: number): number {
-  return Math.floor((ms + KST_OFFSET_MS) / DAY_MS) * DAY_MS - KST_OFFSET_MS;
-}
-
 // 주어진 시각의 KST 날짜 키 'YYYY-MM-DD'
 export function toKstDateKey(ms: number): string {
   return new Date(ms + KST_OFFSET_MS).toISOString().slice(0, 10);
@@ -77,11 +75,6 @@ export function kstWeekStartMs(ms: number): number {
   const dow = new Date(ms + KST_OFFSET_MS).getUTCDay();
   const daysSinceMonday = (dow + 6) % 7;
   return dayStart - daysSinceMonday * DAY_MS;
-}
-
-// KST 달력 기준 남은 일수 (마감일 날짜 - 오늘 날짜)
-export function kstDaysLeft(deadlineMs: number, nowMs: number): number {
-  return Math.round((kstDayStartMs(deadlineMs) - kstDayStartMs(nowMs)) / DAY_MS);
 }
 
 function parseMs(value: string | null): number | null {

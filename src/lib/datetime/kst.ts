@@ -69,6 +69,28 @@ export function parseDeadlineMs(value: string | null | undefined): number | null
   return parseKstDateTimeMs(s);
 }
 
+// 주어진 시각이 속한 KST 날짜의 00:00을 UTC epoch ms로 반환
+export function kstDayStartMs(ms: number): number {
+  return Math.floor((ms + KST_OFFSET_MS) / DAY_MS) * DAY_MS - KST_OFFSET_MS;
+}
+
+// KST 달력 기준 남은 일수 (마감일 날짜 - 오늘 날짜, 오늘 마감 = 0)
+export function kstDaysLeft(deadlineMs: number, nowMs: number): number {
+  return Math.round((kstDayStartMs(deadlineMs) - kstDayStartMs(nowMs)) / DAY_MS);
+}
+
+// KST 날짜 표시 'YYYY. M. D.' (toLocaleDateString("ko-KR")과 같은 모양, 실행 환경 TZ와 무관)
+export function formatKstDate(ms: number): string {
+  const d = new Date(ms + KST_OFFSET_MS);
+  return `${d.getUTCFullYear()}. ${d.getUTCMonth() + 1}. ${d.getUTCDate()}.`;
+}
+
+// 마감일 문자열 → KST 날짜 표시. 해석 불가면 빈 문자열
+export function formatDeadlineKst(value: string | null | undefined): string {
+  const ms = parseDeadlineMs(value);
+  return ms === null ? "" : formatKstDate(ms);
+}
+
 /**
  * 형식과 달력 값(2월 30일, 25시 등)까지 엄격하게 검증.
  * Date.parse는 '2026-02-30'을 3월 2일로 넘겨버리므로 저장 전에는 이 검사를 거친다.

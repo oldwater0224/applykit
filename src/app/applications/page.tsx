@@ -9,6 +9,7 @@ import {
   ApplicationWithProgram,
 } from "@/src/types/applications";
 import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
+import { formatDeadlineKst } from "@/src/lib/datetime/kst";
 
 
 export default function MyApplicationsPage() {
@@ -115,7 +116,7 @@ function ApplicationCard({
           {program.deadline && (
             <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
               접수 마감:{" "}
-              {new Date(program.deadline).toLocaleDateString("ko-KR")}
+              {formatDeadlineKst(program.deadline)}
             </p>
           )}
           <p className="text-xs mt-2" style={{ color: "var(--gray-500)" }}>

@@ -1,6 +1,7 @@
 import {
   AVAILABILITY_BADGE_STYLE,
   getProgramAvailabilityView,
+  getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
 import { checkProgramAcceptingApplications } from "@/src/lib/application/deadline";
 
@@ -122,7 +123,7 @@ describe("getProgramAvailabilityView", () => {
   });
 
   it("모든 tone에 뱃지 스타일이 있음", () => {
-    for (const tone of ["open", "closed", "muted"] as const) {
+    for (const tone of ["open", "closed", "muted", "pending"] as const) {
       expect(AVAILABILITY_BADGE_STYLE[tone]).toEqual(
         expect.objectContaining({
           borderColor: expect.any(String),
@@ -131,5 +132,115 @@ describe("getProgramAvailabilityView", () => {
         }),
       );
     }
+  });
+});
+
+describe("getProgramDisplay (목록·상세 공통)", () => {
+  const FORM = { fields: [{ id: "f1" }] };
+  const EMPTY_FORM = { fields: [] };
+
+  it("접수 중 + 양식 있음 → 접수 중, 지원 가능", () => {
+    const d = getProgramDisplay(
+      { status: "active", deadline: DEADLINE_ISO, form_schema: FORM },
+      BEFORE,
+    );
+    expect(d).toMatchObject({
+      statusLabel: "접수 중",
+      statusTone: "open",
+      hasForm: true,
+      canApply: true,
+    });
+  });
+
+  it("접수 중 + 양식 없음/빈 양식 → 양식 준비 중, 지원 불가 (목록·상세 같은 결과)", () => {
+    for (const form_schema of [null, undefined, EMPTY_FORM]) {
+      const d = getProgramDisplay(
+        { status: "active", deadline: DEADLINE_ISO, form_schema },
+        BEFORE,
+      );
+      expect(d).toMatchObject({
+        statusLabel: "양식 준비 중",
+        statusTone: "pending",
+        hasForm: false,
+        canApply: false,
+      });
+      expect(d.view.accepting).toBe(true);
+    }
+  });
+
+  it("접수 불가가 양식 없음보다 우선", () => {
+    expect(
+      getProgramDisplay({ status: "closed", deadline: null, form_schema: null }, BEFORE)
+        .statusLabel,
+    ).toBe("접수 마감");
+    expect(
+      getProgramDisplay(
+        { status: "active", deadline: DEADLINE_ISO, form_schema: null },
+        AFTER,
+      ).statusLabel,
+    ).toBe("접수 마감");
+    expect(
+      getProgramDisplay({ status: "draft", deadline: null, form_schema: null }, BEFORE)
+        .statusLabel,
+    ).toBe("모집 전");
+  });
+
+  it("D-day는 KST 달력 기준, 오늘 마감은 '오늘 마감'", () => {
+    // 마감 2026-10-20 18:00 KST, 지금 같은 날 17:59 KST
+    const today = getProgramDisplay(
+      { status: "active", deadline: DEADLINE_ISO, form_schema: FORM },
+      BEFORE,
+    );
+    expect(today).toMatchObject({ daysLeft: 0, dDayLabel: "오늘 마감", dDayUrgent: true });
+
+    // 지금 2026-10-19 23:30 KST → 하루 전 (24시간 미만이어도 달력으로 D-1)
+    const yesterday = getProgramDisplay(
+      { status: "active", deadline: DEADLINE_ISO, form_schema: FORM },
+      Date.parse("2026-10-19T14:30:00Z"),
+    );
+    expect(yesterday).toMatchObject({ daysLeft: 1, dDayLabel: "D-1", dDayUrgent: true });
+
+    // 8일 남으면 급하지 않음
+    const later = getProgramDisplay(
+      { status: "active", deadline: DEADLINE_ISO, form_schema: FORM },
+      Date.parse("2026-10-12T00:00:00Z"),
+    );
+    expect(later).toMatchObject({ daysLeft: 8, dDayLabel: "D-8", dDayUrgent: false });
+  });
+
+  it("양식 준비 중이어도 접수 중이면 D-day 표시", () => {
+    expect(
+      getProgramDisplay(
+        { status: "active", deadline: DEADLINE_ISO, form_schema: null },
+        BEFORE,
+      ).dDayLabel,
+    ).toBe("오늘 마감");
+  });
+
+  it("접수 불가거나 마감일이 없으면 D-day 없음", () => {
+    for (const [program, now] of [
+      [{ status: "active", deadline: DEADLINE_ISO, form_schema: FORM }, AFTER],
+      [{ status: "closed", deadline: DEADLINE_ISO, form_schema: FORM }, BEFORE],
+      [{ status: "active", deadline: null, form_schema: FORM }, BEFORE],
+    ] as const) {
+      const d = getProgramDisplay(program, now);
+      expect(d.daysLeft).toBeNull();
+      expect(d.dDayLabel).toBeNull();
+      expect(d.dDayUrgent).toBe(false);
+    }
+  });
+
+  it("마감 날짜는 KST로 표시 (UTC로는 전날이어도)", () => {
+    // 2026-10-20 08:00 KST = 2026-10-19T23:00Z
+    expect(
+      getProgramDisplay(
+        { status: "closed", deadline: "2026-10-19T23:00:00+00:00", form_schema: null },
+        BEFORE,
+      ).deadlineLabel,
+    ).toBe("2026. 10. 20.");
+    expect(
+      getProgramDisplay({ status: "active", deadline: null, form_schema: null }, BEFORE)
+        .deadlineLabel,
+    ).toBeNull();
   });
 });

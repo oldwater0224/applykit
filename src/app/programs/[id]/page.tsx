@@ -10,7 +10,8 @@ import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
 import {
   AVAILABILITY_BADGE_STYLE,
-  getProgramAvailabilityView,
+  DDAY_BADGE_STYLE,
+  getProgramDisplay,
   type ProgramAvailabilityView,
 } from "@/src/components/programs/programAvailability";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
@@ -60,21 +61,9 @@ export default function ProgramPublicDetailPage() {
     );
   }
 
-  const now = new Date();
-  const deadline = program.deadline ? new Date(program.deadline) : null;
-  // 서버(checkProgramAcceptingApplications)와 같은 기준으로 접수 가능 여부 판정
-  const availability = getProgramAvailabilityView(program, now);
-  const canApply = availability.accepting;
-
-  const daysRemaining =
-    deadline !== null
-      ? Math.ceil(
-          (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-        )
-      : null;
-
-  const hasFormSchema =
-    program.form_schema && program.form_schema.fields.length > 0;
+  // 목록 카드와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
+  const display = getProgramDisplay(program, new Date());
+  const availability = display.view;
 
   // 지원 페이지로 이동 (company 파라미터 전달)
   const handleApply = () => {
@@ -103,20 +92,18 @@ export default function ProgramPublicDetailPage() {
         <div className="mb-4 flex items-center gap-2">
           <span
             className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-            style={AVAILABILITY_BADGE_STYLE[availability.tone]}
+            style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
           >
-            {availability.label}
+            {display.statusLabel}
           </span>
-          {daysRemaining !== null &&
-            daysRemaining >= 0 &&
-            canApply && (
-              <span
-                className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-                style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)", backgroundColor: "rgba(59, 130, 246, 0.1)" }}
-              >
-                D-{daysRemaining}
-              </span>
-            )}
+          {display.dDayLabel && (
+            <span
+              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
+            >
+              {display.dDayLabel}
+            </span>
+          )}
         </div>
 
         {/* 기관명 */}
@@ -132,11 +119,11 @@ export default function ProgramPublicDetailPage() {
         </h1>
 
         {/* 마감 정보 */}
-        {deadline && (
+        {display.deadlineLabel && (
           <div className="mt-4 flex items-center gap-3 text-sm">
             <span style={{ color: "var(--gray-500)" }}>접수 마감:</span>
             <span style={{ color: "var(--gray-100)" }}>
-              {deadline.toLocaleDateString("ko-KR")}
+              {display.deadlineLabel}
             </span>
           </div>
         )}
@@ -165,8 +152,8 @@ export default function ProgramPublicDetailPage() {
           style={{ borderColor: "var(--navy-700)" }}
         >
           <ApplyButton
-            canApply={canApply}
-            hasFormSchema={!!hasFormSchema}
+            canApply={availability.accepting}
+            hasFormSchema={display.hasForm}
             availability={availability}
             existingApplication={existingApplication}
             onApply={handleApply}

@@ -52,6 +52,35 @@
 
 ## 단계별 결과
 
+### 작업 10 — 메인: `/programs` 목록과 상세 상태 표시 불일치 (완료)
+
+**증상 (사용자 제보)**: 공고를 만든 뒤 `/programs` 목록은 "양식 준비 중", 상세 페이지는 "접수 중"으로 표시가 다름
+
+**원인**
+1. 목록과 상세가 뱃지를 고르는 규칙이 달랐음
+   - 목록: 양식이 없으면 "양식 준비 중" 뱃지 + 접수 중이면 "접수 중" 대신 D-day만 표시
+   - 상세: 양식 여부와 무관하게 판정 라벨("접수 중") 표시, 양식 없음은 버튼("지원 양식 준비 중")에만 나옴
+2. 공고 생성·수정·삭제 후 운영기관 목록·상세 캐시만 갱신하고 지원자용 공개 목록(`programKeys.public()`) 캐시는 갱신하지 않음 → 폼 빌더에서 양식을 저장해도 목록은 이전 상태가 남음 (상세는 갱신됨)
+3. D-day 계산도 달랐음: 목록은 7일 이내 빨간색, 상세는 항상 파란색. 둘 다 `Math.ceil(남은 시간/24h)`라 대시보드 D-day(KST 달력)와 하루 차이 날 수 있었음 (R24). 마감 날짜는 브라우저 시간대로 표시
+
+**수정**
+| 파일 | 내용 |
+|---|---|
+| `src/components/programs/programAvailability.ts` | `getProgramDisplay` 추가. 상태 뱃지 우선순위 접수 불가(접수 마감·모집 전·모집 중 아님) → 양식 없음("양식 준비 중", amber) → "접수 중". D-day는 접수 중이고 마감일이 있을 때만, KST 달력 기준(오늘 마감 = "오늘 마감"), 7일 이내 빨간색 |
+| `src/components/programs/programsContent.tsx`, `src/app/programs/[id]/page.tsx` | 둘 다 `getProgramDisplay` 하나로 뱃지·D-day·마감 날짜 표시 → 항상 같은 결과 |
+| `src/hooks/usePrograms.ts` | 생성·수정·삭제 성공 시 `programKeys.all` 무효화 (운영기관 목록·공개 목록·상세 모두 갱신) |
+| `src/lib/datetime/kst.ts` | `kstDayStartMs`·`kstDaysLeft`를 aggregate에서 이동(aggregate는 재export), `formatKstDate`·`formatDeadlineKst` 추가 |
+| `src/app/programs/[id]/apply/page.tsx`, `src/app/applications/page.tsx` | 마감 날짜 표시를 KST로 |
+
+**동작 변경**
+- 목록 카드: 접수 중이면 "접수 중" 뱃지가 항상 보이고 D-day는 옆에 따로 표시 (전에는 D-day만)
+- 상세: 양식이 없으면 상태 뱃지가 "접수 중" → "양식 준비 중"
+- D-day가 KST 달력 기준으로 바뀌어 하루 차이 날 수 있음 (예: 내일 오전 마감이 전에는 D-1, 지금도 D-1 / 오늘 23시 마감을 오후에 보면 전에는 D-1, 지금은 "오늘 마감")
+
+**검증**: `npx tsc --noEmit` 통과 / `npm run lint` 에러 0, 기존 경고 1 / `npm test` 13 스위트 222 통과 (`TZ=America/Los_Angeles`에서도 통과) / `npm run build` 성공. 브라우저 확인은 아직
+- [ ] 양식 없는 active 공고: 목록·상세 모두 "양식 준비 중"
+- [ ] 폼 빌더에서 양식 저장 후 `/programs`로 이동: 바로 "접수 중"으로 바뀜
+
 ### 작업 9 — 메인: 코드 정리 N1~N3, S6 (완료)
 
 DB 없이 할 수 있는 코드 작업만 진행 (사용자 요청). 서브에이전트 대신 메인이 직접 처리.

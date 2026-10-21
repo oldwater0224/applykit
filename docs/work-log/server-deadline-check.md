@@ -15,11 +15,12 @@
 루트 `CLAUDE.md`의 "이전 작업 불러와" 절차를 따른다 (브랜치 `develop` 체크아웃·pull, 이슈 #58 확인, 이 문서 읽기, 남은 일 보고 후 승인 받고 착수). 커밋에 `Refs #58`, 끝나면 이슈 #58에 커밋 링크 댓글
 
 남은 일
-- [ ] **기존 마감 데이터 -9h 보정 (R23)**: 수정 전 저장된 `programs.deadline`이 9시간 늦음. `programs`에 `updated_at`이 없어 보정 대상 id를 먼저 확정해야 함. 운영 DB 쓰기라 실행 전 대상 행 SELECT로 확인 → 스크립트 준비 완료, 실행 대기 (아래 작업 8)
-- [ ] **DB 차원 강제 (S5)**: 지원자용 RLS `with check` 또는 BEFORE INSERT/UPDATE 트리거로 `status = 'active'` + 마감 확인, `UNIQUE(program_id, user_id)` (적용 전 중복 행 존재 여부 SELECT 확인). 마이그레이션 파일로 작성
+- [ ] **기존 마감 데이터 -9h 보정 (R23)**: 대상 확정 — `2d735e73-ca75-4ed4-a143-62eb9acb4471` "2026 게임 스타트업 지원"(closed, 18:21 → 09:21) 1건. 공고 "111"은 PR #57 이후 생성이라 제외. SQL Editor 실행 대기 (작업 11)
+- [ ] **DB 차원 강제 (S5)**: 마이그레이션 `supabase/migrations/20261021000000_application_deadline_enforcement.sql` 작성·로컬 검증 완료, 운영 DB 적용 대기 (작업 11)
 - [x] **삭제 경로 정책 (S6)**: 작성 중이면 마감·종료 후에도 삭제 허용으로 결정 (사용자 결정, 작업 9)
 - [ ] **로그인 상태 브라우저 확인**: 아래 작업 1·4의 체크리스트, 로그인 사용자 기준 RLS (작업 10 첫 항목은 2026-10-20 확인 완료, 양식 저장 항목은 대기)
-- [ ] **closed 공고 노출 정책 (S8)**: RLS가 지원자에게 closed 공고를 숨김 → 보여줄지 숨길지 결정 (작업 10 참고)
+- [ ] **closed 공고 노출 정책 (S8)**: 보여주기로 결정 (사용자 결정 2026-10-21, 다음 사업 예측용). 위 마이그레이션에 포함, 적용 대기
+- [ ] (후속 후보, S9) `updateApplication`이 지원자가 보낸 `status`를 그대로 저장 → 제출 전 지원서 status를 임의 값(passed 등)으로 바꿀 수 있음. 현재 판정에 `applications.status`를 안 써서(R9) 영향 작음
 - [x] (선택) N1~N3 정리 (작업 9). N4는 목록이 draft를 제외하는 의도된 동작이라 그대로 둠
 
 참고: 서브에이전트 정의는 `.claude/agents/` (ui-builder, logic-builder, debugger). 메인이 조율하고 위임, 결과는 이 문서에 기록. `gh pr merge`는 사용자가 직접 실행.
@@ -52,6 +53,44 @@
 | S6 | `deleteApplication`, `deleteApplicationFile`은 draft 정리용이라 마감 확인 미적용 | 삭제 허용으로 결정 (작업 9), 제출된 지원서·파일 삭제 거부는 기존대로 |
 
 ## 단계별 결과
+
+### 작업 11 — 메인: DB 조회 결과 반영, S5·S8 마이그레이션 (작성·로컬 검증 완료, 운영 적용 대기)
+
+**운영 DB 조회 결과 (2026-10-21, 사용자 실행, SELECT만)**
+- ① 마감일 있는 공고 2건: "2026 게임 스타트업 지원"(closed, 2026-05-06 생성, 보이는 값 06-18 18:21 / 원래 의도 09:21 — 작업 7의 예시와 같은 값) → **보정 대상**. "111"(active, 10-20 생성, PR #57 이후) → 제외
+- ② 중복 지원(program_id, user_id) 0건 → UNIQUE 바로 적용 가능
+- ③ RLS
+  - `programs.public_read_active`: `status = 'active'`만 공개 → S8 원인 확인
+  - **`applications.anyone_insert`: INSERT `with check (true)`, 역할 public → 비로그인 포함 누구나 아무 user_id·program_id·status로 지원서 행을 넣을 수 있음 (보안 문제)**. 앱은 `applicant_own`으로 충분해 필요 없음
+  - `applications.applicant_own`(ALL, `auth.uid() = user_id`)만 있어 API 직접 호출로 마감 후 작성, 제출된 지원서 수정·삭제 가능
+  - `application_files`: 본인 지원서면 추가·삭제 가능 (마감·제출 확인 없음)
+- ④ 제약: PK·FK·`programs_status_check`·`programs_slug_key`만. 트리거 조회 결과는 SQL Editor가 마지막 결과만 보여 줘서 확인 못 함 (마이그레이션은 자기 트리거 이름만 다루므로 영향 없음)
+
+**마이그레이션** `supabase/migrations/20261021000000_application_deadline_enforcement.sql`
+| 항목 | 내용 |
+|---|---|
+| S8 | `public_read_active` → `public_read_published` (`status in ('active','closed')`), draft는 계속 비공개 |
+| 보안 | `anyone_insert` 정책 삭제 |
+| 중복 | `UNIQUE(program_id, user_id)` |
+| 마감 | `assert_program_accepting_applications(program_id)`: 서버와 같은 규칙(active + 마감 정각까지), 호출자 권한으로 조회라 draft는 "공고를 찾을 수 없습니다." |
+| 지원서 트리거 | anon/authenticated 쓰기만 검사. INSERT·UPDATE는 접수 가능 확인, 제출된 지원서 수정·삭제 거부, 공고·작성자 변경 거부. 작성 중 지원서 삭제는 마감 후에도 허용(S6) |
+| 파일 트리거 | 본인 지원서 파일만 검사. 추가는 미제출 + 접수 가능, 삭제는 미제출이면 허용(S6) |
+- service_role, SQL Editor(postgres), FK cascade는 검사하지 않음
+- 맨 아래 되돌리기 SQL 포함, 다시 실행해도 안전
+
+**로컬 검증 (PostgreSQL 16, 운영 RLS 정책을 그대로 재현)**: 두 번 실행 OK / anon: active·closed 보임, draft 안 보임, 지원서 insert 거부 / 지원자: 접수 중 insert·제출 OK, 중복·남의 user_id·마감 지남·closed·draft 거부, 제출된 지원서 수정·삭제 거부, 다른 공고로 이동 거부, 마감 후 파일 추가 거부, 제출된 지원서 파일 추가·삭제 거부, 마감 후 작성 중 지원서·파일 삭제 OK / 운영기관: 제출된 지원서가 있는 공고 삭제(cascade) OK / service_role 통과 / 사용자 삭제 시 user_id null 처리 OK
+
+**코드**
+- `dbRuleViolationMessage` (`src/lib/application/deadline.ts`): 트리거 거부(P0001)면 그 한국어 메시지를 사용자에게 보여줌 (판정~저장 사이에 마감된 경우). 그 외 DB 에러는 기존처럼 일반 메시지
+- `createApplication`: UNIQUE 위반(23505)은 "이미 해당 공고에 작성 중인 지원서가 있습니다."
+- `updateApplication`, `uploadApplicationFile`(Storage 롤백 유지)도 같은 처리
+- `getPublicPrograms` 주석을 S8 결정(active + closed)에 맞춤 (쿼리는 원래 draft만 제외)
+- 테스트 5개 추가. tsc 통과 / lint 에러 0, 기존 경고 1 / `npm test` 227 통과 (LA 시간대 포함) / build 성공
+
+**적용 순서 (사용자)**
+1. R23 보정 SQL 실행 (대상 1건)
+2. 마이그레이션 실행 (SQL Editor에 파일 내용 붙여넣기 또는 `supabase db push`)
+3. 확인: 지원자로 closed 공고가 목록에 "접수 마감"으로 보이는지, active 공고 임시저장·파일 업로드·제출 정상인지
 
 ### 작업 10 — 메인: `/programs` 목록과 상세 상태 표시 불일치 (완료)
 

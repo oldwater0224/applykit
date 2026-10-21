@@ -9,6 +9,7 @@ import {
 } from "@/src/lib/file/allowedTypes";
 import {
   checkProgramAcceptingApplications,
+  dbRuleViolationMessage,
   pickEmbeddedProgram,
   PROGRAM_AVAILABILITY_ERROR,
 } from "@/src/lib/application/deadline";
@@ -178,7 +179,10 @@ export async function uploadApplicationFile(
     // 이게 없으면 고아 파일이 쌓임
     console.error("[uploadApplicationFile] db insert", dbError);
     await supabase.storage.from(BUCKET_NAME).remove([storagePath]);
-    return { success: false, error: "파일 정보 저장에 실패했습니다." };
+    return {
+      success: false,
+      error: dbRuleViolationMessage(dbError) ?? "파일 정보 저장에 실패했습니다.",
+    };
   }
 
   revalidatePath("/applications");

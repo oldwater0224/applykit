@@ -52,6 +52,16 @@ export function checkProgramAcceptingApplications(
   return { ok: true };
 }
 
+// DB 트리거(enforce_application_write 등, 마이그레이션 20261021000000)가 거부하면
+// errcode P0001과 함께 사용자용 한국어 메시지를 보낸다. 판정~저장 사이에 마감된 경우 등.
+// 그 외 DB 에러는 내부 정보라 노출하지 않으므로 null
+export function dbRuleViolationMessage(
+  error: { code?: string; message?: string } | null | undefined,
+): string | null {
+  if (error?.code === "P0001" && error.message) return error.message;
+  return null;
+}
+
 // Supabase 임베드 결과는 객체 또는 배열로 올 수 있어서 하나로 정규화
 export function pickEmbeddedProgram<T>(value: T | T[] | null | undefined): T | null {
   if (Array.isArray(value)) return value[0] ?? null;

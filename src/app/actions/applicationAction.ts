@@ -11,6 +11,7 @@ import type {
 } from '@/src/types/applications';
 import {
   checkProgramAcceptingApplications,
+  dbRuleViolationMessage,
   pickEmbeddedProgram,
   PROGRAM_AVAILABILITY_ERROR,
 } from '@/src/lib/application/deadline';
@@ -103,7 +104,17 @@ export async function createApplication(
     // DB 에러는 사용자에게 그대로 노출하지 않고 일반 메시지로 변환
     // 실제 에러는 서버 로그에만 남김 (디버깅용)
     console.error('[createApplication]', error);
-    return { success: false, error: '지원서 생성에 실패했습니다.' };
+    // 동시 요청으로 중복 확인을 지나친 경우 UNIQUE(program_id, user_id)가 막음
+    if (error.code === '23505') {
+      return {
+        success: false,
+        error: '이미 해당 공고에 작성 중인 지원서가 있습니다.',
+      };
+    }
+    return {
+      success: false,
+      error: dbRuleViolationMessage(error) ?? '지원서 생성에 실패했습니다.',
+    };
   }
 
   // 6. 캐시 무효화 - 목록 페이지와 프로그램 상세 페이지 모두 갱신 필요
@@ -205,7 +216,10 @@ export async function updateApplication(
 
   if (error) {
     console.error('[updateApplication]', error);
-    return { success: false, error: '지원서 수정에 실패했습니다.' };
+    return {
+      success: false,
+      error: dbRuleViolationMessage(error) ?? '지원서 수정에 실패했습니다.',
+    };
   }
 
   revalidatePath('/applications');

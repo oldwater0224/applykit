@@ -8,6 +8,8 @@ const state: {
   user: { id: string } | null;
   // 테이블별 단건 조회 응답 (single / maybeSingle)
   fetch: Record<string, Result>;
+  // insert/update/delete 결과 에러 (DB 트리거·제약 거부 흉내)
+  writeError?: unknown;
   calls: Array<{ table: string; op: string; args: unknown[] }>;
 } = { user: null, fetch: {}, calls: [] };
 
@@ -16,7 +18,10 @@ function chain(table: string) {
     state.calls.push({ table, op, args });
   const fetched = async () =>
     state.fetch[table] ?? { data: null, error: { message: "no mock" } };
-  const writeResult = async () => ({ data: { id: "new-app" }, error: null });
+  const writeResult = async () =>
+    state.writeError
+      ? { data: null, error: state.writeError }
+      : { data: { id: "new-app" }, error: null };
   let isWrite = false;
   const c = {
     select: (...args: unknown[]) => {
@@ -46,7 +51,7 @@ function chain(table: string) {
     maybeSingle: () => fetched(),
     // update(...).eq(...)를 await할 때
     then: (resolve: (v: Result) => void) =>
-      resolve({ data: null, error: null }),
+      resolve({ data: null, error: isWrite ? (state.writeError ?? null) : null }),
   };
   return c;
 }
@@ -104,6 +109,7 @@ beforeEach(() => {
   state.user = { id: "u1" };
   state.fetch = {};
   state.calls = [];
+  state.writeError = undefined;
   storageUpload.mockClear();
   storageRemove.mockClear();
 });
@@ -430,5 +436,81 @@ describe("deleteApplicationFile 마감 무관", () => {
     });
     expect(writes("delete", "application_files")).toHaveLength(0);
     expect(storageRemove).not.toHaveBeenCalled();
+  });
+});
+
+// ============================================
+// DB 트리거·제약 거부 시 메시지 (마이그레이션 20261021000000)
+// ============================================
+describe("DB가 거부한 경우 메시지", () => {
+  const DB_DEADLINE = { code: "P0001", message: DEADLINE_ERROR };
+
+  it("createApplication: 트리거 거부(P0001)면 그 메시지", async () => {
+    state.fetch.programs = {
+      data: { id: "p1", status: "active", deadline: FUTURE, applications: [] },
+      error: null,
+    };
+    state.writeError = DB_DEADLINE;
+    const res = await createApplication({ program_id: "p1", form_data: {}, is_complete: true });
+    expect(res).toEqual({ success: false, error: DEADLINE_ERROR });
+  });
+
+  it("createApplication: UNIQUE 위반(23505)이면 중복 지원 메시지", async () => {
+    state.fetch.programs = {
+      data: { id: "p1", status: "active", deadline: FUTURE, applications: [] },
+      error: null,
+    };
+    state.writeError = { code: "23505", message: "duplicate key value violates unique constraint" };
+    const res = await createApplication({ program_id: "p1", form_data: {}, is_complete: false });
+    expect(res).toEqual({
+      success: false,
+      error: "이미 해당 공고에 작성 중인 지원서가 있습니다.",
+    });
+  });
+
+  it("createApplication: 그 밖의 DB 에러는 내부 메시지를 숨김", async () => {
+    state.fetch.programs = {
+      data: { id: "p1", status: "active", deadline: FUTURE, applications: [] },
+      error: null,
+    };
+    state.writeError = { code: "42501", message: "permission denied for table applications" };
+    const res = await createApplication({ program_id: "p1", form_data: {}, is_complete: false });
+    expect(res).toEqual({ success: false, error: "지원서 생성에 실패했습니다." });
+  });
+
+  it("updateApplication: 트리거 거부면 그 메시지", async () => {
+    state.fetch.applications = {
+      data: {
+        id: "a1",
+        user_id: "u1",
+        is_complete: false,
+        programs: { status: "active", deadline: FUTURE },
+      },
+      error: null,
+    };
+    state.writeError = DB_DEADLINE;
+    const res = await updateApplication("a1", { is_complete: true });
+    expect(res).toEqual({ success: false, error: DEADLINE_ERROR });
+  });
+
+  it("uploadApplicationFile: 트리거 거부면 그 메시지 + Storage 롤백", async () => {
+    state.fetch.applications = {
+      data: {
+        id: "a1",
+        user_id: "u1",
+        is_complete: false,
+        programs: { status: "active", deadline: FUTURE },
+      },
+      error: null,
+    };
+    state.writeError = DB_DEADLINE;
+    const fd = new FormData();
+    fd.append("application_id", "a1");
+    fd.append("field_key", "f1");
+    fd.append("file", new File(["%PDF"], "doc.pdf", { type: "application/pdf" }));
+    const res = await uploadApplicationFile(fd);
+    expect(res).toEqual({ success: false, error: DEADLINE_ERROR });
+    expect(storageUpload).toHaveBeenCalledTimes(1);
+    expect(storageRemove).toHaveBeenCalledTimes(1);
   });
 });

@@ -42,8 +42,9 @@ politics.md
 
 
 
-# claude
-.claude 
+# claude (서브에이전트 정의만 공유)
+.claude/*
+!.claude/agents/
 
 # typescript
 *.tsbuildinfo

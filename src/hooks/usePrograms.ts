@@ -72,7 +72,8 @@ export function useCreateProgram() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: programKeys.list(orgId!) });
+      // 운영기관 목록뿐 아니라 지원자용 공개 목록·상세도 함께 갱신
+      queryClient.invalidateQueries({ queryKey: programKeys.all });
     },
   });
 }
@@ -81,7 +82,6 @@ export function useCreateProgram() {
 // - 폼 빌더의 "폼 저장"도 이 훅을 그대로 사용 (form_schema만 partial update)
 export function useUpdateProgram() {
   const queryClient = useQueryClient();
-  const { orgId } = useAuthStore();
 
   return useMutation({
     mutationFn: async (data: UpdateProgramData) => {
@@ -91,11 +91,9 @@ export function useUpdateProgram() {
       }
       return result.data;
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: programKeys.list(orgId!) });
-      queryClient.invalidateQueries({
-        queryKey: programKeys.detail(variables.id),
-      });
+    onSuccess: () => {
+      // 운영기관 목록뿐 아니라 지원자용 공개 목록·상세도 함께 갱신
+      queryClient.invalidateQueries({ queryKey: programKeys.all });
     },
   });
 }
@@ -103,7 +101,6 @@ export function useUpdateProgram() {
 // 프로그램 삭제
 export function useDeleteProgram() {
   const queryClient = useQueryClient();
-  const { orgId } = useAuthStore();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -114,7 +111,8 @@ export function useDeleteProgram() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: programKeys.list(orgId!) });
+      // 운영기관 목록뿐 아니라 지원자용 공개 목록·상세도 함께 갱신
+      queryClient.invalidateQueries({ queryKey: programKeys.all });
     },
   });
 }

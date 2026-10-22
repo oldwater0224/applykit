@@ -209,7 +209,8 @@ export async function deleteProgram(id: string): Promise<ActionResult> {
 }
 /**
  * 공개된 공고 목록 조회 (지원자용)
- * - status가 'closed'가 아닌 모든 프로그램
+ * - draft를 뺀 active·closed 공고 (closed도 지원자에게 보여줌 - 다음 사업 예측용, #58 S8)
+ * - RLS public_read_published(status in active, closed)와 같은 범위
  * - organizations 조인으로 기관명 함께 반환
  * - 마감일 빠른 순 정렬 (마감 임박한 공고가 위로)
  * - 로그인 불필요하지만 현재는 대시보드 안에서만 쓰므로 인증 체크 유지
@@ -227,7 +228,7 @@ export async function getPublicPrograms(): Promise<ActionResult<Program[]>> {
     return { success: false, error: "로그인이 필요합니다." };
   }
 
-  // closed가 아닌 모든 공고 + 기관명
+  // draft를 뺀 공고 (active + closed)
   // deadline NULLS LAST - 마감일 없는 공고는 뒤로
   // deadline 있는 것끼리는 오름차순 (가까운 것부터)
   const { data, error } = await supabase

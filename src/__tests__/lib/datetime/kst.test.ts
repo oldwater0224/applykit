@@ -1,4 +1,6 @@
 import {
+  formatDeadlineKst,
+  formatKstDate,
   hasTimeZone,
   isValidDateTimeString,
   isoToKstLocalInput,
@@ -198,5 +200,20 @@ describe("normalizeDeadlineForStorage (서버 저장 직전 정규화)", () => {
     expect(shown).toBe("2026-06-18T09:21");
     const saved = normalizeDeadlineForStorage(shown);
     expect(saved.ok && Date.parse(saved.value!)).toBe(Date.parse(stored));
+  });
+});
+
+describe("formatKstDate / formatDeadlineKst", () => {
+  it("KST 날짜를 'YYYY. M. D.'로 표시", () => {
+    expect(formatKstDate(Date.parse("2026-01-05T00:00:00+09:00"))).toBe("2026. 1. 5.");
+    // UTC 15:00 = 다음날 KST 00:00
+    expect(formatKstDate(Date.parse("2026-12-31T15:00:00Z"))).toBe("2027. 1. 1.");
+  });
+
+  it("마감일 문자열 규칙(parseDeadlineMs)을 따름", () => {
+    expect(formatDeadlineKst("2026-10-20")).toBe("2026. 10. 20.");
+    expect(formatDeadlineKst("2026-10-20T23:30")).toBe("2026. 10. 20.");
+    expect(formatDeadlineKst("2026-10-20T15:30:00+00:00")).toBe("2026. 10. 21.");
+    expect(formatDeadlineKst(null)).toBe("");
   });
 });

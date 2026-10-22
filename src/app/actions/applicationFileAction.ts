@@ -7,6 +7,12 @@ import {
   ALLOWED_FILES_LABEL,
   isAllowedFile,
 } from "@/src/lib/file/allowedTypes";
+import {
+  checkProgramAcceptingApplications,
+  dbRuleViolationMessage,
+  pickEmbeddedProgram,
+  PROGRAM_AVAILABILITY_ERROR,
+} from "@/src/lib/application/deadline";
 
 // 다른 Action들과 동일한 응답 패턴
 type ActionResult<T = null> =
@@ -59,7 +65,7 @@ export async function uploadApplicationFile(
   // - 안 그러면 다른 사람 지원서에 파일을 붙일 수 있음
   const { data: application, error: appError } = await supabase
     .from("applications")
-    .select("id, user_id, is_complete")
+    .select("id, user_id, is_complete, programs(status, deadline)")
     .eq("id", applicationId)
     .single();
 
@@ -76,6 +82,19 @@ export async function uploadApplicationFile(
     return {
       success: false,
       error: "제출된 지원서에는 파일을 추가할 수 없습니다.",
+    };
+  }
+
+  // 마감/모집 상태 확인 - 마감 후에는 파일 추가도 거부
+  // 공고 정보는 위 지원서 조회에 임베드해서 가져옴 (추가 쿼리 없음)
+  const availability = checkProgramAcceptingApplications(
+    pickEmbeddedProgram(application.programs),
+    new Date(),
+  );
+  if (!availability.ok) {
+    return {
+      success: false,
+      error: PROGRAM_AVAILABILITY_ERROR[availability.reason],
     };
   }
 
@@ -160,7 +179,10 @@ export async function uploadApplicationFile(
     // 이게 없으면 고아 파일이 쌓임
     console.error("[uploadApplicationFile] db insert", dbError);
     await supabase.storage.from(BUCKET_NAME).remove([storagePath]);
-    return { success: false, error: "파일 정보 저장에 실패했습니다." };
+    return {
+      success: false,
+      error: dbRuleViolationMessage(dbError) ?? "파일 정보 저장에 실패했습니다.",
+    };
   }
 
   revalidatePath("/applications");
@@ -211,6 +233,7 @@ export async function deleteApplicationFile(
     return { success: false, error: "권한이 없습니다." };
   }
 
+  // 작성 중 지원서의 파일은 공고 마감·종료 후에도 삭제 허용 (#58 S6, 업로드와 달리 마감 확인 안 함)
   if (application.is_complete) {
     return {
       success: false,

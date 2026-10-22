@@ -8,6 +8,8 @@ import {
   APPLICATION_STATUS_STYLE,
   ApplicationWithProgram,
 } from "@/src/types/applications";
+import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
+import { formatDeadlineKst } from "@/src/lib/datetime/kst";
 
 
 export default function MyApplicationsPage() {
@@ -81,6 +83,15 @@ function ApplicationCard({
     );
   }
 
+  // 작성 중 지원서는 공고가 접수 중일 때만 이어서 작성 가능 (서버와 같은 기준)
+  // 접수 중이 아니면 "마감됨" 표시 - 카드를 누르면 지원 페이지의 안내 화면으로 이동
+  const isDraftLocked =
+    !application.is_complete &&
+    !getProgramAvailabilityView(
+      { status: program.status ?? null, deadline: program.deadline },
+      new Date(),
+    ).accepting;
+
   function handleClick() {
     if (!application.is_complete) {
       router.push(`/programs/${program?.id}/apply`);
@@ -105,7 +116,7 @@ function ApplicationCard({
           {program.deadline && (
             <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
               접수 마감:{" "}
-              {new Date(program.deadline).toLocaleDateString("ko-KR")}
+              {formatDeadlineKst(program.deadline)}
             </p>
           )}
           <p className="text-xs mt-2" style={{ color: "var(--gray-500)" }}>
@@ -121,6 +132,18 @@ function ApplicationCard({
           >
             {APPLICATION_STATUS_LABEL[application.status]}
           </span>
+          {isDraftLocked && (
+            <span
+              className="px-2 py-0.5 text-xs border rounded-full"
+              style={{
+                borderColor: "var(--navy-600)",
+                color: "var(--gray-400)",
+                backgroundColor: "var(--navy-800)",
+              }}
+            >
+              마감됨
+            </span>
+          )}
         </div>
       </div>
     </li>

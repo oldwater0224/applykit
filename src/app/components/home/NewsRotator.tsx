@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { StartupNews } from "@/src/types/news";
+import { formatKstYmdFromString } from "@/src/lib/datetime/kst";
 
 const VISIBLE_COUNT = 6;
 const ROTATE_INTERVAL = 7000;
@@ -18,14 +19,6 @@ const ROUND_DOT_COLORS: Record<string, string> = {
   IPO: "var(--round-ipo)",
   "M&A": "var(--round-ma)",
 };
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  return `${y}.${m}.${day}`;
-}
 
 export default function NewsRotator({ news }: { news: StartupNews[] }) {
   const totalPages = Math.ceil(news.length / VISIBLE_COUNT);
@@ -177,7 +170,10 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {visible.map((item) => (
+        {visible.map((item) => {
+          // 발행일은 KST 날짜로 표시. 해석할 수 없는 값이면 ""
+          const publishedDate = formatKstYmdFromString(item.publishedAt);
+          return (
           <a
             key={item.id}
             href={item.url}
@@ -237,11 +233,12 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
               style={{ color: "var(--gray-500)" }}
             >
               {item.press && <span>{item.press}</span>}
-              {item.press && <span>·</span>}
-              <span>{formatDate(item.publishedAt)}</span>
+              {item.press && publishedDate && <span>·</span>}
+              {publishedDate && <span>{publishedDate}</span>}
             </div>
           </a>
-        ))}
+          );
+        })}
       </div>
     </>
   );

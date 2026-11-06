@@ -204,3 +204,53 @@ describe("NewsRotator 자동 갱신", () => {
     expect(jest.getTimerCount()).toBe(0);
   });
 });
+
+// 이슈 #63: 발행일은 실행 시간대와 무관하게 KST 날짜로 표시
+// TZ=UTC / TZ=America/Los_Angeles 로 실행해도 같은 결과가 나와야 함
+describe("NewsRotator 발행일 KST 표시", () => {
+  function one(overrides: Partial<StartupNews>): StartupNews[] {
+    return [{ ...makeNews(1)[0], ...overrides }];
+  }
+
+  function metaLine(): HTMLElement {
+    // 카드 마지막 div(언론사 · 날짜 줄)
+    const link = screen.getByRole("link");
+    return link.lastElementChild as HTMLElement;
+  }
+
+  it("KST 07:00 발행(UTC 전날 22:00)은 KST 날짜로 표시", () => {
+    render(
+      <NewsRotator news={one({ press: "테스트일보", publishedAt: "2026-11-04T22:00:00+00:00" })} />
+    );
+    expect(metaLine().textContent).toBe("테스트일보·2026.11.05");
+    expect(screen.queryByText("2026.11.04")).toBeNull();
+  });
+
+  it("Z 형식도 같은 결과", () => {
+    render(<NewsRotator news={one({ press: "테스트일보", publishedAt: "2026-11-04T22:00:00Z" })} />);
+    expect(screen.getByText("2026.11.05")).toBeInTheDocument();
+  });
+
+  it("해석할 수 없는 publishedAt이면 구분점과 날짜 모두 없음", () => {
+    render(<NewsRotator news={one({ press: "테스트일보", publishedAt: "not-a-date" })} />);
+    const line = metaLine();
+    expect(line.textContent).toBe("테스트일보");
+    expect(line.children).toHaveLength(1);
+    expect(screen.queryByText("·")).toBeNull();
+    expect(line.textContent).not.toContain("NaN");
+  });
+
+  it("빈 publishedAt도 구분점과 날짜 없음", () => {
+    render(<NewsRotator news={one({ press: "테스트일보", publishedAt: "" })} />);
+    expect(metaLine().textContent).toBe("테스트일보");
+    expect(screen.queryByText("·")).toBeNull();
+  });
+
+  it("press가 없으면 구분점 없이 날짜만", () => {
+    render(<NewsRotator news={one({ press: null, publishedAt: "2026-11-04T22:00:00Z" })} />);
+    const line = metaLine();
+    expect(line.textContent).toBe("2026.11.05");
+    expect(line.children).toHaveLength(1);
+    expect(screen.queryByText("·")).toBeNull();
+  });
+});

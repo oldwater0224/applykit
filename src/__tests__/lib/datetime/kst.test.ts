@@ -1,6 +1,8 @@
 import {
   formatDeadlineKst,
   formatKstDate,
+  formatKstYmd,
+  formatKstYmdFromString,
   hasTimeZone,
   isValidDateTimeString,
   isoToKstLocalInput,
@@ -215,5 +217,58 @@ describe("formatKstDate / formatDeadlineKst", () => {
     expect(formatDeadlineKst("2026-10-20T23:30")).toBe("2026. 10. 20.");
     expect(formatDeadlineKst("2026-10-20T15:30:00+00:00")).toBe("2026. 10. 21.");
     expect(formatDeadlineKst(null)).toBe("");
+  });
+});
+
+describe("formatKstYmd / formatKstYmdFromString", () => {
+  it("KST 날짜를 'YYYY.MM.DD'(두 자리 채움)로 표시", () => {
+    expect(formatKstYmd(Date.parse("2026-01-05T12:00:00+09:00"))).toBe("2026.01.05");
+    expect(formatKstYmd(Date.parse("2026-11-20T12:00:00+09:00"))).toBe("2026.11.20");
+  });
+
+  it("KST 자정 경계: UTC 14:59:59는 그날, UTC 15:00:00은 다음날", () => {
+    expect(formatKstYmdFromString("2026-11-04T14:59:59Z")).toBe("2026.11.04");
+    expect(formatKstYmdFromString("2026-11-04T14:59:59.999Z")).toBe("2026.11.04");
+    expect(formatKstYmdFromString("2026-11-04T15:00:00Z")).toBe("2026.11.05");
+    expect(formatKstYmdFromString("2026-11-04T15:00:00+00:00")).toBe("2026.11.05");
+  });
+
+  it("KST 08:59 / 09:00 (UTC 날짜가 바뀌는 시각)에도 KST 날짜 유지", () => {
+    // 이슈 #63: KST 07:00 발행 기사가 UTC 기준 전날로 보이던 문제
+    expect(formatKstYmdFromString("2026-11-04T22:00:00+00:00")).toBe("2026.11.05");
+    expect(formatKstYmdFromString("2026-11-04T23:59:00Z")).toBe("2026.11.05"); // KST 08:59
+    expect(formatKstYmdFromString("2026-11-05T00:00:00Z")).toBe("2026.11.05"); // KST 09:00
+    expect(formatKstYmdFromString("2026-11-05T08:59:00+09:00")).toBe("2026.11.05");
+    expect(formatKstYmdFromString("2026-11-05T09:00:00+09:00")).toBe("2026.11.05");
+  });
+
+  it("월말·연말·윤일 넘어감", () => {
+    expect(formatKstYmdFromString("2026-10-31T15:00:00Z")).toBe("2026.11.01");
+    expect(formatKstYmdFromString("2026-10-31T14:59:59Z")).toBe("2026.10.31");
+    expect(formatKstYmdFromString("2026-12-31T15:00:00Z")).toBe("2027.01.01");
+    expect(formatKstYmdFromString("2026-12-31T14:59:59Z")).toBe("2026.12.31");
+    expect(formatKstYmdFromString("2028-02-28T15:00:00Z")).toBe("2028.02.29");
+    expect(formatKstYmdFromString("2027-02-28T15:00:00Z")).toBe("2027.03.01");
+  });
+
+  it("다른 오프셋·날짜만·오프셋 없는 값도 parseKstDateTimeMs 규칙대로", () => {
+    // 네이버 pubDate(+0900)를 저장한 값과 같은 시각
+    expect(formatKstYmdFromString("2026-11-05T07:00:00+0900")).toBe("2026.11.05");
+    expect(formatKstYmdFromString("2026-11-04T17:00:00-05:00")).toBe("2026.11.05");
+    // 날짜만: KST 그날
+    expect(formatKstYmdFromString("2026-11-05")).toBe("2026.11.05");
+    // 오프셋 없는 일시: KST로 간주
+    expect(formatKstYmdFromString("2026-11-05T00:30")).toBe("2026.11.05");
+    expect(formatKstYmdFromString("2026-11-05 23:59:59")).toBe("2026.11.05");
+  });
+
+  it("잘못된 입력은 빈 문자열", () => {
+    expect(formatKstYmdFromString(null)).toBe("");
+    expect(formatKstYmdFromString(undefined)).toBe("");
+    expect(formatKstYmdFromString("")).toBe("");
+    expect(formatKstYmdFromString("   ")).toBe("");
+    expect(formatKstYmdFromString("not-a-date")).toBe("");
+    expect(formatKstYmd(Number.NaN)).toBe("");
+    expect(formatKstYmd(Number.POSITIVE_INFINITY)).toBe("");
   });
 });

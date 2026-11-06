@@ -91,6 +91,26 @@ export function formatDeadlineKst(value: string | null | undefined): string {
   return ms === null ? "" : formatKstDate(ms);
 }
 
+// KST 날짜 표시 'YYYY.MM.DD' (월·일 두 자리, 실행 환경 TZ와 무관). 유한하지 않은 값은 빈 문자열
+export function formatKstYmd(ms: number): string {
+  if (!Number.isFinite(ms)) return "";
+  const d = new Date(ms + KST_OFFSET_MS);
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${d.getUTCFullYear()}.${m}.${day}`;
+}
+
+/**
+ * 일시 문자열 → KST 날짜 표시 'YYYY.MM.DD'. 해석 불가면 빈 문자열
+ * - 해석 규칙은 parseKstDateTimeMs와 같음
+ *   (오프셋/Z 있는 ISO는 그 시각, 'YYYY-MM-DD'와 오프셋 없는 일시는 KST로 간주)
+ * - 예: '2026-11-04T22:00:00+00:00' → '2026.11.05' (KST 07:00)
+ */
+export function formatKstYmdFromString(value: string | null | undefined): string {
+  const ms = parseKstDateTimeMs(value);
+  return ms === null ? "" : formatKstYmd(ms);
+}
+
 /**
  * 형식과 달력 값(2월 30일, 25시 등)까지 엄격하게 검증.
  * Date.parse는 '2026-02-30'을 3월 2일로 넘겨버리므로 저장 전에는 이 검사를 거친다.

@@ -3,6 +3,7 @@ import {
   formatKstDate,
   formatKstYmd,
   formatKstYmdFromString,
+  getKstMonthRanges,
   hasTimeZone,
   isValidDateTimeString,
   isoToKstLocalInput,
@@ -270,5 +271,69 @@ describe("formatKstYmd / formatKstYmdFromString", () => {
     expect(formatKstYmdFromString("not-a-date")).toBe("");
     expect(formatKstYmd(Number.NaN)).toBe("");
     expect(formatKstYmd(Number.POSITIVE_INFINITY)).toBe("");
+  });
+});
+
+describe("getKstMonthRanges", () => {
+  const at = (iso: string) => getKstMonthRanges(Date.parse(iso));
+
+  it("12월이면 다음 달 경계가 다음 해 1월 1일 (전년 동월 범위가 뒤집히지 않음)", () => {
+    // 2026-12-15 12:00 KST
+    expect(at("2026-12-15T03:00:00Z")).toEqual({
+      monthStart: "2026-12-01",
+      monthEnd: "2027-01-01",
+      prevYearMonthStart: "2025-12-01",
+      prevYearMonthEnd: "2026-01-01",
+    });
+  });
+
+  it("매월 1일 KST 00:00 / 08:59 / 09:00 모두 이번 달 (UTC로는 전날 또는 같은 날)", () => {
+    const dec = {
+      monthStart: "2026-12-01",
+      monthEnd: "2027-01-01",
+      prevYearMonthStart: "2025-12-01",
+      prevYearMonthEnd: "2026-01-01",
+    };
+    expect(at("2026-11-30T15:00:00Z")).toEqual(dec); // 12-01 00:00 KST
+    expect(at("2026-11-30T23:59:59Z")).toEqual(dec); // 12-01 08:59:59 KST
+    expect(at("2026-12-01T00:00:00Z")).toEqual(dec); // 12-01 09:00 KST
+  });
+
+  it("말일 KST 23:59는 아직 그 달", () => {
+    // 2026-11-30 23:59:59.999 KST
+    expect(at("2026-11-30T14:59:59.999Z")).toEqual({
+      monthStart: "2026-11-01",
+      monthEnd: "2026-12-01",
+      prevYearMonthStart: "2025-11-01",
+      prevYearMonthEnd: "2025-12-01",
+    });
+  });
+
+  it("새해 1월 1일 KST 새벽 (UTC로는 전년 12월 31일)", () => {
+    // 2027-01-01 05:00 KST
+    expect(at("2026-12-31T20:00:00Z")).toEqual({
+      monthStart: "2027-01-01",
+      monthEnd: "2027-02-01",
+      prevYearMonthStart: "2026-01-01",
+      prevYearMonthEnd: "2026-02-01",
+    });
+  });
+
+  it("1월 중순", () => {
+    expect(at("2026-01-15T03:00:00Z")).toEqual({
+      monthStart: "2026-01-01",
+      monthEnd: "2026-02-01",
+      prevYearMonthStart: "2025-01-01",
+      prevYearMonthEnd: "2025-02-01",
+    });
+  });
+
+  it("평범한 달 (2026-11-08)", () => {
+    expect(at("2026-11-08T03:00:00Z")).toEqual({
+      monthStart: "2026-11-01",
+      monthEnd: "2026-12-01",
+      prevYearMonthStart: "2025-11-01",
+      prevYearMonthEnd: "2025-12-01",
+    });
   });
 });

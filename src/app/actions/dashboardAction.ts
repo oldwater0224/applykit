@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
+import { getKstMonthRanges } from "@/src/lib/datetime/kst";
 import type {
   DashboardStats,
   RoundNameCount,
@@ -37,12 +38,9 @@ interface RecentRoundRow {
 export async function getDashboardStats(): Promise<DashboardStats> {
   const supabase = await createClient();
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
-  const prevYearMonthStart = `${year - 1}-${String(month).padStart(2, "0")}-01`;
-  const prevYearMonthEnd = `${year - 1}-${String(month + 1 > 12 ? 1 : month + 1).padStart(2, "0")}-01`;
+  // KST 기준 이번 달·전년 동월 범위 (시작 포함, 끝 미포함)
+  const { monthStart, monthEnd, prevYearMonthStart, prevYearMonthEnd } =
+    getKstMonthRanges(Date.now());
 
   // 1) 전체 투자 건수 + 금액
   const { data: allRounds } = await supabase
@@ -55,7 +53,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   // 2) 이번 달 투자
   const monthlyData = rounds.filter(
-    (r) => r.announced_date && r.announced_date >= monthStart,
+    (r) =>
+      r.announced_date &&
+      r.announced_date >= monthStart &&
+      r.announced_date < monthEnd,
   );
   const monthlyRounds = monthlyData.length;
   const monthlyAmount = monthlyData.reduce(

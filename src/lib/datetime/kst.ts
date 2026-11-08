@@ -189,3 +189,35 @@ export function normalizeDeadlineForStorage(
   const iso = kstLocalInputToIso(s);
   return iso === null ? { ok: false } : { ok: true, value: iso };
 }
+
+export interface KstMonthRanges {
+  monthStart: string;
+  monthEnd: string;
+  prevYearMonthStart: string;
+  prevYearMonthEnd: string;
+}
+
+function monthKey(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, "0")}-01`;
+}
+
+/**
+ * 주어진 시각이 속한 KST 달의 범위와 전년 같은 달의 범위 ('YYYY-MM-01', 시작 포함·끝 미포함)
+ * - 'YYYY-MM-DD' 문자열과 사전순 비교로 거르는 용도
+ * - 12월이면 다음 달 경계는 다음 해 1월 1일
+ * - 예: 2026-12-01 KST 00:00 → monthStart '2026-12-01', monthEnd '2027-01-01',
+ *       prevYearMonthStart '2025-12-01', prevYearMonthEnd '2026-01-01'
+ */
+export function getKstMonthRanges(nowMs: number): KstMonthRanges {
+  const d = new Date(nowMs + KST_OFFSET_MS);
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth() + 1; // 1~12
+  const nextYear = month === 12 ? year + 1 : year;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  return {
+    monthStart: monthKey(year, month),
+    monthEnd: monthKey(nextYear, nextMonth),
+    prevYearMonthStart: monthKey(year - 1, month),
+    prevYearMonthEnd: monthKey(nextYear - 1, nextMonth),
+  };
+}

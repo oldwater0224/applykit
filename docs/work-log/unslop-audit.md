@@ -216,3 +216,31 @@
 **#58 관련 (이번 확인 중에 같이 본 것)**
 - 관리자 공고 관리에서 "2026 게임 스타트업 지원" 마감이 06.18 09:21로 나오는 것을 확인했다
 - 지원자 `/programs`에서 두 공고 모두 "접수 마감" 배지가 나오는 것을 확인했다
+
+## 5단계: 모션 정리 (사용자 결정으로 건너뜀)
+
+다음 항목은 그대로 남아 있다: `transition-all`, hover 그림자와 translate, JS onMouseEnter 테두리, 뉴스 카드 hover 이동(명세 99행).
+
+## 6단계: 로그인·회원가입 (검증 완료)
+
+| 담당 | 결과 |
+|---|---|
+| ui-builder | login과 signup을 어두운 패널 카드로 바꿨다(card-bg, hairline, rounded-xl, p-6/sm:p-8). 제목은 PAGE_TITLE_CLASS를 쓴다. 입력칸은 navy-800 바탕이고 포커스 때 brand 테두리와 링이 나온다. 모바일 입력 글자는 16px로 iOS 자동 확대를 막는다. 주 버튼은 brand-600이고 hover 때 brand-700이 된다. 에러는 danger 톤이다. globals.css에 `.input-autofill-dark` 규칙을 넣었다 |
+| logic-builder | 바꿀 것 없음. 인증 흐름이 마크업에 의존하는 지점을 정리했다: FormData 키, hidden redirect, Suspense, `AuthState`. 검증 체크리스트를 냈다 |
+| debugger | tsc 통과, lint는 기존 경고 1개, test 264/264, build 26/26. 체크리스트 11개를 모두 통과했다. auth.ts와 proxy.ts의 diff는 비어 있다. 수정한 파일 없음 |
+| 메인 | 브라우저로 `/signup`을 확인했다 |
+
+**대비**
+- 제목: 15.8
+- 라벨: 11.7
+- 입력 글자: 14.1
+- placeholder: 6.0
+- 에러: 8.3
+- 링크(brand-500): 4.71
+- 버튼(흰 글자/brand-600): 5.17
+
+**남은 것 / 별건**
+- 회원가입 비밀번호 길이: UI의 minLength는 8인데 서버(auth.ts:33)는 6자부터 받는다. Supabase 기본값도 6일 가능성이 크다. 브라우저 검증을 우회하면 6자 비밀번호로 가입할 수 있다. logic-builder는 8로 맞추자고 의견을 냈다. 이 작업은 인증 로직 변경이라 사용자 승인이 필요하다
+- 에러 영역에 `role="alert"`가 없다
+- 앱의 다른 곳에 `hover:bg-(--brand-500)` 버튼이 있다. 흰 글자 대비가 3.68:1이다
+- autofill은 실제 브라우저에서 자동완성으로 확인해야 한다

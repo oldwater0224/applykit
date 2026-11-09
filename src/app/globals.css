@@ -143,6 +143,24 @@
   }
 }
 
+/* 어두운 입력칸 autofill (login/signup)
+   브라우저가 자동완성 때 칠하는 흰/노란 배경을 입력 표면(navy-800)으로 덮는다.
+   레이어 밖 규칙이라 Tailwind ring(box-shadow)을 이기므로 포커스 링을 같이 그린다 */
+.input-autofill-dark:-webkit-autofill,
+.input-autofill-dark:-webkit-autofill:hover {
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+  box-shadow: inset 0 0 0 1000px var(--navy-800);
+}
+
+.input-autofill-dark:-webkit-autofill:focus-visible {
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+  box-shadow:
+    inset 0 0 0 1000px var(--navy-800),
+    0 0 0 2px var(--dash-focus-ring);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

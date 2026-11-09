@@ -36,9 +36,9 @@ export default function FundingTimeline({
     return (
       <div
         className="flex h-32 items-center justify-center rounded-lg"
-        style={{ borderColor: "var(--gray-300)" }}
+        style={{ borderColor: "var(--hairline-strong)" }}
       >
-        <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+        <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
           등록된 투자 이력이 없습니다
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function FundingTimeline({
     <div className="relative">
       <div
         className="absolute left-1.75 top-2 bottom-2 w-px"
-        style={{ backgroundColor: "var(--gray-200)" }}
+        style={{ backgroundColor: "var(--hairline-strong)" }}
       />
 
       <div className="space-y-1">
@@ -77,15 +77,15 @@ export default function FundingTimeline({
               {/* 날짜 */}
               <span
                 className="w-16 shrink-0 text-xs sm:text-[11px] tabular-nums"
-                style={{ color: "var(--gray-100)" }}
+                style={{ color: "var(--text-muted)" }}
               >
                 {formatDate(round.announced_date)}
               </span>
 
               {/* 라운드 */}
               <span
-                className="inline-flex w-20 shrink-0 items-center gap-1 text-[12px] font-semibold"
-                style={{ color: "var(--gray-400)" }}
+                className="inline-flex w-20 shrink-0 items-center gap-1 text-[12px] font-medium"
+                style={{ color: "var(--text-primary)" }}
               >
                 <span
                   className="inline-block size-1.5 rounded-full"
@@ -96,8 +96,8 @@ export default function FundingTimeline({
 
               {/* 금액 */}
               <span
-                className="text-[13px] font-bold tabular-nums"
-                style={{ color: "var(--gray-500)" }}
+                className="text-[13px] font-semibold tabular-nums"
+                style={{ color: "var(--text-primary)" }}
               >
                 {formatAmount(round.amount)}
               </span>

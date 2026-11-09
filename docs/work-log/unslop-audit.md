@@ -104,3 +104,46 @@
 - `gnb.tsx:231` 검색 스피너 버그(기존): 인라인 borderColor가 `border-t-transparent`를 덮는다. 3단계에서 GNB를 다룰 때 함께 고친다
 - `--card-shadow`와 `--card-hover-shadow`는 5단계에서 정리한다
 - 별건: `auth.ts:33`은 비밀번호를 6자 이상으로 검사하는데 `signup/page.tsx:71`은 `minLength={8}`이다. 이번 범위가 아니다
+
+## 2단계: 제목·굵기·텍스트 색 토큰 (검증 완료)
+
+| 담당 | 결과 |
+|---|---|
+| ui-builder | 파일 41개를 수정하고 `src/components/layout/pageTitle.tsx`를 새로 만들었다 (+501/−553) |
+| logic-builder | 바꿀 파일 없음. 피해야 할 문자열 목록을 ui-builder에게 넘겼다: NewsRotator 구조, "전체" value, 서버 메시지 출력부 |
+| debugger | tsc 통과, lint는 기존 경고 1개, test 261/261, build 26/26. diff를 검토한 결과 회귀 없음: 색 배경 위 글자, 로직 값, 정의되지 않은 변수, 서버/클라 경계를 확인했다. 수정한 파일 0개 |
+| 메인 | 브라우저에서 `/`와 `/investors`를 확인했다. eyebrow가 빠졌고 제목이 통일됐다 |
+
+**변경**
+- `PageTitle` 컴포넌트와 `PAGE_TITLE_CLASS`/`PAGE_DESCRIPTION_CLASS` 상수를 만들었다
+  - 제목 스타일: 20px, sm 22px, 굵기 600, primary 색
+  - 레이아웃이 화면마다 다른 곳은 상수만 쓴다. 컴포넌트에 props가 계속 늘어나지 않게 하려는 것이다
+- 영문 eyebrow 4개를 지웠다. 한글 제목과 같은 말을 반복했다
+- `font-bold`를 37곳에서 2곳으로 줄였다. 남은 2곳은 워드마크다. 나머지 기준:
+  - 페이지 제목은 600
+  - 섹션·카드 제목은 500
+  - 큰 수치는 600 + tabular-nums
+- 11px 미만 글자를 모두 11px로 올렸다. 차트 tick도 포함이다
+- uppercase와 tracking을 0곳으로 만들었다. sidebar의 "ADMIN" 배지는 조용한 텍스트 "관리자"로 바꿨다
+- 텍스트 색
+  - `#fff`와 gray 계열 글자를 역할에 맞는 토큰으로 바꿨다 (약 150줄)
+  - 색 배경 위의 흰 글자는 그대로 뒀다
+- 밝은 테두리를 `--hairline`(구분선, 격자)과 `--hairline-strong`(드롭다운, 축, 칩)으로 바꿨다
+- 문구
+  - placeholder 끝의 "..." 4곳을 지웠다
+  - 한 문장짜리 빈 상태·검증·대체 문구에서 마침표 약 45곳을 지웠다
+  - 여러 문장으로 된 안내와 서버 메시지는 그대로 뒀다
+
+**남긴 것**
+- programsContent의 에러 문구: 원인과 관계없이 항상 로그인 안내가 나온다. 별건으로 보고한다
+- 서버 메시지는 마침표가 있고 UI 문구는 없어서 섞여 있다
+- 진행 중 라벨 "로딩 중..." 등
+- 관리자 셸의 semibold
+
+**다음 단계로 넘긴 것**
+- 4단계 배지
+  - 리드 배지가 amber 위 흰 글자라 대비가 약 2:1이다
+  - investors 유형 색 `text-*-700`
+  - GNB S/V 타일이 밝다
+  - statusBadge muted
+- 칩 테두리가 hairline으로 바뀌어 대비가 약해졌다. 4단계에서 칩·배지와 함께 다시 본다

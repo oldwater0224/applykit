@@ -67,7 +67,7 @@ function ArchiveSearch({ initialQuery }: { initialQuery: string }) {
           role="alert"
           className="rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
         >
-          {error instanceof Error ? error.message : "검색에 실패했습니다."}
+          {error instanceof Error ? error.message : "검색에 실패했습니다"}
         </div>
       ) : (
         <DashboardPanel
@@ -111,8 +111,8 @@ function ArchiveSearch({ initialQuery }: { initialQuery: string }) {
             minWidth="600px"
             emptyMessage={
               debouncedQuery
-                ? `"${debouncedQuery}"에 해당하는 심사 이력이 없습니다.`
-                : "아직 심사한 지원서가 없습니다."
+                ? `"${debouncedQuery}"에 해당하는 심사 이력이 없습니다`
+                : "아직 심사한 지원서가 없습니다"
             }
           />
         </DashboardPanel>

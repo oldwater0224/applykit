@@ -74,7 +74,7 @@ export function DataTable<T>({
   caption,
   loading = false,
   skeletonRows = 5,
-  emptyMessage = "표시할 데이터가 없습니다.",
+  emptyMessage = "표시할 데이터가 없습니다",
   minWidth = "560px",
   density = "default",
   className,

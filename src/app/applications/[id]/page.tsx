@@ -7,6 +7,7 @@ import { useApplicationFiles } from '@/src/hooks/useApplicationFiles';
 import { ApplicationReadOnlyView } from '@/src/components/application/applicationReadOnlyView';
 import { APPLICATION_STATUS_LABEL, APPLICATION_STATUS_STYLE } from '@/src/types/applications';
 import { FormSchema } from '@/src/types/form';
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export default function ApplicationDetailPage() {
   const params = useParams();
@@ -24,7 +25,7 @@ export default function ApplicationDetailPage() {
   if (isAppLoading || isFilesLoading) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-400)" }}>
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--text-muted)" }}>
           로딩 중...
         </div>
       </div>
@@ -35,7 +36,7 @@ export default function ApplicationDetailPage() {
     return (
       <div className="min-h-screen p-8">
         <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--accent-rose)" }}>
-          지원서를 찾을 수 없습니다.
+          지원서를 찾을 수 없습니다
         </div>
       </div>
     );
@@ -46,8 +47,8 @@ export default function ApplicationDetailPage() {
   if (!program) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-500)" }}>
-          이 지원서가 속한 공고가 삭제되었습니다.
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--text-secondary)" }}>
+          이 지원서가 속한 공고가 삭제되었습니다
         </div>
       </div>
     );
@@ -65,17 +66,17 @@ export default function ApplicationDetailPage() {
           <Link
             href="/applications"
             className="text-sm transition"
-            style={{ color: "var(--gray-400)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             ← 내 지원서 목록
           </Link>
           <div className="mt-2 flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate" style={{ color: "var(--gray-100)" }}>
+              <h1 className={`${PAGE_TITLE_CLASS} truncate`}>
                 {program.title}
               </h1>
               {application.submitted_at && (
-                <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
+                <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
                   제출일:{' '}
                   {new Date(application.submitted_at).toLocaleString('ko-KR')}
                 </p>

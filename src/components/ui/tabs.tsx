@@ -33,14 +33,14 @@ export function TabList({
           onClick={() => onChange(tab.id)}
           className="relative px-3 py-2 text-[12px] font-medium transition-colors"
           style={{
-            color: activeTab === tab.id ? "var(--gray-100)" : "var(--gray-400)",
+            color: activeTab === tab.id ? "var(--text-primary)" : "var(--text-muted)",
           }}
         >
           {tab.label}
           {tab.count !== undefined && (
             <span
-              className="ml-1 text-xs sm:text-[10px]"
-              style={{ color: "var(--gray-400)" }}
+              className="ml-1 text-xs sm:text-[11px] tabular-nums"
+              style={{ color: "var(--text-muted)" }}
             >
               {tab.count}
             </span>

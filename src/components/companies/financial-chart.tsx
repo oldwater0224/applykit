@@ -41,15 +41,15 @@ export default function FinancialChart({
           data={chartData}
           margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--gray-100)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--hairline)" />
           <XAxis
             dataKey="year"
-            tick={{ fontSize: 11, fill: "var(--gray-400)"}}
-            axisLine={{ stroke: "var(--gray-200)" }}
+            tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+            axisLine={{ stroke: "var(--hairline-strong)" }}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "var(--gray-400)" }}
+            tick={{ fontSize: 11, fill: "var(--text-muted)" }}
             tickFormatter={formatBillionShort}
             width={55}
             axisLine={false}
@@ -59,11 +59,11 @@ export default function FinancialChart({
             formatter={(value) => [formatBillionShort(Number(value)), undefined]}
             cursor={false}
            // labelStyle == rechart-tooltip-label 요소에 적용
-           labelStyle={{color : "var(--gray-100)"}}
+           labelStyle={{ color: "var(--text-primary)" }}
            // contentStyle == Tooltip 컨테이너 전체 스타일
             contentStyle={{
               borderRadius: "6px",
-              border: "1px solid var(--gray-200)",
+              border: "1px solid var(--hairline-strong)",
               fontSize: "12px",
               backgroundColor: "var(--card-bg)",
               boxShadow: "var(--card-hover-shadow)",

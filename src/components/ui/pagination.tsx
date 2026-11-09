@@ -57,7 +57,7 @@ export default function Pagination(props: PaginationProps) {
         onClick={() => handlePage(activePage - 1)}
         disabled={activePage <= 1}
         className="rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
-        style={{ color: "var(--gray-500)" }}
+        style={{ color: "var(--text-muted)" }}
       >
         ← 이전
       </button>
@@ -69,7 +69,7 @@ export default function Pagination(props: PaginationProps) {
           className="min-w-7 rounded px-1.5 py-1 text-[12px] font-medium transition hover: cursor-pointer"
           style={{
             backgroundColor: p === activePage ? "var(--navy-900)" : "transparent",
-            color: p === activePage ? "var(--gray-100)" : "var(--gray-500)",
+            color: p === activePage ? "var(--text-primary)" : "var(--text-muted)",
           }}
         >
           {p}
@@ -80,7 +80,7 @@ export default function Pagination(props: PaginationProps) {
         onClick={() => handlePage(activePage + 1)}
         disabled={activePage >= totalPages}
         className="rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
-        style={{ color: "var(--gray-500)" }}
+        style={{ color: "var(--text-muted)" }}
       >
         다음 →
       </button>

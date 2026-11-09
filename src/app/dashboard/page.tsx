@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useAdminDashboard } from "@/src/hooks/useAdminDashboard";
 import type {
@@ -97,10 +98,10 @@ function PageIntro({
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
-        <h1 className="text-[18px] font-bold tracking-tight text-(--dash-text)">
+        <h1 className={PAGE_TITLE_CLASS}>
           운영 현황
         </h1>
-        <p className="mt-0.5 text-[12px] text-(--dash-text-subtle)">
+        <p className="mt-0.5 text-[12px] text-(--dash-text-muted)">
           공고·접수·심사 지표 (KST 기준)
           {generatedAt && (
             <>
@@ -145,7 +146,7 @@ function ErrorState({
       className="flex flex-col items-center gap-3 rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-12 text-center"
     >
       <p className="text-[14px] font-semibold text-(--dash-text)">
-        대시보드 데이터를 불러오지 못했습니다.
+        대시보드 데이터를 불러오지 못했습니다
       </p>
       <p className="max-w-md text-[12px] break-keep text-(--dash-text-muted)">
         {message}
@@ -250,7 +251,7 @@ function DashboardBody({
             <ChartSkeleton />
           ) : last30Total === 0 ? (
             <div className="flex h-[220px] items-center justify-center text-[13px] text-(--dash-text-muted)">
-              최근 30일 동안 제출된 지원서가 없습니다.
+              최근 30일 동안 제출된 지원서가 없습니다
             </div>
           ) : (
             <ApplicationTrendChart data={daily} />
@@ -274,7 +275,7 @@ function DashboardBody({
             loading={loading}
             skeletonRows={4}
             minWidth="360px"
-            emptyMessage="7일 이내 마감되는 모집 중 공고가 없습니다."
+            emptyMessage="7일 이내 마감되는 모집 중 공고가 없습니다"
           />
         </DashboardPanel>
       </div>
@@ -296,7 +297,7 @@ function DashboardBody({
           }
           loading={loading}
           minWidth="640px"
-          emptyMessage="아직 접수된 지원서가 없습니다."
+          emptyMessage="아직 접수된 지원서가 없습니다"
         />
       </DashboardPanel>
 

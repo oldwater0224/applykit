@@ -30,8 +30,8 @@ export function ApplicationsTable({
         className="rounded-lg border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <p className="text-sm" style={{ color: "var(--gray-500)" }}>
-          아직 접수된 지원서가 없습니다.
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          아직 접수된 지원서가 없습니다
         </p>
       </div>
     );
@@ -49,16 +49,16 @@ export function ApplicationsTable({
             style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-700)" }}
           >
             <tr>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 지원자
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 상태
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 제출일
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 작성 시작일
               </th>
             </tr>
@@ -103,14 +103,14 @@ function ApplicationRow({
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-200)" }}
+          style={{ color: "var(--text-primary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
           {companyName ? (
             <span className="font-medium">{displayName}</span>
           ) : (
-            <span className="font-mono text-xs" style={{ color: "var(--gray-500)" }}>
+            <span className="font-mono text-xs" style={{ color: "var(--text-muted)" }}>
               {displayName}
             </span>
           )}
@@ -134,7 +134,7 @@ function ApplicationRow({
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
@@ -147,7 +147,7 @@ function ApplicationRow({
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >

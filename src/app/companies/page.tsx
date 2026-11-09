@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import type { Company } from "@/src/types/company";
 import Pagination from "@/src/components/ui/pagination";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 
 const CORP_CLS_OPTIONS = [
   { value: "전체", label: "전체" },
@@ -85,23 +86,11 @@ export default function CompaniesPage() {
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       {/* 헤더 */}
-      <div className="mb-5">
-        <p
-          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
-          style={{ color: "var(--gray-400)" }}
-        >
-          Startups
-        </p>
-        <h1
-          className="mt-1 text-[22px] font-bold tracking-tight"
-          style={{ color: "#fff" }}
-        >
-          스타트업
-        </h1>
-        <p className="mt-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
-          총 {totalCount.toLocaleString()}개 기업
-        </p>
-      </div>
+      <PageTitle
+        className="mb-5"
+        title="스타트업"
+        description={`총 ${totalCount.toLocaleString()}개 기업`}
+      />
 
       {/* 검색 + 정렬 */}
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -119,12 +108,12 @@ export default function CompaniesPage() {
                 setPage(1);
               }
             }}
-            placeholder="기업명으로 검색..."
-            className="min-w-0 flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none  focus:ring-2 text-gray-100  focus:ring-blue-500"
+            placeholder="기업명으로 검색"
+            className="min-w-0 flex-1 rounded-md border px-3 py-1.5 text-[13px] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             style={{
               backgroundColor: "var(--navy-800)",
               borderColor: "var(--navy-600)",
-              color: "var(--gray-100)",
+              color: "var(--text-primary)",
             }}
           />
           <button
@@ -142,7 +131,7 @@ export default function CompaniesPage() {
             resetPage();
           }}
           className="rounded-md border px-1 py-1.5  text-[12px] outline-none"
-          style={{ borderColor: "var(--gray-200)", color: "var(--gray-500)" }}
+          style={{ borderColor: "var(--hairline-strong)", color: "var(--text-secondary)" }}
         >
           {SORT_OPTIONS.map(({ value, label }) => (
             <option key={value} value={value}>
@@ -174,7 +163,7 @@ export default function CompaniesPage() {
               }}
             >
               {s.name}{" "}
-              <span style={{ color: "var(--gray-400)" }}>({s.count})</span>
+              <span style={{ color: "var(--text-muted)" }}>({s.count})</span>
             </Chip>
           ))}
         </FilterRow>
@@ -228,7 +217,7 @@ export default function CompaniesPage() {
       )}
       {isError && (
         <div className="py-20 text-center text-[13px] text-red-500">
-          데이터를 불러오는 중 오류가 발생했습니다.
+          데이터를 불러오는 중 오류가 발생했습니다
         </div>
       )}
 
@@ -238,12 +227,12 @@ export default function CompaniesPage() {
           {companies.length === 0 ? (
             <div
               className="flex h-48 items-center justify-center rounded-lg border border-dashed"
-              style={{ borderColor: "var(--gray-300)" }}
+              style={{ borderColor: "var(--hairline-strong)" }}
             >
-              <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+              <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
                 {search
-                  ? `"${search}" 검색 결과가 없습니다.`
-                  : "조건에 맞는 기업이 없습니다."}
+                  ? `"${search}" 검색 결과가 없습니다`
+                  : "조건에 맞는 기업이 없습니다"}
               </p>
             </div>
           ) : (
@@ -297,15 +286,15 @@ function CompanyCard({ company }: { company: Company }) {
       <div className="mb-2 flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <h3
-            className="truncate text-[14px] font-semibold"
-            style={{ color: "var(--gray-100)" }}
+            className="truncate text-[14px] font-medium"
+            style={{ color: "var(--text-primary)" }}
           >
             {company.corp_name}
           </h3>
           {company.corp_name_eng && (
             <p
               className="mt-0.5 truncate text-xs sm:text-[11px]"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               {company.corp_name_eng}
             </p>
@@ -313,7 +302,7 @@ function CompanyCard({ company }: { company: Company }) {
         </div>
         {company.sector && (
           <span
-            className="ml-2 shrink-0 rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
+            className="ml-2 shrink-0 rounded px-2 py-0.5 text-xs sm:text-[11px] font-medium"
             style={{ backgroundColor: "", color: "var(--brand-700)" }}
           >
             {company.sector}
@@ -323,13 +312,13 @@ function CompanyCard({ company }: { company: Company }) {
 
       <div
         className="space-y-1 text-[12px]"
-        style={{ color: "var(--gray-500)" }}
+        style={{ color: "var(--text-secondary)" }}
       >
         {company.ceo_name && (
           <div className="flex gap-2">
             <span
               className="w-10 shrink-0"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               대표
             </span>
@@ -340,7 +329,7 @@ function CompanyCard({ company }: { company: Company }) {
           <div className="flex gap-2">
             <span
               className="w-10 shrink-0"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               설립
             </span>
@@ -351,10 +340,10 @@ function CompanyCard({ company }: { company: Company }) {
 
       <div
         className="mt-3 flex items-center gap-2 border-t pt-2.5"
-        style={{ borderColor: "var(--gray-100)" }}
+        style={{ borderColor: "var(--hairline)" }}
       >
         <span
-          className="inline-flex items-center gap-1 text-xs sm:text-[10px] font-medium"
+          className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-medium"
           style={{ color: clsColor }}
         >
           <span
@@ -379,7 +368,7 @@ function FilterRow({
     <div className="flex items-start gap-2">
       <span
         className="mt-1 w-14 shrink-0 text-xs sm:text-[11px] font-medium"
-        style={{ color: "var(--gray-400)" }}
+        style={{ color: "var(--text-muted)" }}
       >
         {label}
       </span>
@@ -405,8 +394,8 @@ function Chip({
         backgroundColor: active ? "var(--navy-900)" : "transparent",
         border: active
           ? "1px solid var(--brand-500)"
-          : "1px solid var(--gray-400)",
-        color: active ? "var(--gray-100)" : "var(--gray-400)",
+          : "1px solid var(--hairline-strong)",
+        color: active ? "var(--text-primary)" : "var(--text-muted)",
       }}
     >
       {children}

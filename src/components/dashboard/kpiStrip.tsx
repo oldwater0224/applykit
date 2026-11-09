@@ -103,13 +103,13 @@ function KpiCell({ item, loading }: { item: KpiItem; loading: boolean }) {
         <>
           <p
             className={cn(
-              "mt-1.5 text-[26px] leading-none font-bold tracking-tight tabular-nums",
+              "mt-1.5 text-[26px] leading-none font-semibold tabular-nums",
               VALUE_TONE[item.tone ?? "default"]
             )}
           >
             {formatted}
             {item.unit && (
-              <span className="ml-0.5 text-[14px] font-semibold text-(--dash-text-muted)">
+              <span className="ml-0.5 text-[14px] font-medium text-(--dash-text-muted)">
                 {item.unit}
               </span>
             )}

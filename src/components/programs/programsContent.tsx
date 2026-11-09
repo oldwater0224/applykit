@@ -15,6 +15,7 @@ import {
   DDAY_BADGE_STYLE,
   getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 
 export default function ProgramsContent() {
   const searchParams = useSearchParams();
@@ -35,17 +36,11 @@ export default function ProgramsContent() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
-      <div className="mb-6">
-        <h1
-          className="text-2xl font-bold"
-          style={{ color: "var(--gray-100)" }}
-        >
-          지원하기
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--gray-500)" }}>
-          스타트업 지원 프로그램에 지원하세요
-        </p>
-      </div>
+      <PageTitle
+        className="mb-6"
+        title="지원하기"
+        description="스타트업 지원 프로그램에 지원하세요"
+      />
 
       {/* 기업 상세에서 진입한 경우 안내 */}
       {companyParam && (
@@ -69,12 +64,12 @@ export default function ProgramsContent() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="프로그램명, 기관명으로 검색..."
+          placeholder="프로그램명, 기관명으로 검색"
           className="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
           style={{
             backgroundColor: "var(--navy-800)",
             borderColor: "var(--navy-600)",
-            color: "var(--gray-100)",
+            color: "var(--text-primary)",
           }}
         />
       </div>
@@ -107,10 +102,10 @@ export default function ProgramsContent() {
               style={{ borderColor: "var(--navy-600)" }}
             >
               <div className="text-center">
-                <p className="text-sm" style={{ color: "var(--gray-500)" }}>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                   {search
-                    ? `"${search}" 검색 결과가 없습니다.`
-                    : "진행 중인 공고가 없습니다."}
+                    ? `"${search}" 검색 결과가 없습니다`
+                    : "진행 중인 공고가 없습니다"}
                 </p>
               </div>
             </div>
@@ -177,15 +172,15 @@ function ProgramCard({
 
       {/* 기관명 */}
       {program.organizations && (
-        <p className="mb-1 text-xs" style={{ color: "var(--gray-500)" }}>
+        <p className="mb-1 text-xs" style={{ color: "var(--text-muted)" }}>
           {program.organizations.name}
         </p>
       )}
 
       {/* 제목 */}
       <h2
-        className="line-clamp-2 text-lg font-semibold"
-        style={{ color: "var(--gray-100)" }}
+        className="line-clamp-2 text-lg font-medium"
+        style={{ color: "var(--text-primary)" }}
       >
         {program.title}
       </h2>
@@ -194,7 +189,7 @@ function ProgramCard({
       {program.description && (
         <p
           className="mt-2 line-clamp-2 text-sm"
-          style={{ color: "var(--gray-500)" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           {program.description}
         </p>
@@ -202,7 +197,7 @@ function ProgramCard({
 
       {/* 마감일 */}
       {display.deadlineLabel && (
-        <p className="mt-3 text-xs" style={{ color: "var(--gray-500)" }}>
+        <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
           접수 마감: {display.deadlineLabel}
         </p>
       )}

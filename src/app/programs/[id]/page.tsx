@@ -15,6 +15,7 @@ import {
   type ProgramAvailabilityView,
 } from "@/src/components/programs/programAvailability";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export default function ProgramPublicDetailPage() {
   const params = useParams();
@@ -48,8 +49,8 @@ export default function ProgramPublicDetailPage() {
   if (programError || !program) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <p className="mb-4" style={{ color: "var(--gray-500)" }}>
-          공고를 찾을 수 없습니다.
+        <p className="mb-4" style={{ color: "var(--text-secondary)" }}>
+          공고를 찾을 수 없습니다
         </p>
         <Link
           href="/programs"
@@ -80,7 +81,7 @@ export default function ProgramPublicDetailPage() {
       <Link
         href="/programs"
         className="mb-6 inline-flex items-center text-sm transition"
-        style={{ color: "var(--gray-400)" }}
+        style={{ color: "var(--text-muted)" }}
       >
         ← 공고 목록
       </Link>
@@ -109,21 +110,21 @@ export default function ProgramPublicDetailPage() {
 
         {/* 기관명 */}
         {program.organizations && (
-          <p className="mb-1 text-sm" style={{ color: "var(--gray-500)" }}>
+          <p className="mb-1 text-sm" style={{ color: "var(--text-muted)" }}>
             {program.organizations.name}
           </p>
         )}
 
         {/* 제목 */}
-        <h1 className="text-2xl font-bold" style={{ color: "var(--gray-100)" }}>
+        <h1 className={PAGE_TITLE_CLASS}>
           {program.title}
         </h1>
 
         {/* 마감 정보 */}
         {display.deadlineLabel && (
           <div className="mt-4 flex items-center gap-3 text-sm">
-            <span style={{ color: "var(--gray-500)" }}>접수 마감:</span>
-            <span style={{ color: "var(--gray-100)" }}>
+            <span style={{ color: "var(--text-muted)" }}>접수 마감:</span>
+            <span style={{ color: "var(--text-primary)" }}>
               {display.deadlineLabel}
             </span>
           </div>
@@ -135,12 +136,12 @@ export default function ProgramPublicDetailPage() {
             className="mt-6 border-t pt-6"
             style={{ borderColor: "var(--navy-700)" }}
           >
-            <h2 className="mb-2 text-sm font-medium" style={{ color: "var(--gray-300)" }}>
+            <h2 className="mb-2 text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               공고 내용
             </h2>
             <p
               className="whitespace-pre-wrap wrap-break-word text-sm"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-secondary)" }}
             >
               {program.description}
             </p>
@@ -182,7 +183,7 @@ function ApplyButton({
     return (
       <div className="space-y-3">
         <p className="text-sm" style={{ color: "var(--accent-emerald)" }}>
-          이미 이 공고에 지원서를 제출하셨습니다.
+          이미 이 공고에 지원서를 제출하셨습니다
         </p>
         <Link
           href={`/applications/${existingApplication.id}`}
@@ -200,7 +201,7 @@ function ApplyButton({
     if (!canApply) {
       return (
         <div className="space-y-3">
-          <p className="text-sm" style={{ color: "var(--gray-400)" }}>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             작성 중인 지원서가 있지만 더 이상 작성할 수 없습니다.{" "}
             {!availability.availability.ok &&
               PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
@@ -218,7 +219,7 @@ function ApplyButton({
     return (
       <div className="space-y-3">
         <p className="text-sm" style={{ color: "var(--accent-amber)" }}>
-          작성 중인 지원서가 있습니다.
+          작성 중인 지원서가 있습니다
         </p>
         <button
           onClick={onApply}

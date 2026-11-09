@@ -8,7 +8,7 @@ import { isoToKstLocalInput } from "@/src/lib/datetime/kst";
 const modalInputStyle: React.CSSProperties = {
   backgroundColor: "var(--navy-800)",
   borderColor: "var(--navy-600)",
-  color: "var(--gray-100)",
+  color: "var(--text-primary)",
 };
 
 export function EditProgramModal() {
@@ -66,13 +66,13 @@ export function EditProgramModal() {
         className="rounded-lg w-full max-w-md p-6 border"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <h2 className="text-xl font-bold mb-4" style={{ color: "var(--gray-100)" }}>
+        <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
           공고 수정
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
               공고 제목 *
             </label>
             <input
@@ -87,7 +87,7 @@ export function EditProgramModal() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
               설명
             </label>
             <textarea
@@ -101,7 +101,7 @@ export function EditProgramModal() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
               마감일
             </label>
             <input
@@ -115,7 +115,7 @@ export function EditProgramModal() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
+            <label className="block text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
               상태
             </label>
             <select
@@ -142,7 +142,7 @@ export function EditProgramModal() {
               type="button"
               onClick={closeModal}
               className="px-4 py-2 border rounded-md transition"
-              style={{ borderColor: "var(--navy-600)", color: "var(--gray-300)" }}
+              style={{ borderColor: "var(--navy-600)", color: "var(--text-secondary)" }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >

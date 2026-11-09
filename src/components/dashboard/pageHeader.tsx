@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export function DashboardPageHeader({
   backHref,
@@ -27,21 +28,18 @@ export function DashboardPageHeader({
         <Link
           href={backHref}
           className="mb-1 inline-block text-xs sm:text-[11px] transition"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
         >
           {backLabel ?? "← 뒤로"}
         </Link>
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1
-            className="text-[18px] font-bold"
-            style={{ color: "var(--gray-100)" }}
-          >
+          <h1 className={PAGE_TITLE_CLASS}>
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-0.5 text-[12px]" style={{ color: "var(--gray-500)" }}>
+            <p className="mt-0.5 text-[12px]" style={{ color: "var(--text-secondary)" }}>
               {subtitle}
             </p>
           )}

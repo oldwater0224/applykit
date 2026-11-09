@@ -3,6 +3,7 @@ import { getInvestments } from "@/src/app/actions/investmentAction";
 import InvestmentTabs from "@/src/components/investments/investment-tabs";
 import InvestmentTable from "@/src/components/investments/investment-table";
 import Pagination from "@/src/components/ui/pagination";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 import { createClient } from "@/src/lib/supabase/server";
 import { normalizeRoundName } from "@/src/types/funding";
 
@@ -89,23 +90,10 @@ export default async function InvestmentsPage({
   
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
-      <div className="mb-1">
-        <p
-          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
-          style={{ color: "var(--gray-400)" }}
-        >
-          Investment & M&A
-        </p>
-        <h1
-          className="mt-1 text-[22px] font-bold tracking-tight"
-          style={{ color: "#fff" }}
-        >
-          투자/M&A
-        </h1>
-        <p className="mt-1 text-[12px]" style={{ color: "var(--gray-500)" }}>
-          국내 스타트업 투자 라운드 {total.toLocaleString()}건
-        </p>
-      </div>
+      <PageTitle
+        title="투자/M&A"
+        description={`국내 스타트업 투자 라운드 ${total.toLocaleString()}건`}
+      />
 
       <div className="mb-4 mt-4">
         <Suspense fallback={null}>

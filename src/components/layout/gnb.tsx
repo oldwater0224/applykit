@@ -143,7 +143,7 @@ export default function GNB() {
       <nav className="mx-auto flex h-12 max-w-(--max-width) items-center justify-between px-4 lg:px-6">
         {/* 로고 */}
         <Link href="/" className="mr-8 flex items-center gap-1.5">
-          <span className="text-base font-bold tracking-tight text-white">
+          <span className="text-base font-bold text-(--text-primary)">
             Apply<span style={{ color: "var(--brand-500)" }}>Kit</span>
           </span>
         </Link>
@@ -156,7 +156,7 @@ export default function GNB() {
                 href={href}
                 className="relative px-3 py-1.5 text-[13px] font-medium transition-colors"
                 style={{
-                  color: isActive(href) ? "#ffffff" : "var(--gray-400)",
+                  color: isActive(href) ? "var(--text-primary)" : "var(--text-muted)",
                 }}
               >
                 {label}
@@ -185,7 +185,7 @@ export default function GNB() {
                 backgroundColor: searchOpen
                   ? "var(--navy-700)"
                   : "var(--navy-800)",
-                color: "var(--gray-400)",
+                color: "var(--text-muted)",
                 border: searchOpen
                   ? "1px solid var(--navy-600)"
                   : "1px solid var(--navy-700)",
@@ -199,16 +199,16 @@ export default function GNB() {
                   value={searchQuery}
                   onChange={(e) => handleSearchInput(e.target.value)}
                   placeholder="기업, 투자자 검색"
-                  className="w-full bg-transparent text-[12px] text-white outline-none placeholder:text-gray-500"
+                  className="w-full bg-transparent text-[12px] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
                 />
               ) : (
                 <>
                   <span>통합검색</span>
                   <kbd
-                    className="ml-auto rounded px-1 py-0.5 text-xs sm:text-[10px]"
+                    className="ml-auto rounded px-1 py-0.5 text-xs sm:text-[11px]"
                     style={{
                       backgroundColor: "var(--navy-700)",
-                      color: "var(--gray-500)",
+                      color: "var(--text-muted)",
                     }}
                   >
                     ⌘K
@@ -223,7 +223,7 @@ export default function GNB() {
                 className="absolute right-0 top-9 w-80 overflow-hidden rounded-lg border shadow-xl"
                 style={{
                   backgroundColor: "var(--card-bg)",
-                  borderColor: "var(--gray-200)",
+                  borderColor: "var(--hairline-strong)",
                 }}
               >
                 {isSearching ? (
@@ -236,7 +236,7 @@ export default function GNB() {
                 ) : results.length === 0 ? (
                   <div
                     className="px-4 py-8 text-center text-[13px]"
-                    style={{ color: "var(--gray-400)" }}
+                    style={{ color: "var(--text-muted)" }}
                   >
                     검색 결과가 없습니다
                   </div>
@@ -246,7 +246,7 @@ export default function GNB() {
                       <>
                         <div
                           className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
-                          style={{ color: "var(--gray-400)" }}
+                          style={{ color: "var(--text-muted)" }}
                         >
                           스타트업
                         </div>
@@ -259,7 +259,7 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition "
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
+                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[11px] font-semibold"
                                 style={{
                                   backgroundColor: "var(--brand-50)",
                                   color: "var(--brand-600)",
@@ -270,14 +270,14 @@ export default function GNB() {
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-100)" }}
+                                  style={{ color: "var(--text-primary)" }}
                                 >
                                   {r.name}
                                 </p>
                                 {r.subtitle && (
                                   <p
                                     className="truncate text-xs sm:text-[11px]"
-                                    style={{ color: "var(--gray-400)" }}
+                                    style={{ color: "var(--text-muted)" }}
                                   >
                                     {r.subtitle}
                                   </p>
@@ -292,7 +292,7 @@ export default function GNB() {
                       <>
                         <div
                           className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
-                          style={{ color: "var(--gray-400)" }}
+                          style={{ color: "var(--text-muted)" }}
                         >
                           투자자
                         </div>
@@ -305,7 +305,7 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition"
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
+                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[11px] font-semibold"
                                 style={{
                                   backgroundColor: "#ecfdf5",
                                   color: "var(--accent-emerald)",
@@ -316,14 +316,14 @@ export default function GNB() {
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-100)" }}
+                                  style={{ color: "var(--text-primary)" }}
                                 >
                                   {r.name}
                                 </p>
                                 {r.subtitle && (
                                   <p
                                     className="truncate text-xs sm:text-[11px]"
-                                    style={{ color: "var(--gray-400)" }}
+                                    style={{ color: "var(--text-muted)" }}
                                   >
                                     {r.subtitle}
                                   </p>
@@ -355,7 +355,7 @@ export default function GNB() {
             <button
               onClick={handleLogout}
               className="rounded-md px-3 py-1 text-[12px] font-medium transition"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               로그아웃
             </button>
@@ -363,7 +363,7 @@ export default function GNB() {
             <Link
               href="/login"
               className="rounded-md px-3 py-1 text-[12px] font-medium transition"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               로그인
             </Link>
@@ -375,7 +375,7 @@ export default function GNB() {
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
           className="flex size-8 items-center justify-center rounded md:hidden"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
           aria-label="메뉴"
         >
           {mobileOpen ? <XIcon /> : <MenuIcon />}
@@ -396,8 +396,8 @@ export default function GNB() {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchInput(e.target.value)}
-              placeholder="기업, 투자자 검색..."
-              className="w-full rounded-md px-3 py-2 text-[13px] text-white outline-none placeholder:text-gray-500"
+              placeholder="기업, 투자자 검색"
+              className="w-full rounded-md px-3 py-2 text-[13px] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               style={{
                 backgroundColor: "var(--navy-800)",
                 border: "1px solid var(--navy-700)",
@@ -413,11 +413,11 @@ export default function GNB() {
                       setMobileOpen(false);
                     }}
                     className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px]"
-                    style={{ color: "var(--gray-300)" }}
+                    style={{ color: "var(--text-secondary)" }}
                   >
                     <span
-                      className="text-xs sm:text-[10px]"
-                      style={{ color: "var(--gray-500)" }}
+                      className="text-xs sm:text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
                     >
                       {r.type === "company" ? "기업" : "투자"}
                     </span>
@@ -436,7 +436,7 @@ export default function GNB() {
                   onClick={() => setMobileOpen(false)}
                   className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors"
                   style={{
-                    color: isActive(href) ? "#ffffff" : "var(--gray-400)",
+                    color: isActive(href) ? "var(--text-primary)" : "var(--text-muted)",
                     backgroundColor: isActive(href)
                       ? "var(--navy-800)"
                       : "transparent",

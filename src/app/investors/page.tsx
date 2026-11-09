@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useInvestors, useInvestorTypes } from "@/src/hooks/useInvestor";
 import Link from "next/link";
 import Pagination from "@/src/components/ui/pagination";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 
 // 투자자 유형 라벨
 const TYPE_LABELS: Record<string, string> = {
@@ -65,25 +66,11 @@ export default function InvestorsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
-      <div>
-        <p
-          className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
-          style={{ color: "var(--gray-400)" }}
-        >
-          Investors
-        </p>
-        <div className="mb-6">
-          <h1
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: "#fff" }}
-          >
-            투자자
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            VC · 액셀러레이터 · CVC {totalCount.toLocaleString()}곳
-          </p>
-        </div>
-      </div>
+      <PageTitle
+        className="mb-6"
+        title="투자자"
+        description={`VC · 액셀러레이터 · CVC ${totalCount.toLocaleString()}곳`}
+      />
 
       {/* 검색 */}
       <form onSubmit={handleSearch} className="mb-6 flex gap-2 sm:max-w-md">
@@ -97,12 +84,12 @@ export default function InvestorsPage() {
               setPage(1);
             }
           }}
-          placeholder="투자자명으로 검색..."
-          className="min-w-0 flex-1 rounded-lg border px-4 py-2 text-gray-100 text-[13px]  focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="투자자명으로 검색"
+          className="min-w-0 flex-1 rounded-lg border px-4 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-500"
           style={{
             backgroundColor: "var(--navy-800)",
             borderColor: "var(--navy-600)",
-            color: "var(--gray-100)",
+            color: "var(--text-primary)",
           }}
         />
         <button
@@ -129,8 +116,8 @@ export default function InvestorsPage() {
             border:
               type === "전체"
                 ? "1px solid var(--brand-500)"
-                : "1px solid var(--gray-400)",
-            color: type === "전체" ? "var(--gray-100)" : "var(--gray-400)",
+                : "1px solid var(--hairline-strong)",
+            color: type === "전체" ? "var(--text-primary)" : "var(--text-muted)",
           }}
         >
           전체
@@ -151,8 +138,8 @@ export default function InvestorsPage() {
               border:
                 type === t.name
                   ? "1px solid var(--brand-500)"
-                  : "1px solid var(--gray-400)",
-              color: type === t.name ? "var(--gray-100)" : "var(--gray-400)",
+                  : "1px solid var(--hairline-strong)",
+              color: type === t.name ? "var(--text-primary)" : "var(--text-muted)",
             }}
           >
             {getTypeLabel(t.name)} ({t.count})
@@ -170,7 +157,7 @@ export default function InvestorsPage() {
       {/* 에러 */}
       {isError && (
         <div className="py-20 text-center text-red-500">
-          데이터를 불러오는 중 오류가 발생했습니다.
+          데이터를 불러오는 중 오류가 발생했습니다
         </div>
       )}
 
@@ -178,11 +165,11 @@ export default function InvestorsPage() {
       {!isLoading && !isError && (
         <>
           {investors.length === 0 ? (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300">
-              <p className="text-sm text-gray-400">
+            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-(--hairline-strong)">
+              <p className="text-sm text-(--text-muted)">
                 {search
-                  ? `"${search}" 검색 결과가 없습니다.`
-                  : "등록된 투자자가 없습니다."}
+                  ? `"${search}" 검색 결과가 없습니다`
+                  : "등록된 투자자가 없습니다"}
               </p>
             </div>
           ) : (
@@ -191,10 +178,10 @@ export default function InvestorsPage() {
                 <Link
                   key={inv.id}
                   href={`/investors/${inv.id}`}
-                  className="block rounded-xl border  border-gray-200  p-5 transition-all hover:border-blue-300 hover:shadow-md"
+                  className="block rounded-xl border border-(--hairline) p-5 transition-all hover:border-blue-300 hover:shadow-md"
                 >
                   <div className="mb-3 flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-300">{inv.name}</h3>
+                    <h3 className="font-medium text-(--text-primary)">{inv.name}</h3>
                     {inv.investor_type && (
                       <span
                         className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium ${
@@ -208,17 +195,17 @@ export default function InvestorsPage() {
                   </div>
 
                   {inv.description && (
-                    <p className="mb-3 line-clamp-2 text-sm text-gray-500">
+                    <p className="mb-3 line-clamp-2 text-sm text-(--text-secondary)">
                       {inv.description}
                     </p>
                   )}
 
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
-                    <span className="text-gray-500">
+                  <div className="flex items-center justify-between border-t border-(--hairline) pt-3 text-sm">
+                    <span className="text-(--text-muted)">
                       투자 {inv.investmentCount}건
                     </span>
                     {inv.homepage_url && (
-                      <span className="truncate text-xs text-gray-400">
+                      <span className="truncate text-xs text-(--text-muted)">
                         {inv.homepage_url.replace(/^https?:\/\//, "")}
                       </span>
                     )}

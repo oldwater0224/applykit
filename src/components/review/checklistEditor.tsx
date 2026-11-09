@@ -15,7 +15,7 @@ interface ChecklistEditorProps {
 const editorInputStyle: React.CSSProperties = {
   backgroundColor: "var(--navy-800)",
   borderColor: "var(--navy-600)",
-  color: "var(--gray-100)",
+  color: "var(--text-primary)",
 };
 
 export function ChecklistEditor({ programId }: ChecklistEditorProps) {
@@ -51,22 +51,22 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
 
   function getValidationError(): string | null {
     if (items.length === 0) {
-      return "체크리스트 항목이 1개 이상 필요합니다.";
+      return "체크리스트 항목이 1개 이상 필요합니다";
     }
     if (items.some((i) => !i.label.trim())) {
-      return "모든 항목에 이름을 입력해주세요.";
+      return "모든 항목에 이름을 입력해주세요";
     }
     if (items.some((i) => i.max_score <= 0)) {
-      return "모든 항목의 배점은 1 이상이어야 합니다.";
+      return "모든 항목의 배점은 1 이상이어야 합니다";
     }
     if (passingScore < 0) {
-      return "합격 기준점은 0 이상이어야 합니다.";
+      return "합격 기준점은 0 이상이어야 합니다";
     }
     if (passingScore > maxTotal) {
-      return `합격 기준점(${passingScore})이 만점(${maxTotal})보다 큽니다.`;
+      return `합격 기준점(${passingScore})이 만점(${maxTotal})보다 큽니다`;
     }
     if (items.some((i) => i.max_score > 100)) {
-      return "한 항목의 배점은 100점 이하여야 합니다.";
+      return "한 항목의 배점은 100점 이하여야 합니다";
     }
     return null;
   }
@@ -91,7 +91,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
 
   if (isLoading) {
     return (
-      <div className="p-8 text-center" style={{ color: "var(--gray-400)" }}>
+      <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
         로딩 중...
       </div>
     );
@@ -103,11 +103,11 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <header>
-        <h2 className="text-lg font-semibold" style={{ color: "var(--gray-100)" }}>
+        <h2 className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>
           심사 체크리스트
         </h2>
-        <p className="text-sm mt-1" style={{ color: "var(--gray-400)" }}>
-          항목별 배점을 정하고, 합격 기준점을 설정하세요.
+        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+          항목별 배점을 정하고, 합격 기준점을 설정하세요
         </p>
       </header>
 
@@ -126,7 +126,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
         {items.length === 0 && (
           <div
             className="p-6 border border-dashed rounded-md text-sm text-center"
-            style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
+            style={{ borderColor: "var(--navy-600)", color: "var(--text-muted)" }}
           >
             아직 항목이 없습니다. 아래 버튼으로 항목을 추가하세요.
           </div>
@@ -137,7 +137,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
         type="button"
         onClick={handleAddItem}
         className="w-full py-2 border border-dashed rounded-md text-sm transition"
-        style={{ borderColor: "var(--navy-600)", color: "var(--gray-400)" }}
+        style={{ borderColor: "var(--navy-600)", color: "var(--text-muted)" }}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
       >
@@ -147,12 +147,12 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
       {/* 합격 기준점 + 만점 요약 */}
       <div className="border-t pt-4 space-y-3" style={{ borderColor: "var(--navy-700)" }}>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium" style={{ color: "var(--gray-300)" }}>만점</span>
-          <span className="text-sm" style={{ color: "var(--gray-200)" }}>{maxTotal}점</span>
+          <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>만점</span>
+          <span className="text-sm" style={{ color: "var(--text-primary)" }}>{maxTotal}점</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <label htmlFor="passing-score" className="text-sm font-medium" style={{ color: "var(--gray-300)" }}>
+          <label htmlFor="passing-score" className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
             합격 기준점
           </label>
           <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
               className="w-24 px-2 py-1 border rounded-md text-right"
               style={editorInputStyle}
             />
-            <span className="text-sm" style={{ color: "var(--gray-400)" }}>점 이상</span>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>점 이상</span>
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
         >
           {upsertMutation.error instanceof Error
             ? upsertMutation.error.message
-            : "저장 중 오류가 발생했습니다."}
+            : "저장 중 오류가 발생했습니다"}
         </div>
       )}
     </div>
@@ -211,7 +211,7 @@ function ChecklistItemRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm w-6 text-right" style={{ color: "var(--gray-500)" }}>
+      <span className="text-sm w-6 text-right" style={{ color: "var(--text-muted)" }}>
         {index + 1}.
       </span>
 
@@ -221,7 +221,7 @@ function ChecklistItemRow({
         onChange={(e) => onChange({ label: e.target.value })}
         placeholder="예: 팀 구성 및 역량"
         className="flex-1 px-3 py-2 border rounded-md text-sm"
-        style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--gray-100)" }}
+        style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--text-primary)" }}
       />
 
       <div className="flex items-center gap-1">
@@ -232,9 +232,9 @@ function ChecklistItemRow({
           value={item.max_score}
           onChange={(e) => onChange({ max_score: Number(e.target.value) || 0 })}
           className="w-20 px-2 py-2 border rounded-md text-sm text-right"
-          style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--gray-100)" }}
+          style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-600)", color: "var(--text-primary)" }}
         />
-        <span className="text-sm" style={{ color: "var(--gray-400)" }}>점</span>
+        <span className="text-sm" style={{ color: "var(--text-muted)" }}>점</span>
       </div>
 
       <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { backfillCompanyNames } from "@/src/app/actions/reviewAction";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
@@ -47,10 +48,11 @@ export default function BackfillPage() {
         <div className="max-w-2xl mx-auto px-4 py-4">
           <Link
             href="/dashboard/archive"
-            className="text-sm transition"
+            className="inline-flex items-center gap-1 text-sm transition"
             style={{ color: "var(--text-muted)" }}
           >
-            ← 심사 아카이브
+            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            심사 아카이브
           </Link>
           <h1 className={`${PAGE_TITLE_CLASS} mt-1`}>
             회사명 일괄 보정

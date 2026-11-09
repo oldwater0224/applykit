@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RefreshCw } from "lucide-react";
+import { ChevronRight, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 import { useAuth } from "@/src/hooks/useAuth";
@@ -55,8 +55,9 @@ export default function DashboardPage() {
     return (
       <div className="flex h-full items-center justify-center">
         <div
-          className="size-6 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--brand-500)" }}
+          role="status"
+          aria-label="불러오는 중"
+          className="size-6 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
         />
       </div>
     );
@@ -156,7 +157,7 @@ function ErrorState({
         onClick={onRetry}
         className="mt-1 flex h-8 items-center gap-1.5 rounded-md bg-(--brand-600) px-3 text-[12px] font-semibold text-white transition-colors hover:bg-(--brand-500) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand-500)"
       >
-        <RefreshCw className="size-3.5" aria-hidden />
+        <RefreshCw size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
         다시 시도
       </button>
     </div>
@@ -309,9 +310,10 @@ function DashboardBody({
         action={
           <Link
             href="/dashboard/programs"
-            className="text-[12px] font-medium text-(--dash-text-muted) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+            className="inline-flex items-center gap-1 text-[12px] font-medium text-(--dash-text-muted) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
           >
-            공고 관리 →
+            공고 관리
+            <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
           </Link>
         }
         flush

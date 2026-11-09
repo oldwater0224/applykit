@@ -147,3 +147,33 @@
   - GNB S/V 타일이 밝다
   - statusBadge muted
 - 칩 테두리가 hairline으로 바뀌어 대비가 약해졌다. 4단계에서 칩·배지와 함께 다시 본다
+
+## 3단계: 아이콘 lucide 통일 (검증 완료)
+
+| 담당 | 결과 |
+|---|---|
+| ui-builder | 파일 약 20개 수정. 유니코드 ←/→와 gnb 직접 그린 SVG 4개를 lucide로 바꿨다 |
+| logic-builder | 바꿀 것 없음. 화살표는 화면 텍스트에만 있다. lucide 1.14는 서버 컴포넌트에서 import해도 되고, LucideProvider는 서버 트리에 적용되지 않아 아이콘마다 props를 준다 |
+| debugger | tsc 통과, lint 기존 경고 1개, test 261/261, build 26/26. 접근성 이름, 스피너 CSS 순서, truncate를 확인했다. 들여쓰기 1줄만 고쳤다 |
+| 메인 | 브라우저 확인: GNB 검색·대시보드 아이콘, 뉴스 이전/다음, "전체 보기" Chevron |
+
+**규칙**
+- 아이콘 크기
+  - 내비·본문 16px
+  - 11~13px 텍스트 옆 14px
+  - 모두 strokeWidth 1.5, currentColor
+- 간격
+  - 방향 화살표 gap-1
+  - 동작 아이콘 gap-1.5
+  - 사이드바 행 gap-2.5
+- 아이콘 크기·두께는 아이콘마다 props로 준다. LucideProvider는 서버 컴포넌트에 적용되지 않기 때문이다
+
+**변경**
+- 뒤로가기는 ArrowLeft, "더 보기"는 ChevronRight, 이전/다음은 Chevron, 외부 링크는 ArrowUpRight로 바꿨다
+- pageHeader: backLabel 기본값을 "뒤로"로 하고 아이콘은 따로 렌더한다
+- sidebar: 활성 아이콘의 strokeWidth 변경과 아이콘 전용 색을 없앴다. 이제 아이콘은 링크 텍스트 색을 따른다
+- 스피너 3곳(gnb 검색, dashboard, dashboard/programs): 인라인 borderColor가 덮어쓰던 버그를 고치고 role="status"를 붙였다
+
+**남긴 것**
+- formBuilder 175행, 186행의 ↑/↓ 순서 버튼: 글자로 되어 있고 aria-label이 없다. 기존부터 있던 상태다. 4단계에서 함께 고친다
+- 입력칸 안 Search 아이콘과 브레드크럼 구분자는 subtle 색으로 둔다. placeholder·장식 역할이기 때문이다

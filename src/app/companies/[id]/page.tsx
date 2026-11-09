@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { useCompanyDetail } from "@/src/hooks/useCompanies";
 import Link from "next/link";
 import { useState } from "react";
@@ -98,10 +99,11 @@ export default function CompanyDetailPage() {
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
       <Link
         href="/companies"
-        className="mb-4 inline-flex items-center text-[12px] transition"
+        className="mb-4 inline-flex items-center gap-1 text-[12px] transition"
         style={{ color: "var(--text-muted)" }}
       >
-        ← 스타트업 목록
+        <ArrowLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        스타트업 목록
       </Link>
 
       {/* 기업 헤더 */}

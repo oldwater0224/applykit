@@ -8,6 +8,7 @@ import {
   type SearchResult,
 } from "@/src/app/actions/searchAction";
 import { createClient } from "@/src/lib/supabase/client";
+import { LayoutGrid, Menu, Search, X } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", label: "홈" },
@@ -191,7 +192,7 @@ export default function GNB() {
                   : "1px solid var(--navy-700)",
               }}
             >
-              <SearchIcon size={12} />
+              <Search size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               {searchOpen ? (
                 <input
                   ref={inputRef}
@@ -229,8 +230,9 @@ export default function GNB() {
                 {isSearching ? (
                   <div className="flex items-center justify-center py-8">
                     <div
-                      className="size-4 animate-spin rounded-full border-2 border-t-transparent"
-                      style={{ borderColor: "var(--brand-500)" }}
+                      role="status"
+                      aria-label="검색 중"
+                      className="size-4 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
                     />
                   </div>
                 ) : results.length === 0 ? (
@@ -341,13 +343,13 @@ export default function GNB() {
           {isOrgAdmin && (
             <Link
               href="/dashboard"
-              className="flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
               style={{
                 backgroundColor: "var(--brand-500)",
                 color: "#fff",
               }}
             >
-              <DashboardIcon />
+              <LayoutGrid size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               대시보드
             </Link>
           )}
@@ -378,7 +380,11 @@ export default function GNB() {
           style={{ color: "var(--text-muted)" }}
           aria-label="메뉴"
         >
-          {mobileOpen ? <XIcon /> : <MenuIcon />}
+          {mobileOpen ? (
+            <X size={16} strokeWidth={1.5} aria-hidden="true" />
+          ) : (
+            <Menu size={16} strokeWidth={1.5} aria-hidden="true" />
+          )}
         </button>
       </nav>
 
@@ -457,7 +463,7 @@ export default function GNB() {
                     backgroundColor: "var(--brand-500)",
                   }}
                 >
-                  <DashboardIcon />
+                  <LayoutGrid size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
                   대시보드
                 </Link>
               </li>
@@ -466,73 +472,5 @@ export default function GNB() {
         </div>
       )}
     </header>
-  );
-}
-
-function DashboardIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
-    </svg>
-  );
-}
-
-function SearchIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function MenuIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
   );
 }

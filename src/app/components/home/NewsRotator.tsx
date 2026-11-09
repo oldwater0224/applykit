@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { StartupNews } from "@/src/types/news";
 import { formatKstYmdFromString } from "@/src/lib/datetime/kst";
 
@@ -111,7 +112,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
   );
 
   const pagerButtonClass =
-    "inline-flex min-h-11 items-center rounded px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
+    "inline-flex min-h-11 items-center gap-1 rounded px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
 
   return (
     <>
@@ -141,7 +142,8 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
                 className={pagerButtonClass}
                 style={{ color: "var(--text-muted)" }}
               >
-                ← 이전
+                <ChevronLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+                이전
               </button>
               <span
                 className="px-1 text-xs tabular-nums sm:text-[12px]"
@@ -157,7 +159,8 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
                 className={pagerButtonClass}
                 style={{ color: "var(--text-muted)" }}
               >
-                다음 →
+                다음
+                <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               </button>
             </div>
           )}

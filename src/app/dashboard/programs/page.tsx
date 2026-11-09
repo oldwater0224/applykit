@@ -29,8 +29,9 @@ export default function ProgramsPage() {
     return (
       <div className="flex h-full items-center justify-center">
         <div
-          className="size-6 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "var(--brand-500)" }}
+          role="status"
+          aria-label="불러오는 중"
+          className="size-6 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
         />
       </div>
     );
@@ -101,7 +102,7 @@ export default function ProgramsPage() {
             onClick={() => openEditModal(p)}
             label={`${p.title || "제목 없음"} 공고 수정`}
           >
-            <Pencil className="size-3" aria-hidden />
+            <Pencil size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
             수정
           </RowActionButton>
           <RowActionButton
@@ -109,7 +110,7 @@ export default function ProgramsPage() {
             label={`${p.title || "제목 없음"} 공고 삭제`}
             danger
           >
-            <Trash2 className="size-3" aria-hidden />
+            <Trash2 size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
             삭제
           </RowActionButton>
         </div>
@@ -126,9 +127,10 @@ export default function ProgramsPage() {
           <button
             type="button"
             onClick={openCreateModal}
-            className="flex h-8 items-center gap-1 rounded-md bg-(--brand-600) px-3 text-[12px] font-semibold text-white transition-colors hover:bg-(--brand-500) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand-500)"
+            className="flex h-8 items-center gap-1.5 rounded-md bg-(--brand-600) px-3 text-[12px] font-semibold text-white transition-colors hover:bg-(--brand-500) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand-500)"
           >
-            <Plus className="size-3.5" aria-hidden />새 공고
+            <Plus size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            새 공고
           </button>
         }
       />
@@ -199,8 +201,8 @@ function RowActionButton({
       aria-label={label}
       className={
         danger
-          ? "flex h-7 items-center gap-1 rounded-md border border-(--accent-rose)/40 px-2 text-[12px] font-medium text-(--dash-negative-text) transition-colors hover:bg-(--accent-rose)/10 focus-visible:outline-2 focus-visible:outline-(--brand-500)"
-          : "flex h-7 items-center gap-1 rounded-md border border-(--dash-border) px-2 text-[12px] font-medium text-(--dash-text-secondary) transition-colors hover:bg-(--dash-hover-bg) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+          ? "flex h-7 items-center gap-1.5 rounded-md border border-(--accent-rose)/40 px-2 text-[12px] font-medium text-(--dash-negative-text) transition-colors hover:bg-(--accent-rose)/10 focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+          : "flex h-7 items-center gap-1.5 rounded-md border border-(--dash-border) px-2 text-[12px] font-medium text-(--dash-text-secondary) transition-colors hover:bg-(--dash-hover-bg) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
       }
     >
       {children}

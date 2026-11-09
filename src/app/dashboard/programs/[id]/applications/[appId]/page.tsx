@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useOperatorApplication } from "@/src/hooks/useApplication";
 import { useApplicationFiles } from "@/src/hooks/useApplicationFiles";
@@ -79,10 +80,11 @@ export default function OperatorApplicationDetailPage() {
         <div className="max-w-3xl mx-auto px-4 py-4">
           <Link
             href={`/dashboard/programs/${programId}?tab=applications`}
-            className="text-sm transition"
+            className="inline-flex items-center gap-1 text-sm transition"
             style={{ color: "var(--text-muted)" }}
           >
-            ← {program.title} 접수 현황
+            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            {program.title} 접수 현황
           </Link>
 
           <div className="mt-2 flex justify-between items-start gap-4">

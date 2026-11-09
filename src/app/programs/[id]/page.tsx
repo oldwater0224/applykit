@@ -5,6 +5,7 @@
 
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
@@ -80,10 +81,11 @@ export default function ProgramPublicDetailPage() {
       {/* 뒤로가기 */}
       <Link
         href="/programs"
-        className="mb-6 inline-flex items-center text-sm transition"
+        className="mb-6 inline-flex items-center gap-1 text-sm transition"
         style={{ color: "var(--text-muted)" }}
       >
-        ← 공고 목록
+        <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        공고 목록
       </Link>
 
       <div

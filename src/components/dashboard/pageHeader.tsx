@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export function DashboardPageHeader({
@@ -27,10 +28,11 @@ export function DashboardPageHeader({
       {backHref && (
         <Link
           href={backHref}
-          className="mb-1 inline-block text-xs sm:text-[11px] transition"
+          className="mb-1 inline-flex items-center gap-1 text-xs sm:text-[11px] transition"
           style={{ color: "var(--text-muted)" }}
         >
-          {backLabel ?? "← 뒤로"}
+          <ArrowLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+          {backLabel ?? "뒤로"}
         </Link>
       )}
       <div className="flex items-center justify-between">

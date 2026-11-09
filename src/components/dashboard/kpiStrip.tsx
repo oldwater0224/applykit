@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SkeletonBlock } from "@/src/components/dashboard/dashboardPanel";
 
@@ -88,9 +89,9 @@ function KpiCell({ item, loading }: { item: KpiItem; loading: boolean }) {
         {item.href && !loading && (
           <span
             aria-hidden
-            className="text-(--dash-text-subtle) opacity-0 transition-opacity group-hover:opacity-100"
+            className="inline-flex opacity-0 transition-opacity group-hover:opacity-100"
           >
-            →
+            <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
           </span>
         )}
       </p>

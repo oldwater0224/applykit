@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { getDashboardStats } from "@/src/app/actions/dashboardAction";
 import NewsSection from "@/src/app/components/home/NewsSection";
 import { PageTitle } from "@/src/components/layout/pageTitle";
@@ -82,10 +83,11 @@ export default async function HomePage() {
           </h2>
           <Link
             href="/investments"
-            className="text-[12px] font-medium"
+            className="inline-flex items-center gap-1 text-[12px] font-medium"
             style={{ color: "var(--brand-600)" }}
           >
-            전체 보기 →
+            전체 보기
+            <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
           </Link>
         </div>
 
@@ -205,10 +207,11 @@ export default async function HomePage() {
             </h2>
             <Link
               href="/investments"
-              className="text-[12px] font-medium"
+              className="inline-flex items-center gap-1 text-[12px] font-medium"
               style={{ color: "var(--brand-600)" }}
             >
-              더 보기 →
+              더 보기
+              <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
             </Link>
           </div>
           <div

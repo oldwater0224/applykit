@@ -1,6 +1,7 @@
 "use client";
 
 import type { FundingRound } from "@/src/types/funding";
+import { ArrowUpRight } from "lucide-react";
 import { normalizeRoundName } from "@/src/types/funding";
 
 const ROUND_DOT_COLORS: Record<string, string> = {
@@ -108,10 +109,11 @@ export default function FundingTimeline({
                   href={round.news_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto text-xs sm:text-[11px]"
+                  className="ml-auto inline-flex items-center gap-1 text-xs sm:text-[11px]"
                   style={{ color: "var(--brand-600)" }}
                 >
-                  내용 →
+                  내용
+                  <ArrowUpRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
                 </a>
               )}
             </div>

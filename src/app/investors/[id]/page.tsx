@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { useInvestorDetail } from "@/src/hooks/useInvestor";
 import Link from "next/link";
 import { normalizeRoundName } from "@/src/types/funding";
@@ -79,8 +80,9 @@ export default function InvestorDetailPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      <Link href="/investors" className="mb-4 inline-flex items-center text-[12px] transition" style={{ color: "var(--text-muted)" }}>
-        ← 투자자 목록
+      <Link href="/investors" className="mb-4 inline-flex items-center gap-1 text-[12px] transition" style={{ color: "var(--text-muted)" }}>
+        <ArrowLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        투자자 목록
       </Link>
 
       {/* 헤더 */}
@@ -100,8 +102,9 @@ export default function InvestorDetailPage() {
         </div>
         {investor.homepage_url && (
           <div className="mt-3">
-            <a href={investor.homepage_url} target="_blank" rel="noopener noreferrer" className="text-[12px] hover:underline" style={{ color: "var(--brand-600)" }}>
-              {investor.homepage_url} →
+            <a href={investor.homepage_url} target="_blank" rel="noopener noreferrer" className="inline-flex max-w-full items-center gap-1 text-[12px] hover:underline" style={{ color: "var(--brand-600)" }}>
+              <span className="truncate">{investor.homepage_url}</span>
+              <ArrowUpRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
             </a>
           </div>
         )}

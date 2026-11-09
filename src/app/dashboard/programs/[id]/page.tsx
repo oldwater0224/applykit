@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { useProgram, useUpdateProgram } from "@/src/hooks/usePrograms";
 import { useFormBuilderStore } from "@/src/stores/formbuilderstore";
 import { useEffect } from "react";
@@ -97,10 +98,11 @@ export default function ProgramDetailPage() {
             <div>
               <Link
                 href="/dashboard/programs"
-                className="text-sm transition"
+                className="inline-flex items-center gap-1 text-sm transition"
                 style={{ color: "var(--text-muted)" }}
               >
-                ← 공고 목록
+                <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+                공고 목록
               </Link>
               <h1 className={`${PAGE_TITLE_CLASS} mt-1`}>
                 {program.title}

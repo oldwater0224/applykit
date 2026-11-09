@@ -82,14 +82,10 @@ export function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
                       />
                     )}
                     <Icon
-                      className={cn(
-                        "size-4 shrink-0",
-                        active
-                          ? "text-(--dash-active-indicator)"
-                          : "text-(--dash-text-subtle)"
-                      )}
-                      strokeWidth={active ? 2.25 : 2}
-                      aria-hidden
+                      size={16}
+                      strokeWidth={1.5}
+                      className="shrink-0"
+                      aria-hidden="true"
                     />
                     {label}
                   </Link>
@@ -122,8 +118,10 @@ export function DashboardOrgFooter({
         className="flex h-9 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-(--dash-text-secondary) transition-colors hover:bg-(--dash-hover-bg) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
       >
         <ArrowUpRight
-          className="size-4 shrink-0 text-(--dash-text-muted)"
-          aria-hidden
+          size={16}
+          strokeWidth={1.5}
+          className="shrink-0"
+          aria-hidden="true"
         />
         서비스 홈 바로가기
       </Link>

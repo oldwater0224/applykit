@@ -23,14 +23,14 @@ export function DeleteProgramModal() {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div
-        className="rounded-lg w-full max-w-sm p-6 border"
+        className="rounded-2xl w-full max-w-sm p-6 border"
         style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
       >
-        <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--gray-100)' }}>
+        <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
           공고 삭제
         </h2>
-        <p className="mb-6" style={{ color: 'var(--gray-400)' }}>
-          <span style={{ color: 'var(--gray-200)' }}>{selectedProgram.title}</span> 공고를 삭제하시겠습니까?
+        <p className="mb-6" style={{ color: 'var(--text-muted)' }}>
+          <span style={{ color: 'var(--text-primary)' }}>{selectedProgram.title}</span> 공고를 삭제하시겠습니까?
           <br />
           <span className="text-sm" style={{ color: 'var(--accent-rose)' }}>이 작업은 되돌릴 수 없습니다.</span>
         </p>
@@ -45,7 +45,7 @@ export function DeleteProgramModal() {
           <button
             onClick={closeModal}
             className="px-4 py-2 border rounded-md transition"
-            style={{ borderColor: 'var(--navy-600)', color: 'var(--gray-300)' }}
+            style={{ borderColor: 'var(--navy-600)', color: 'var(--text-secondary)' }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--navy-800)')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
           >

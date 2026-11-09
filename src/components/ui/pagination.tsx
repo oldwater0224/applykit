@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationBaseProps {
   total: number;
@@ -56,20 +57,21 @@ export default function Pagination(props: PaginationProps) {
       <button
         onClick={() => handlePage(activePage - 1)}
         disabled={activePage <= 1}
-        className="rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
-        style={{ color: "var(--gray-500)" }}
+        className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
+        style={{ color: "var(--text-muted)" }}
       >
-        ← 이전
+        <ChevronLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        이전
       </button>
 
       {pages.map((p) => (
         <button
           key={p}
           onClick={() => handlePage(p)}
-          className="min-w-7 rounded px-1.5 py-1 text-[12px] font-medium transition hover: cursor-pointer"
+          className="min-w-7 rounded-md px-1.5 py-1 text-[12px] font-medium transition hover: cursor-pointer"
           style={{
             backgroundColor: p === activePage ? "var(--navy-900)" : "transparent",
-            color: p === activePage ? "var(--gray-100)" : "var(--gray-500)",
+            color: p === activePage ? "var(--text-primary)" : "var(--text-muted)",
           }}
         >
           {p}
@@ -79,10 +81,11 @@ export default function Pagination(props: PaginationProps) {
       <button
         onClick={() => handlePage(activePage + 1)}
         disabled={activePage >= totalPages}
-        className="rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
-        style={{ color: "var(--gray-500)" }}
+        className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
+        style={{ color: "var(--text-muted)" }}
       >
-        다음 →
+        다음
+        <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
       </button>
     </div>
   );

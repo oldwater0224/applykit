@@ -26,17 +26,17 @@ export function ApplicationReadOnlyView({
   if (schema.fields.length === 0) {
     return (
       <div
-        className="rounded-lg border p-8 text-center"
-        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--gray-500)" }}
+        className="rounded-xl border p-8 text-center"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-muted)" }}
       >
-        양식 정보가 없습니다.
+        양식 정보가 없습니다
       </div>
     );
   }
 
   return (
     <div
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {schema.fields.map((field) => (
@@ -63,7 +63,7 @@ function ReadOnlyField({ field, value, fieldFiles }: ReadOnlyFieldProps) {
       className="pb-4 border-b last:border-0 last:pb-0"
       style={{ borderColor: "var(--navy-700)" }}
     >
-      <p className="text-sm font-medium mb-2" style={{ color: "var(--gray-300)" }}>
+      <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
         {field.label}
         {field.required && <span className="ml-1" style={{ color: "var(--accent-rose)" }}>*</span>}
       </p>
@@ -91,12 +91,12 @@ function ReadOnlyValue({
     (Array.isArray(value) && value.length === 0);
 
   if (isEmpty) {
-    return <p className="text-sm" style={{ color: "var(--gray-500)" }}>답변 없음</p>;
+    return <p className="text-sm" style={{ color: "var(--text-muted)" }}>답변 없음</p>;
   }
 
   if (field.type === 'checkbox' && Array.isArray(value)) {
     return (
-      <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--gray-200)" }}>
+      <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--text-primary)" }}>
         {value.join(', ')}
       </p>
     );
@@ -104,14 +104,14 @@ function ReadOnlyValue({
 
   if (field.type === 'date' && typeof value === 'string') {
     return (
-      <p className="text-sm" style={{ color: "var(--gray-200)" }}>
+      <p className="text-sm" style={{ color: "var(--text-primary)" }}>
         {new Date(value).toLocaleDateString('ko-KR')}
       </p>
     );
   }
 
   return (
-    <p className="text-sm whitespace-pre-wrap wrap-break-word" style={{ color: "var(--gray-200)" }}>
+    <p className="text-sm whitespace-pre-wrap wrap-break-word" style={{ color: "var(--text-primary)" }}>
       {String(value)}
     </p>
   );
@@ -121,7 +121,7 @@ function FileFieldReadOnly({ files }: { files: ApplicationFile[] }) {
   const signedUrlMutation = useFileSignedUrl();
 
   if (files.length === 0) {
-    return <p className="text-sm" style={{ color: "var(--gray-500)" }}>첨부 파일 없음</p>;
+    return <p className="text-sm" style={{ color: "var(--text-muted)" }}>첨부 파일 없음</p>;
   }
 
   async function handleDownload(fileId: string) {
@@ -142,10 +142,10 @@ function FileFieldReadOnly({ files }: { files: ApplicationFile[] }) {
           style={{ borderColor: "var(--navy-600)" }}
         >
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate" style={{ color: "var(--gray-200)" }}>
+            <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
               {file.file_name}
             </p>
-            <p className="text-xs" style={{ color: "var(--gray-500)" }}>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               {formatFileSize(file.size_bytes)}
             </p>
           </div>
@@ -153,7 +153,7 @@ function FileFieldReadOnly({ files }: { files: ApplicationFile[] }) {
             type="button"
             onClick={() => handleDownload(file.id)}
             disabled={signedUrlMutation.isPending}
-            className="ml-3 px-3 py-1 text-sm border rounded disabled:opacity-50"
+            className="ml-3 px-3 py-1 text-sm border rounded-md disabled:opacity-50"
             style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)" }}
           >
             {signedUrlMutation.isPending ? '준비 중...' : '다운로드'}

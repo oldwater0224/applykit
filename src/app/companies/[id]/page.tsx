@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { useCompanyDetail } from "@/src/hooks/useCompanies";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,6 +10,8 @@ import type { FundingRound } from "@/src/types/funding";
 import FundingTimeline from "@/src/components/companies/funding-timeline";
 import FinancialChart from "@/src/components/companies/financial-chart";
 import { TabList } from "@/src/components/ui/tabs";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 function formatBillion(amount: number | null): string {
   if (amount === null || amount === undefined) return "—";
@@ -52,8 +55,8 @@ export default function CompanyDetailPage() {
   if (isError || !company) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <p className="mb-4 text-[13px]" style={{ color: "var(--gray-500)" }}>
-          기업 정보를 불러올 수 없습니다.
+        <p className="mb-4 text-[13px]" style={{ color: "var(--text-secondary)" }}>
+          기업 정보를 불러올 수 없습니다
         </p>
         <Link
           href="/companies"
@@ -97,15 +100,16 @@ export default function CompanyDetailPage() {
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
       <Link
         href="/companies"
-        className="mb-4 inline-flex items-center text-[12px] transition"
-        style={{ color: "var(--gray-400)" }}
+        className="mb-4 inline-flex items-center gap-1 text-[12px] transition"
+        style={{ color: "var(--text-muted)" }}
       >
-        ← 스타트업 목록
+        <ArrowLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        스타트업 목록
       </Link>
 
       {/* 기업 헤더 */}
       <div
-        className="mb-5 rounded-lg border p-5"
+        className="mb-5 rounded-xl border p-6"
         style={{
           backgroundColor: "var(--card-bg)",
           borderColor: "var(--card-border)",
@@ -113,42 +117,24 @@ export default function CompanyDetailPage() {
       >
         <div className="flex items-start justify-between">
           <div>
-            <h1
-              className="text-[20px] font-bold"
-              style={{ color: "var(--gray-100)" }}
-            >
+            <h1 className={PAGE_TITLE_CLASS}>
               {company.corp_name}
             </h1>
             {company.corp_name_eng && (
               <p
                 className="mt-0.5 text-[12px]"
-                style={{ color: "var(--gray-300)" }}
+                style={{ color: "var(--text-secondary)" }}
               >
                 {company.corp_name_eng}
               </p>
             )}
           </div>
-          <div className="flex gap-1.5">
-            <span
-              className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
-              style={{
-                color: clsColor,
-                backgroundColor: `color-mix(in srgb, ${clsColor} 10%)`,
-              }}
-            >
-              <span
-                className="inline-block size-1.5 rounded-full"
-                style={{ backgroundColor: clsColor }}
-              />
+          <div className="ml-3 mt-1 flex flex-wrap justify-end gap-1.5">
+            <StatusBadge tone="neutral" dotColor={clsColor}>
               {clsLabel}
-            </span>
+            </StatusBadge>
             {company.sector && (
-              <span
-                className="rounded px-2 py-0.5 text-xs sm:text-[10px] font-medium"
-                style={{ backgroundColor: "", color: "var(--brand-700)" }}
-              >
-                {company.sector}
-              </span>
+              <StatusBadge tone="neutral">{company.sector}</StatusBadge>
             )}
           </div>
         </div>
@@ -217,7 +203,7 @@ export default function CompanyDetailPage() {
 
       {/* 탭 콘텐츠 */}
       <div
-        className="rounded-lg border p-5"
+        className="rounded-xl border p-6"
         style={{
           backgroundColor: "var(--card-bg)",
           borderColor: "var(--card-border)",
@@ -233,8 +219,8 @@ export default function CompanyDetailPage() {
               <>
                 <div className="mb-5">
                   <h3
-                    className="mb-2 text-xs sm:text-[11px] font-medium uppercase tracking-wide"
-                    style={{ color: "var(--gray-400)" }}
+                    className="mb-2 text-xs sm:text-[12px] font-medium"
+                    style={{ color: "var(--text-secondary)" }}
                   >
                     연도별 추이
                   </h3>
@@ -243,34 +229,34 @@ export default function CompanyDetailPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-[12px]">
                     <thead>
-                      <tr style={{ borderBottom: "1px solid var(--gray-200)" }}>
+                      <tr style={{ borderBottom: "1px solid var(--hairline)" }}>
                         <th
                           className="py-2 pr-3 text-left font-medium"
-                          style={{ color: "var(--gray-100)" }}
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           연도
                         </th>
                         <th
                           className="px-3 py-2 text-right font-medium"
-                          style={{ color: "var(--gray-100)" }}
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           매출액
                         </th>
                         <th
                           className="px-3 py-2 text-right font-medium"
-                          style={{ color: "var(--gray-100)" }}
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           영업이익
                         </th>
                         <th
                           className="px-3 py-2 text-right font-medium"
-                          style={{ color: "var(--gray-100)" }}
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           순이익
                         </th>
                         <th
                           className="py-2 pl-3 text-right font-medium"
-                          style={{ color: "var(--gray-100)" }}
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           자산총계
                         </th>
@@ -285,21 +271,21 @@ export default function CompanyDetailPage() {
                         return (
                           <tr
                             key={f.id}
-                            style={{ borderBottom: "1px solid var(--gray-50)" }}
+                            style={{ borderBottom: "1px solid var(--hairline)" }}
                           >
                             <td
-                              className="py-2 pr-3 font-medium"
-                              style={{ color: "var(--gray-300)" }}
+                              className="py-2 pr-3 font-medium tabular-nums"
+                              style={{ color: "var(--text-primary)" }}
                             >
                               {f.fiscal_year}
                             </td>
                             <td
-                              className="px-3 py-2 text-right"
-                              style={{ color: "var(--gray-300)" }}
+                              className="px-3 py-2 text-right tabular-nums"
+                              style={{ color: "var(--text-secondary)" }}
                             >
                               {growth && (
                                 <span
-                                  className="ml-1 text-xs sm:text-[10px] mr-1"
+                                  className="ml-1 text-xs sm:text-[11px] mr-1"
                                   style={{
                                     color: growth.startsWith("+")
                                       ? "var(--accent-rose)"
@@ -312,30 +298,30 @@ export default function CompanyDetailPage() {
                               {formatBillion(f.revenue)}
                             </td>
                             <td
-                              className="px-3 py-2 text-right"
+                              className="px-3 py-2 text-right tabular-nums"
                               style={{
                                 color:
                                   f.operating_income && f.operating_income < 0
                                     ? "var(--brand-500)"
-                                    : "var(--gray-300)",
+                                    : "var(--text-secondary)",
                               }}
                             >
                               {formatBillion(f.operating_income)}
                             </td>
                             <td
-                              className="px-3 py-2 text-right"
+                              className="px-3 py-2 text-right tabular-nums"
                               style={{
                                 color:
                                   f.net_income && f.net_income < 0
                                     ? "var(--brand-500)"
-                                    : "var(--gray-300)",
+                                    : "var(--text-secondary)",
                               }}
                             >
                               {formatBillion(f.net_income)}
                             </td>
                             <td
-                              className="py-2 pl-3 text-right"
-                              style={{ color: "var(--gray-300)" }}
+                              className="py-2 pl-3 text-right tabular-nums"
+                              style={{ color: "var(--text-secondary)" }}
                             >
                               {formatBillion(f.total_assets)}
                             </td>
@@ -366,13 +352,13 @@ export default function CompanyDetailPage() {
                   >
                     <span
                       className="mt-0.5 shrink-0 whitespace-nowrap text-xs sm:text-[11px] tabular-nums"
-                      style={{ color: "var(--gray-300)" }}
+                      style={{ color: "var(--text-muted)" }}
                     >
                       {formatDate(d.disclosure_date)}
                     </span>
                     <span
                       className="text-[12px] transition group-hover:underline"
-                      style={{ color: "var(--gray-500)" }}
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {d.title}
                     </span>
@@ -392,21 +378,21 @@ export default function CompanyDetailPage() {
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="rounded-lg border p-3 text-center"
+      className="rounded-xl border p-4 text-center"
       style={{
         backgroundColor: "var(--card-bg)",
         borderColor: "var(--card-border)",
       }}
     >
       <p
-        className="text-xs sm:text-[10px] font-medium uppercase tracking-wide"
-        style={{ color: "var(--gray-200)" }}
+        className="text-xs sm:text-[11px]"
+        style={{ color: "var(--text-muted)" }}
       >
         {label}
       </p>
       <p
-        className="mt-1 text-[15px] font-bold"
-        style={{ color: "var(--gray-100)" }}
+        className="mt-1 text-[15px] font-semibold tabular-nums"
+        style={{ color: "var(--text-primary)" }}
       >
         {value}
       </p>
@@ -428,8 +414,8 @@ function InfoItem({
   if (!value && !children) return null;
   return (
     <div className={span2 ? "col-span-2" : ""}>
-      <span style={{ color: "var(--gray-200)" }}>{label}</span>
-      <div className="mt-0.5" style={{ color: "var(--gray-100)" }}>
+      <span style={{ color: "var(--text-muted)" }}>{label}</span>
+      <div className="mt-0.5" style={{ color: "var(--text-primary)" }}>
         {children || value}
       </div>
     </div>
@@ -439,7 +425,7 @@ function InfoItem({
 function EmptyBlock({ message }: { message: string }) {
   return (
     <div className="flex h-32 items-center justify-center">
-      <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+      <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
         {message}
       </p>
     </div>

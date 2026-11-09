@@ -32,17 +32,17 @@ export function ApplicationFormRenderer({
   if (schema.fields.length === 0) {
     return (
       <div
-        className="rounded-lg border p-8 text-center"
-        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--gray-500)" }}
+        className="rounded-xl border p-8 text-center"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-muted)" }}
       >
-        이 공고에는 아직 양식이 등록되지 않았습니다.
+        이 공고에는 아직 양식이 등록되지 않았습니다
       </div>
     );
   }
 
   return (
     <div
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {schema.fields.map((field) => (
@@ -89,7 +89,7 @@ function FieldRenderer({
   const inputStyle: React.CSSProperties = {
     backgroundColor: "var(--navy-800)",
     borderColor: error ? "var(--accent-rose)" : "var(--navy-600)",
-    color: "var(--gray-100)",
+    color: "var(--text-primary)",
   };
 
   const baseInputClass =
@@ -97,7 +97,7 @@ function FieldRenderer({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-1" style={{ color: "var(--gray-300)" }}>
+      <label className="block text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
         {field.label}
         {field.required && <span className="ml-1" style={{ color: "var(--accent-rose)" }}>*</span>}
       </label>
@@ -174,7 +174,7 @@ function FieldRenderer({
                 checked={value === opt}
                 onChange={(e) => onChange(e.target.value)}
               />
-              <span className="text-sm" style={{ color: "var(--gray-200)" }}>{opt}</span>
+              <span className="text-sm" style={{ color: "var(--text-primary)" }}>{opt}</span>
             </label>
           ))}
         </div>
@@ -202,7 +202,7 @@ function FieldRenderer({
                     }
                   }}
                 />
-                <span className="text-sm" style={{ color: "var(--gray-200)" }}>{opt}</span>
+                <span className="text-sm" style={{ color: "var(--text-primary)" }}>{opt}</span>
               </label>
             );
           })}
@@ -224,7 +224,7 @@ function FieldRenderer({
 
       {field.maxLength &&
         (field.type === "text" || field.type === "textarea") && (
-          <p className="mt-1 text-xs text-right" style={{ color: "var(--gray-500)" }}>
+          <p className="mt-1 text-xs text-right" style={{ color: "var(--text-muted)" }}>
             {typeof value === "string" ? value.length : 0} / {field.maxLength}
           </p>
         )}
@@ -255,7 +255,7 @@ function FileFieldRenderer({
       const maxBytes = field.maxFileSize * 1024 * 1024;
       if (file.size > maxBytes) {
         setValidationError(
-          `파일 크기는 ${field.maxFileSize}MB 이하여야 합니다.`,
+          `파일 크기는 ${field.maxFileSize}MB 이하여야 합니다`,
         );
         e.target.value = "";
         return;
@@ -263,7 +263,7 @@ function FileFieldRenderer({
     }
 
     if (!isAllowedFile(file)) {
-      setValidationError(`${ALLOWED_FILES_LABEL} 파일만 업로드할 수 있습니다.`);
+      setValidationError(`${ALLOWED_FILES_LABEL} 파일만 업로드할 수 있습니다`);
       e.target.value = "";
       return;
     }
@@ -289,17 +289,17 @@ function FileFieldRenderer({
               style={{ borderColor: "var(--navy-600)" }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: "var(--gray-200)" }}>
+                <p className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
                   {file.file_name}
                 </p>
-                <p className="text-xs" style={{ color: "var(--gray-500)" }}>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   {formatFileSize(file.size_bytes)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => onDelete(file.id)}
-                className="ml-3 px-2 py-1 text-sm border rounded"
+                className="ml-3 px-2 py-1 text-sm border rounded-md"
                 style={{ color: "var(--accent-rose)", borderColor: "var(--accent-rose)" }}
               >
                 삭제
@@ -320,9 +320,9 @@ function FileFieldRenderer({
           onChange={handleFileChange}
           disabled={isUploading}
           className="block w-full text-sm"
-          style={{ color: "var(--gray-300)" }}
+          style={{ color: "var(--text-secondary)" }}
         />
-        <div className="mt-2 text-xs space-y-1" style={{ color: "var(--gray-500)" }}>
+        <div className="mt-2 text-xs space-y-1" style={{ color: "var(--text-muted)" }}>
           {field.accept && <p>허용 형식: {field.accept}</p>}
           {field.maxFileSize && <p>최대 크기: {field.maxFileSize}MB</p>}
           {isUploading && <p style={{ color: "var(--brand-500)" }}>업로드 중...</p>}

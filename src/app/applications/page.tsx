@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { useMyApplications } from "@/src/hooks/useApplication";
 import {
   APPLICATION_STATUS_LABEL,
-  APPLICATION_STATUS_STYLE,
+  APPLICATION_STATUS_TONE,
   ApplicationWithProgram,
 } from "@/src/types/applications";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
 import { formatDeadlineKst } from "@/src/lib/datetime/kst";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 
 
 export default function MyApplicationsPage() {
@@ -18,7 +20,7 @@ export default function MyApplicationsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-4xl mx-auto text-center" style={{ color: "var(--gray-400)" }}>
+        <div className="max-w-4xl mx-auto text-center" style={{ color: "var(--text-muted)" }}>
           로딩 중...
         </div>
       </div>
@@ -31,7 +33,7 @@ export default function MyApplicationsPage() {
         <div className="max-w-4xl mx-auto text-center" style={{ color: "var(--accent-rose)" }}>
           {error instanceof Error
             ? error.message
-            : "지원서 목록을 불러오지 못했습니다."}
+            : "지원서 목록을 불러오지 못했습니다"}
         </div>
       </div>
     );
@@ -39,12 +41,8 @@ export default function MyApplicationsPage() {
 
   return (
     <div className="min-h-screen">
-      <header>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold" style={{ color: "var(--gray-100)" }}>
-            내 지원서
-          </h1>
-        </div>
+      <header className="max-w-4xl mx-auto px-4 py-4">
+        <PageTitle title="내 지원서" />
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -73,10 +71,10 @@ function ApplicationCard({
   if (!program) {
     return (
       <li
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-5"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <p className="text-sm" style={{ color: "var(--gray-500)" }}>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
           삭제된 공고의 지원서입니다 (ID: {application.id})
         </p>
       </li>
@@ -103,23 +101,23 @@ function ApplicationCard({
   return (
     <li
       onClick={handleClick}
-      className="rounded-lg border p-6 cursor-pointer transition"
+      className="rounded-xl border p-5 cursor-pointer transition"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--brand-500)")}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--card-border)")}
     >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-semibold truncate" style={{ color: "var(--gray-200)" }}>
+          <h2 className="text-lg font-medium truncate" style={{ color: "var(--text-primary)" }}>
             {program.title}
           </h2>
           {program.deadline && (
-            <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
               접수 마감:{" "}
               {formatDeadlineKst(program.deadline)}
             </p>
           )}
-          <p className="text-xs mt-2" style={{ color: "var(--gray-500)" }}>
+          <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
             {application.is_complete && application.submitted_at
               ? `제출일: ${new Date(application.submitted_at).toLocaleString("ko-KR")}`
               : `최근 작성: ${new Date(application.created_at).toLocaleString("ko-KR")}`}
@@ -127,23 +125,13 @@ function ApplicationCard({
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <span
-            className={`px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
+          <StatusBadge
+            tone={APPLICATION_STATUS_TONE[application.status]}
+            srPrefix="지원 상태"
           >
             {APPLICATION_STATUS_LABEL[application.status]}
-          </span>
-          {isDraftLocked && (
-            <span
-              className="px-2 py-0.5 text-xs border rounded-full"
-              style={{
-                borderColor: "var(--navy-600)",
-                color: "var(--gray-400)",
-                backgroundColor: "var(--navy-800)",
-              }}
-            >
-              마감됨
-            </span>
-          )}
+          </StatusBadge>
+          {isDraftLocked && <StatusBadge tone="muted">마감됨</StatusBadge>}
         </div>
       </div>
     </li>
@@ -153,14 +141,14 @@ function ApplicationCard({
 function EmptyState() {
   return (
     <div
-      className="rounded-lg border p-12 text-center"
+      className="rounded-xl border p-12 text-center"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
-      <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--gray-100)" }}>
+      <h2 className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>
         아직 작성한 지원서가 없습니다
       </h2>
-      <p className="text-sm mb-6" style={{ color: "var(--gray-500)" }}>
-        관심 있는 공고에 지원해보세요.
+      <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
+        관심 있는 공고에 지원해보세요
       </p>
       <Link
         href="/programs"

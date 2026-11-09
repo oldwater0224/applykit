@@ -34,11 +34,11 @@ export function DashboardBrand({ onNavigate }: { onNavigate?: () => void }) {
       className="flex items-center gap-2"
       aria-label="ApplyKit 관리자 콘솔 홈"
     >
-      <span className="text-[15px] font-bold tracking-tight text-(--dash-text)">
+      <span className="text-[15px] font-bold text-(--dash-text)">
         Apply<span className="text-(--brand-500)">Kit</span>
       </span>
-      <span className="rounded border border-(--dash-border) px-1.5 py-px text-xs sm:text-[10px] font-semibold text-(--dash-text-muted)">
-        ADMIN
+      <span className="text-xs sm:text-[12px] text-(--dash-text-muted)">
+        관리자
       </span>
     </Link>
   );
@@ -55,7 +55,7 @@ export function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
     <nav aria-label="관리자 메뉴" className="px-3">
       {DASHBOARD_NAV_GROUPS.map((group) => (
         <div key={group.label} className="mt-5 first:mt-3">
-          <p className="mb-1 px-2.5 text-xs sm:text-[11px] font-semibold tracking-wide text-(--dash-text-subtle)">
+          <p className="mb-1 px-2.5 text-xs sm:text-[11px] font-medium text-(--dash-text-muted)">
             {group.label}
           </p>
           <ul className="space-y-0.5">
@@ -82,14 +82,10 @@ export function DashboardNav({ onNavigate }: { onNavigate?: () => void }) {
                       />
                     )}
                     <Icon
-                      className={cn(
-                        "size-4 shrink-0",
-                        active
-                          ? "text-(--dash-active-indicator)"
-                          : "text-(--dash-text-subtle)"
-                      )}
-                      strokeWidth={active ? 2.25 : 2}
-                      aria-hidden
+                      size={16}
+                      strokeWidth={1.5}
+                      className="shrink-0"
+                      aria-hidden="true"
                     />
                     {label}
                   </Link>
@@ -122,8 +118,10 @@ export function DashboardOrgFooter({
         className="flex h-9 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-(--dash-text-secondary) transition-colors hover:bg-(--dash-hover-bg) hover:text-(--dash-text) focus-visible:outline-2 focus-visible:outline-(--brand-500)"
       >
         <ArrowUpRight
-          className="size-4 shrink-0 text-(--dash-text-muted)"
-          aria-hidden
+          size={16}
+          strokeWidth={1.5}
+          className="shrink-0"
+          aria-hidden="true"
         />
         서비스 홈 바로가기
       </Link>
@@ -131,7 +129,7 @@ export function DashboardOrgFooter({
       <div className="mt-2 flex items-center gap-2.5 rounded-md border border-(--dash-border) bg-(--dash-input-bg) px-2.5 py-2">
         <span
           aria-hidden
-          className="flex size-7 shrink-0 items-center justify-center rounded-md bg-(--brand-600) text-[12px] font-bold text-white"
+          className="flex size-7 shrink-0 items-center justify-center rounded-md bg-(--brand-600) text-[12px] font-semibold text-white"
         >
           {name.charAt(0)}
         </span>

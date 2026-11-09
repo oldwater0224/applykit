@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { backfillCompanyNames } from "@/src/app/actions/reviewAction";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export default function BackfillPage() {
   const [result, setResult] = useState<{
@@ -46,29 +48,30 @@ export default function BackfillPage() {
         <div className="max-w-2xl mx-auto px-4 py-4">
           <Link
             href="/dashboard/archive"
-            className="text-sm transition"
-            style={{ color: "var(--gray-400)" }}
+            className="inline-flex items-center gap-1 text-sm transition"
+            style={{ color: "var(--text-muted)" }}
           >
-            ← 심사 아카이브
+            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            심사 아카이브
           </Link>
-          <h1 className="text-xl font-bold mt-1" style={{ color: "var(--gray-100)" }}>
+          <h1 className={`${PAGE_TITLE_CLASS} mt-1`}>
             회사명 일괄 보정
           </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
+          <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
             기존 심사 이력 중 회사명이 비어 있는 항목을 새 폼 설정에 따라
-            다시 추출합니다.
+            다시 추출합니다
           </p>
         </div>
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
         <div
-          className="rounded-lg border p-6 space-y-4"
+          className="rounded-xl border p-6 space-y-4"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
-          <div className="space-y-2 text-sm" style={{ color: "var(--gray-300)" }}>
+          <div className="space-y-2 text-sm" style={{ color: "var(--text-secondary)" }}>
             <p>
-              <b style={{ color: "var(--gray-100)" }}>주의</b>: 이 작업은 일회성으로 실행하면 됩니다.
+              <strong className="font-medium" style={{ color: "var(--text-primary)" }}>주의</strong>: 이 작업은 일회성으로 실행하면 됩니다.
             </p>
             <ul className="list-disc list-inside space-y-1">
               <li>
@@ -95,15 +98,15 @@ export default function BackfillPage() {
 
         {result && (
           <div
-            className="rounded-lg border p-6 space-y-2 text-sm"
-            style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--gray-300)" }}
+            className="rounded-xl border p-6 space-y-2 text-sm"
+            style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-secondary)" }}
           >
             <p>
-              <b style={{ color: "var(--gray-100)" }}>완료</b>: 회사명이 비어 있던 {result.processed}건 중{" "}
-              <b style={{ color: "var(--accent-emerald)" }}>{result.updated}건</b>의 회사명을 보정했습니다.
+              <strong className="font-medium" style={{ color: "var(--text-primary)" }}>완료</strong>: 회사명이 비어 있던 {result.processed}건 중{" "}
+              <strong className="font-medium" style={{ color: "var(--accent-emerald)" }}>{result.updated}건</strong>의 회사명을 보정했습니다.
             </p>
             {result.processed > result.updated && (
-              <p style={{ color: "var(--gray-500)" }}>
+              <p style={{ color: "var(--text-muted)" }}>
                 나머지 {result.processed - result.updated}건은 폼 스키마에서
                 회사명을 추출하지 못해 그대로 두었습니다.
               </p>
@@ -113,7 +116,7 @@ export default function BackfillPage() {
 
         {error && (
           <div
-            className="rounded-lg border p-6 text-sm"
+            className="rounded-xl border p-6 text-sm"
             style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--accent-rose)", color: "var(--accent-rose)" }}
           >
             {error}

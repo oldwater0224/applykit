@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { getDashboardStats } from "@/src/app/actions/dashboardAction";
 import NewsSection from "@/src/app/components/home/NewsSection";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 // import { ROUND_COLORS, normalizeRoundName } from "@/src/types/funding";
 
 export default async function HomePage() {
@@ -19,27 +21,15 @@ export default async function HomePage() {
   return (
     <div className="mx-auto max-w-(--max-width) px-4 py-6 lg:px-6">
       {/* 헤더 영역 */}
-      <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p
-            className="text-xs sm:text-[11px] font-medium uppercase tracking-widest"
-            style={{ color: "var(--gray-400)" }}
-          >
-            Korea Startup Investment
-          </p>
-          <h1
-            className="mt-1 text-[22px] font-bold tracking-tight"
-            style={{ color: "#fff" }}
-          >
-            한국 스타트업 투자
-          </h1>
-        </div>
-        <div className="sm:text-right">
-          <p className="text-xs sm:text-[11px]" style={{ color: "var(--gray-400)" }}>
+      <PageTitle
+        className="mb-6"
+        title="한국 스타트업 투자"
+        actions={
+          <p className="text-xs sm:text-[11px] sm:text-right" style={{ color: "var(--text-muted)" }}>
             DART 공시 기반 · 자동 업데이트
           </p>
-        </div>
-      </div>
+        }
+      />
 
       {/* 메인 통계 바 */}
       <div
@@ -86,17 +76,18 @@ export default async function HomePage() {
       <section className="mb-8">
         <div className="mb-3 flex items-center justify-between">
           <h2
-            className="text-[13px] font-semibold"
-            style={{ color: "#fff" }}
+            className="text-[13px] font-medium"
+            style={{ color: "var(--text-primary)" }}
           >
             투자 라운드별 현황
           </h2>
           <Link
             href="/investments"
-            className="text-[12px] font-medium"
+            className="inline-flex items-center gap-1 text-[12px] font-medium"
             style={{ color: "var(--brand-600)" }}
           >
-            전체 보기 →
+            전체 보기
+            <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
           </Link>
         </div>
 
@@ -108,7 +99,7 @@ export default async function HomePage() {
                   <Link
                     key={`${roundName}-${i}`}
                     href={`/investments?round=${encodeURIComponent(roundName)}`}
-                    className="group mx-1 w-40 shrink-0 rounded-lg border px-3 py-3 transition-all hover:shadow-md"
+                    className="group mx-1 w-40 shrink-0 rounded-xl border p-3 transition-all hover:shadow-md"
                     style={{
                       backgroundColor: "var(--card-bg)",
                       borderColor: "var(--card-border)",
@@ -118,20 +109,20 @@ export default async function HomePage() {
                       <RoundBadge name={roundName} />
                     </div>
                     <p
-                      className="text-xl font-bold tabular-nums"
-                      style={{ color: "#fff" }}
+                      className="text-xl font-semibold tabular-nums"
+                      style={{ color: "var(--text-primary)" }}
                     >
                       {count}
                       <span
                         className="ml-0.5 text-xs sm:text-[11px] font-normal"
-                        style={{ color: "var(--gray-400)" }}
+                        style={{ color: "var(--text-muted)" }}
                       >
                         건
                       </span>
                     </p>
                     <p
                       className="mt-0.5 text-xs sm:text-[11px] tabular-nums"
-                      style={{ color: "var(--gray-400)" }}
+                      style={{ color: "var(--text-muted)" }}
                     >
                       {amount.toLocaleString()}억
                     </p>
@@ -150,13 +141,13 @@ export default async function HomePage() {
         {/* 투자 분야 TOP */}
         <section className="lg:col-span-2">
           <h2
-            className="mb-3 text-[13px] font-semibold"
-            style={{ color: "#fff" }}
+            className="mb-3 text-[13px] font-medium"
+            style={{ color: "var(--text-primary)" }}
           >
             투자 분야 TOP 6
           </h2>
           <div
-            className="rounded-lg border p-4"
+            className="rounded-xl border p-6"
             style={{
               backgroundColor: "var(--card-bg)",
               borderColor: "var(--card-border)",
@@ -170,19 +161,19 @@ export default async function HomePage() {
                   return (
                     <div key={sector.sector}>
                       <div className="mb-1 flex items-center justify-between">
-                        <span className="text-[12px] font-medium" style={{ color: "var(--gray-100)" }}>
-                          <span className="mr-1.5 inline-block w-4 text-center text-xs sm:text-[11px]" style={{ color: "var(--gray-100)" }}>
+                        <span className="text-[12px] font-medium" style={{ color: "var(--text-primary)" }}>
+                          <span className="mr-1.5 inline-block w-4 text-center text-xs sm:text-[11px] tabular-nums" style={{ color: "var(--text-muted)" }}>
                             {i + 1}
                           </span>
                           {sector.sector}
                         </span>
-                        <span className="text-xs sm:text-[11px] tabular-nums" style={{ color: "var(--gray-400)" }}>
+                        <span className="text-xs sm:text-[11px] tabular-nums" style={{ color: "var(--text-muted)" }}>
                           {sector.count}건 · {sector.amount.toLocaleString()}억
                         </span>
                       </div>
                       <div
                         className="h-1.5 w-full overflow-hidden rounded-full"
-                        style={{ backgroundColor: "var(--gray-500)" }}
+                        style={{ backgroundColor: "var(--hairline-strong)" }}
                       >
                         <div
                           className="h-full rounded-full transition-all"
@@ -198,7 +189,7 @@ export default async function HomePage() {
                 })}
               </div>
             ) : (
-              <p className="py-8 text-center text-[12px]" style={{ color: "var(--gray-400)" }}>
+              <p className="py-8 text-center text-[12px]" style={{ color: "var(--text-muted)" }}>
                 데이터 부족
               </p>
             )}
@@ -209,21 +200,22 @@ export default async function HomePage() {
         <section className="lg:col-span-3">
           <div className="mb-3 flex items-center justify-between">
             <h2
-              className="text-[13px] font-semibold"
-              style={{ color: "#fff" }}
+              className="text-[13px] font-medium"
+              style={{ color: "var(--text-primary)" }}
             >
               최근 투자
             </h2>
             <Link
               href="/investments"
-              className="text-[12px] font-medium"
+              className="inline-flex items-center gap-1 text-[12px] font-medium"
               style={{ color: "var(--brand-600)" }}
             >
-              더 보기 →
+              더 보기
+              <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
             </Link>
           </div>
           <div
-            className="overflow-hidden rounded-lg border"
+            className="overflow-hidden rounded-xl border"
             style={{
               backgroundColor: "var(--card-bg)",
               borderColor: "var(--card-border)",
@@ -232,28 +224,28 @@ export default async function HomePage() {
             {stats.recentRounds.length > 0 ? (
               <table className="w-full text-[12px]">
                 <thead>
-                  <tr style={{ borderBottom: "1px solid var(--gray-100)" }}>
+                  <tr style={{ borderBottom: "1px solid var(--hairline)" }}>
                     <th
                       className="px-3 py-2 text-left font-medium"
-                      style={{ color: "#fff" }}
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       기업
                     </th>
                     <th
                       className="hidden px-3 py-2 text-left font-medium sm:table-cell"
-                      style={{ color: "#fff" }}
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       분야
                     </th>
                     <th
                       className="px-3 py-2 text-left font-medium"
-                      style={{ color: "#fff" }}
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       라운드
                     </th>
                     <th
                       className="px-3 py-2 text-right font-medium"
-                      style={{ color: "#fff" }}
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       금액
                     </th>
@@ -264,16 +256,16 @@ export default async function HomePage() {
                     <tr
                       key={round.id}
                       className="transition"
-                      style={{ borderBottom: "1px solid #fff" }}
+                      style={{ borderBottom: "1px solid var(--hairline)" }}
                     >
                       <td className="px-3 py-2.5">
-                        <span className="font-medium" style={{ color: "#fff" }}>
+                        <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                           {round.companyName}
                         </span>
                       </td>
                       <td
                         className="hidden px-3 py-2.5 sm:table-cell"
-                        style={{ color: "#fff" }}
+                        style={{ color: "var(--text-secondary)" }}
                       >
                         {round.sector ?? "—"}
                       </td>
@@ -282,7 +274,7 @@ export default async function HomePage() {
                       </td>
                       <td
                         className="px-3 py-2.5 text-right tabular-nums font-medium"
-                        style={{ color: "#fff" }}
+                        style={{ color: "var(--text-primary)" }}
                       >
                         {round.amount
                           ? `${round.amount.toLocaleString()}억`
@@ -293,7 +285,7 @@ export default async function HomePage() {
                 </tbody>
               </table>
             ) : (
-              <p className="py-12 text-center text-[12px]" style={{ color: "#fff" }}>
+              <p className="py-12 text-center text-[12px]" style={{ color: "var(--text-muted)" }}>
                 데이터 없음
               </p>
             )}
@@ -319,25 +311,25 @@ function StatBig({
 }) {
   return (
     <div>
-      <p className="whitespace-nowrap text-xs sm:text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--gray-500)" }}>
+      <p className="whitespace-nowrap text-xs sm:text-[11px]" style={{ color: "var(--text-muted)" }}>
         {label}
       </p>
       <p className="mt-0.5 flex items-baseline gap-1">
         <span
-          className="text-xl font-bold tabular-nums"
+          className="text-xl font-semibold tabular-nums"
           style={{
             color:
               positive === true
                 ? "var(--accent-emerald)"
                 : positive === false
                   ? "var(--accent-rose)"
-                  : "#ffffff",
+                  : "var(--text-primary)",
           }}
         >
           {value}
         </span>
         {sub && (
-          <span className="text-xs sm:text-[11px]" style={{ color: "var(--gray-500)" }}>
+          <span className="text-xs sm:text-[11px]" style={{ color: "var(--text-muted)" }}>
             {sub}
           </span>
         )}
@@ -366,12 +358,13 @@ function RoundBadge({ name, small }: { name: string; small?: boolean }) {
   const dotColor = ROUND_DOT_COLORS[name] ?? "var(--gray-400)";
   return (
     <span
-      className={`inline-flex items-center gap-1 font-semibold ${
+      className={`inline-flex items-center gap-1 font-medium ${
         small ? "text-xs sm:text-[11px]" : "text-xs sm:text-[11px]"
       }`}
-      style={{ color: "#fff" }}
+      style={{ color: "var(--text-primary)" }}
     >
       <span
+        aria-hidden="true"
         className="inline-block size-1.5 rounded-full"
         style={{ backgroundColor: dotColor }}
       />
@@ -383,10 +376,10 @@ function RoundBadge({ name, small }: { name: string; small?: boolean }) {
 function EmptyBlock() {
   return (
     <div
-      className="flex h-32 items-center justify-center rounded-lg border border-dashed"
-      style={{ borderColor: "var(--gray-300)" }}
+      className="flex h-32 items-center justify-center rounded-xl border border-dashed"
+      style={{ borderColor: "var(--hairline-strong)" }}
     >
-      <p className="text-[12px]" style={{ color: "var(--gray-400)" }}>
+      <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
         등록된 데이터가 없습니다
       </p>
     </div>

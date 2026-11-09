@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SkeletonBlock } from "@/src/components/dashboard/dashboardPanel";
 
@@ -63,7 +64,7 @@ export function KpiStrip({
         } as React.CSSProperties
       }
       className={cn(
-        "grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-(--dash-border-subtle) bg-(--dash-border-subtle) lg:grid-cols-(--kpi-cols)",
+        "grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-(--dash-border-subtle) bg-(--dash-border-subtle) lg:grid-cols-(--kpi-cols)",
         "[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1",
         className
       )}
@@ -88,9 +89,9 @@ function KpiCell({ item, loading }: { item: KpiItem; loading: boolean }) {
         {item.href && !loading && (
           <span
             aria-hidden
-            className="text-(--dash-text-subtle) opacity-0 transition-opacity group-hover:opacity-100"
+            className="inline-flex opacity-0 transition-opacity group-hover:opacity-100"
           >
-            →
+            <ArrowRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
           </span>
         )}
       </p>
@@ -103,13 +104,13 @@ function KpiCell({ item, loading }: { item: KpiItem; loading: boolean }) {
         <>
           <p
             className={cn(
-              "mt-1.5 text-[26px] leading-none font-bold tracking-tight tabular-nums",
+              "mt-1.5 text-[26px] leading-none font-semibold tabular-nums",
               VALUE_TONE[item.tone ?? "default"]
             )}
           >
             {formatted}
             {item.unit && (
-              <span className="ml-0.5 text-[14px] font-semibold text-(--dash-text-muted)">
+              <span className="ml-0.5 text-[14px] font-medium text-(--dash-text-muted)">
                 {item.unit}
               </span>
             )}

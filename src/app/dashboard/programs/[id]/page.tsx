@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { useProgram, useUpdateProgram } from "@/src/hooks/usePrograms";
 import { useFormBuilderStore } from "@/src/stores/formbuilderstore";
 import { useEffect } from "react";
@@ -12,6 +13,7 @@ import { ApplicationStatsCards } from "@/src/components/dashboard/applicationSta
 import { ApplicationsTable } from "@/src/components/dashboard/applicationsTable";
 import { ChecklistEditor } from "@/src/components/review/checklistEditor";
 import { ReviewResultsList } from "@/src/components/review/reviewResultsList";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 type TabId = "form" | "applications" | "review";
 
@@ -56,7 +58,7 @@ export default function ProgramDetailPage() {
   if (error || !program) {
     return (
       <div className="p-8" style={{ color: "var(--accent-rose)" }}>
-        프로그램을 찾을 수 없습니다.
+        프로그램을 찾을 수 없습니다
       </div>
     );
   }
@@ -96,12 +98,13 @@ export default function ProgramDetailPage() {
             <div>
               <Link
                 href="/dashboard/programs"
-                className="text-sm transition"
-                style={{ color: "var(--gray-400)" }}
+                className="inline-flex items-center gap-1 text-sm transition"
+                style={{ color: "var(--text-muted)" }}
               >
-                ← 공고 목록
+                <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+                공고 목록
               </Link>
-              <h1 className="text-xl font-bold mt-1" style={{ color: "var(--gray-100)" }}>
+              <h1 className={`${PAGE_TITLE_CLASS} mt-1`}>
                 {program.title}
               </h1>
             </div>
@@ -111,7 +114,7 @@ export default function ProgramDetailPage() {
                   <span className="text-sm" style={{ color: "var(--accent-rose)" }}>
                     {updateProgram.error instanceof Error
                       ? updateProgram.error.message
-                      : "저장에 실패했습니다."}
+                      : "저장에 실패했습니다"}
                   </span>
                 )}
                 {!updateProgram.isError && isDirty && (
@@ -148,7 +151,7 @@ export default function ProgramDetailPage() {
                   className="pb-3 text-sm font-medium border-b-2 transition"
                   style={{
                     borderColor: activeTab === tab.id ? "var(--brand-500)" : "transparent",
-                    color: activeTab === tab.id ? "var(--brand-500)" : "var(--gray-400)",
+                    color: activeTab === tab.id ? "var(--brand-500)" : "var(--text-muted)",
                   }}
                 >
                   {tab.label}
@@ -163,13 +166,13 @@ export default function ProgramDetailPage() {
         {activeTab === "form" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--gray-100)" }}>
+              <h2 className="text-lg font-medium mb-4" style={{ color: "var(--text-primary)" }}>
                 양식 편집
               </h2>
               <FormBuilder />
             </div>
             <div>
-              <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--gray-100)" }}>
+              <h2 className="text-lg font-medium mb-4" style={{ color: "var(--text-primary)" }}>
                 미리보기
               </h2>
               <FormPreview />
@@ -197,10 +200,10 @@ function ApplicationsTab({ programId }: { programId: string }) {
   if (isLoading) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <p className="text-sm" style={{ color: "var(--gray-500)" }}>로딩 중...</p>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>로딩 중...</p>
       </div>
     );
   }
@@ -208,13 +211,13 @@ function ApplicationsTab({ programId }: { programId: string }) {
   if (error) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm" style={{ color: "var(--accent-rose)" }}>
           {error instanceof Error
             ? error.message
-            : "지원서 목록을 불러오지 못했습니다."}
+            : "지원서 목록을 불러오지 못했습니다"}
         </p>
       </div>
     );
@@ -224,7 +227,7 @@ function ApplicationsTab({ programId }: { programId: string }) {
     <div className="space-y-6">
       <ApplicationStatsCards applications={applications} />
       <div>
-        <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--gray-100)" }}>
+        <h2 className="text-lg font-medium mb-4" style={{ color: "var(--text-primary)" }}>
           지원서 목록
         </h2>
         <ApplicationsTable

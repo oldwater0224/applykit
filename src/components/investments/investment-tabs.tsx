@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { FilterChip } from "@/src/components/layout/filterChip";
 
 const TABS = [
   { value: "all", label: "전체" },
@@ -29,24 +30,19 @@ export default function InvestmentTabs() {
   };
 
   return (
-    <div className="flex gap-1 overflow-x-auto pb-1">
+    <div className="flex gap-1.5 overflow-x-auto pb-1">
       {TABS.map(({ value, label }) => {
         const isActive =
           currentRound === value ||
           (!searchParams.has("round") && value === "all");
         return (
-          <button
+          <FilterChip
             key={value}
+            active={isActive}
             onClick={() => handleTab(value)}
-            className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors sm:min-h-0"
-            style={{
-              backgroundColor: isActive ? "var(--navy-900)" : "transparent",
-              border: isActive ? "1px solid var(--brand-500)" : "1px solid var(--gray-400)",
-              color : isActive ? "var(--gray-100)" : "var(--gray-400)",
-            }}
           >
             {label}
-          </button>
+          </FilterChip>
         );
       })}
     </div>

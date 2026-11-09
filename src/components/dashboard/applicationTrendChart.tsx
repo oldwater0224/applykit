@@ -76,7 +76,7 @@ export function ApplicationTrendChart({
           <XAxis
             dataKey="date"
             tickFormatter={(v: string) => formatDateKey(v).short}
-            tick={{ fontSize: 10, fill: "var(--gray-500)" }}
+            tick={{ fontSize: 11, fill: "var(--text-muted)" }}
             axisLine={{ stroke: "var(--dash-border)" }}
             tickLine={false}
             interval="preserveStartEnd"
@@ -84,7 +84,7 @@ export function ApplicationTrendChart({
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fontSize: 10, fill: "var(--gray-500)" }}
+            tick={{ fontSize: 11, fill: "var(--text-muted)" }}
             axisLine={false}
             tickLine={false}
             tickCount={4}

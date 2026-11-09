@@ -4,8 +4,9 @@ import Link from "next/link";
 import {
   Application,
   APPLICATION_STATUS_LABEL,
-  APPLICATION_STATUS_STYLE,
+  APPLICATION_STATUS_TONE,
 } from "@/src/types/applications";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import type { FormSchema } from "@/src/types/form";
 import { extractCompanyName } from "@/src/lib/review/extractCompanyName";
 
@@ -27,11 +28,11 @@ export function ApplicationsTable({
   if (applications.length === 0) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <p className="text-sm" style={{ color: "var(--gray-500)" }}>
-          아직 접수된 지원서가 없습니다.
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          아직 접수된 지원서가 없습니다
         </p>
       </div>
     );
@@ -39,7 +40,7 @@ export function ApplicationsTable({
 
   return (
     <div
-      className="rounded-lg border overflow-hidden"
+      className="rounded-xl border overflow-hidden"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <div className="overflow-x-auto">
@@ -49,16 +50,16 @@ export function ApplicationsTable({
             style={{ backgroundColor: "var(--navy-800)", borderColor: "var(--navy-700)" }}
           >
             <tr>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 지원자
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 상태
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 제출일
               </th>
-              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--gray-300)" }}>
+              <th className="px-4 py-3 text-left font-medium" style={{ color: "var(--text-secondary)" }}>
                 작성 시작일
               </th>
             </tr>
@@ -103,14 +104,14 @@ function ApplicationRow({
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-200)" }}
+          style={{ color: "var(--text-primary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
           {companyName ? (
             <span className="font-medium">{displayName}</span>
           ) : (
-            <span className="font-mono text-xs" style={{ color: "var(--gray-500)" }}>
+            <span className="font-mono text-xs" style={{ color: "var(--text-muted)" }}>
               {displayName}
             </span>
           )}
@@ -123,18 +124,16 @@ function ApplicationRow({
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <span
-            className={`inline-block px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
-          >
+          <StatusBadge tone={APPLICATION_STATUS_TONE[application.status]}>
             {APPLICATION_STATUS_LABEL[application.status]}
-          </span>
+          </StatusBadge>
         </Link>
       </td>
       <td className="p-0">
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
@@ -147,7 +146,7 @@ function ApplicationRow({
         <Link
           href={href}
           className="block px-4 py-3 transition-colors"
-          style={{ color: "var(--gray-400)" }}
+          style={{ color: "var(--text-muted)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >

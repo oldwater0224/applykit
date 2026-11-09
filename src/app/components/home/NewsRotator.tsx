@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { StartupNews } from "@/src/types/news";
 import { formatKstYmdFromString } from "@/src/lib/datetime/kst";
 
@@ -111,14 +112,14 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
   );
 
   const pagerButtonClass =
-    "inline-flex min-h-11 items-center rounded px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
+    "inline-flex min-h-11 items-center gap-1 rounded-md px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
 
   return (
     <>
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2
-          className="shrink-0 text-[13px] font-semibold"
-          style={{ color: "#fff" }}
+          className="shrink-0 text-[13px] font-medium"
+          style={{ color: "var(--text-primary)" }}
         >
           스타트업 뉴스
         </h2>
@@ -126,7 +127,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
           {hasPages && (
             <span
               className="hidden text-xs sm:inline sm:text-[11px]"
-              style={{ color: "var(--gray-500)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               7초마다 자동 갱신
             </span>
@@ -139,13 +140,14 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
                 disabled={page <= 0}
                 aria-label="이전 뉴스"
                 className={pagerButtonClass}
-                style={{ color: "var(--gray-500)" }}
+                style={{ color: "var(--text-muted)" }}
               >
-                ← 이전
+                <ChevronLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+                이전
               </button>
               <span
                 className="px-1 text-xs tabular-nums sm:text-[12px]"
-                style={{ color: "var(--gray-500)" }}
+                style={{ color: "var(--text-muted)" }}
               >
                 {page + 1}/{totalPages}
               </span>
@@ -155,9 +157,10 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
                 disabled={page >= totalPages - 1}
                 aria-label="다음 뉴스"
                 className={pagerButtonClass}
-                style={{ color: "var(--gray-500)" }}
+                style={{ color: "var(--text-muted)" }}
               >
-                다음 →
+                다음
+                <ChevronRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               </button>
             </div>
           )}
@@ -179,7 +182,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block rounded-lg border px-4 py-3 transition-all hover:-translate-y-0.5"
+            className="group block rounded-xl border px-4 py-3 transition-all hover:-translate-y-0.5"
             style={{
               backgroundColor: "var(--navy-800)",
               borderColor: "var(--navy-700)",
@@ -193,8 +196,8 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
           >
             {item.roundName && (
               <span
-                className="mb-1.5 inline-flex items-center gap-1 text-xs sm:text-[10px] font-semibold"
-                style={{ color: "var(--gray-400)" }}
+                className="mb-1.5 inline-flex items-center gap-1 text-xs sm:text-[11px] font-medium"
+                style={{ color: "var(--text-secondary)" }}
               >
                 <span
                   className="inline-block size-1.5 rounded-full"
@@ -205,7 +208,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
                 />
                 {item.roundName}
                 {item.amountText && (
-                  <span style={{ color: "var(--gray-500)" }}>
+                  <span style={{ color: "var(--text-muted)" }}>
                     · {item.amountText}
                   </span>
                 )}
@@ -213,8 +216,8 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
             )}
 
             <h3
-              className="text-[13px] font-semibold leading-snug lg:text-[14px]"
-              style={{ color: "#fff" }}
+              className="text-[13px] font-medium leading-snug lg:text-[14px]"
+              style={{ color: "var(--text-primary)" }}
             >
               <span className="line-clamp-1">{item.title}</span>
             </h3>
@@ -222,7 +225,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
             {item.description && (
               <p
                 className="mt-1 text-[12px] leading-relaxed line-clamp-1 md:line-clamp-2"
-                style={{ color: "var(--gray-400)" }}
+                style={{ color: "var(--text-secondary)" }}
               >
                 {item.description}
               </p>
@@ -230,7 +233,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
 
             <div
               className="mt-2 flex items-center gap-1.5 text-xs sm:text-[11px]"
-              style={{ color: "var(--gray-500)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               {item.press && <span>{item.press}</span>}
               {item.press && publishedDate && <span>·</span>}

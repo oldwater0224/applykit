@@ -76,7 +76,7 @@ function SheetContent({
         {children}
         {showCloseButton && (
           <SheetPrimitive.Close className="absolute top-3.5 right-3.5 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none">
-            <XIcon className="size-4" />
+            <XIcon className="size-4" strokeWidth={1.5} aria-hidden="true" />
             <span className="sr-only">닫기</span>
           </SheetPrimitive.Close>
         )}

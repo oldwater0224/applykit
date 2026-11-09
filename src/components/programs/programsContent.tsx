@@ -11,10 +11,12 @@ import { useSearchParams } from "next/navigation";
 import { usePublicPrograms } from "@/src/hooks/usePrograms";
 import type { Program } from "@/src/types/program";
 import {
-  AVAILABILITY_BADGE_STYLE,
-  DDAY_BADGE_STYLE,
+  AVAILABILITY_BADGE_TONE,
+  getDdayBadgeTone,
   getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
+import { PageTitle } from "@/src/components/layout/pageTitle";
 
 export default function ProgramsContent() {
   const searchParams = useSearchParams();
@@ -35,22 +37,16 @@ export default function ProgramsContent() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* 헤더 */}
-      <div className="mb-6">
-        <h1
-          className="text-2xl font-bold tracking-high"
-          style={{ color: "var(--gray-100)" }}
-        >
-          지원하기
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--gray-500)" }}>
-          스타트업 지원 프로그램에 지원하세요
-        </p>
-      </div>
+      <PageTitle
+        className="mb-6"
+        title="지원하기"
+        description="스타트업 지원 프로그램에 지원하세요"
+      />
 
       {/* 기업 상세에서 진입한 경우 안내 */}
       {companyParam && (
         <div
-          className="mb-6 rounded-lg border px-4 py-3"
+          className="mb-6 rounded-xl border px-4 py-3"
           style={{
             borderColor: "var(--brand-500)",
             backgroundColor: "rgba(59, 130, 246, 0.1)",
@@ -69,12 +65,12 @@ export default function ProgramsContent() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="프로그램명, 기관명으로 검색..."
-          className="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
+          placeholder="프로그램명, 기관명으로 검색"
+          className="w-full rounded-md border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
           style={{
             backgroundColor: "var(--navy-800)",
             borderColor: "var(--navy-600)",
-            color: "var(--gray-100)",
+            color: "var(--text-primary)",
           }}
         />
       </div>
@@ -103,14 +99,14 @@ export default function ProgramsContent() {
         <>
           {filtered.length === 0 ? (
             <div
-              className="flex h-48 items-center justify-center rounded-lg border border-dashed"
+              className="flex h-48 items-center justify-center rounded-xl border border-dashed"
               style={{ borderColor: "var(--navy-600)" }}
             >
               <div className="text-center">
-                <p className="text-sm" style={{ color: "var(--gray-500)" }}>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                   {search
-                    ? `"${search}" 검색 결과가 없습니다.`
-                    : "진행 중인 공고가 없습니다."}
+                    ? `"${search}" 검색 결과가 없습니다`
+                    : "진행 중인 공고가 없습니다"}
                 </p>
               </div>
             </div>
@@ -140,6 +136,7 @@ function ProgramCard({
 }) {
   // 상세 페이지와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
   const display = getProgramDisplay(program, new Date());
+  const ddayTone = getDdayBadgeTone(display);
 
   const href = companyId
     ? `/programs/${program.id}?company=${companyId}`
@@ -148,8 +145,8 @@ function ProgramCard({
   return (
     <Link
       href={href}
-      className="block rounded-xl border p-6 transition-all"
-      style={{ borderColor: "var(--card-border)" }}
+      className="block rounded-xl border p-5 transition-all"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.borderColor = "var(--brand-500)")
       }
@@ -159,33 +156,27 @@ function ProgramCard({
     >
       {/* 뱃지 */}
       <div className="mb-3 flex items-center gap-2">
-        <span
-          className="rounded-full border px-2 py-0.5 text-xs"
-          style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
-        >
+        <StatusBadge tone={AVAILABILITY_BADGE_TONE[display.statusTone]}>
           {display.statusLabel}
-        </span>
-        {display.dDayLabel && (
-          <span
-            className="rounded-full border px-2 py-0.5 text-xs"
-            style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
-          >
+        </StatusBadge>
+        {ddayTone && (
+          <StatusBadge tone={ddayTone} className="tabular-nums">
             {display.dDayLabel}
-          </span>
+          </StatusBadge>
         )}
       </div>
 
       {/* 기관명 */}
       {program.organizations && (
-        <p className="mb-1 text-xs" style={{ color: "var(--gray-500)" }}>
+        <p className="mb-1 text-xs" style={{ color: "var(--text-muted)" }}>
           {program.organizations.name}
         </p>
       )}
 
       {/* 제목 */}
       <h2
-        className="line-clamp-2 text-lg font-semibold"
-        style={{ color: "var(--gray-100)" }}
+        className="line-clamp-2 text-lg font-medium"
+        style={{ color: "var(--text-primary)" }}
       >
         {program.title}
       </h2>
@@ -194,7 +185,7 @@ function ProgramCard({
       {program.description && (
         <p
           className="mt-2 line-clamp-2 text-sm"
-          style={{ color: "var(--gray-500)" }}
+          style={{ color: "var(--text-secondary)" }}
         >
           {program.description}
         </p>
@@ -202,7 +193,7 @@ function ProgramCard({
 
       {/* 마감일 */}
       {display.deadlineLabel && (
-        <p className="mt-3 text-xs" style={{ color: "var(--gray-500)" }}>
+        <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
           접수 마감: {display.deadlineLabel}
         </p>
       )}

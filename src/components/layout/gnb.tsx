@@ -8,6 +8,7 @@ import {
   type SearchResult,
 } from "@/src/app/actions/searchAction";
 import { createClient } from "@/src/lib/supabase/client";
+import { LayoutGrid, Menu, Search, X } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", label: "홈" },
@@ -143,7 +144,7 @@ export default function GNB() {
       <nav className="mx-auto flex h-12 max-w-(--max-width) items-center justify-between px-4 lg:px-6">
         {/* 로고 */}
         <Link href="/" className="mr-8 flex items-center gap-1.5">
-          <span className="text-base font-bold tracking-tight text-white">
+          <span className="text-base font-bold text-(--text-primary)">
             Apply<span style={{ color: "var(--brand-500)" }}>Kit</span>
           </span>
         </Link>
@@ -156,7 +157,7 @@ export default function GNB() {
                 href={href}
                 className="relative px-3 py-1.5 text-[13px] font-medium transition-colors"
                 style={{
-                  color: isActive(href) ? "#ffffff" : "var(--gray-400)",
+                  color: isActive(href) ? "var(--text-primary)" : "var(--text-muted)",
                 }}
               >
                 {label}
@@ -185,13 +186,13 @@ export default function GNB() {
                 backgroundColor: searchOpen
                   ? "var(--navy-700)"
                   : "var(--navy-800)",
-                color: "var(--gray-400)",
+                color: "var(--text-muted)",
                 border: searchOpen
                   ? "1px solid var(--navy-600)"
                   : "1px solid var(--navy-700)",
               }}
             >
-              <SearchIcon size={12} />
+              <Search size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               {searchOpen ? (
                 <input
                   ref={inputRef}
@@ -199,16 +200,16 @@ export default function GNB() {
                   value={searchQuery}
                   onChange={(e) => handleSearchInput(e.target.value)}
                   placeholder="기업, 투자자 검색"
-                  className="w-full bg-transparent text-[12px] text-white outline-none placeholder:text-gray-500"
+                  className="w-full bg-transparent text-[12px] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
                 />
               ) : (
                 <>
                   <span>통합검색</span>
                   <kbd
-                    className="ml-auto rounded px-1 py-0.5 text-xs sm:text-[10px]"
+                    className="ml-auto rounded px-1 py-0.5 text-xs sm:text-[11px]"
                     style={{
                       backgroundColor: "var(--navy-700)",
-                      color: "var(--gray-500)",
+                      color: "var(--text-muted)",
                     }}
                   >
                     ⌘K
@@ -220,23 +221,24 @@ export default function GNB() {
             {/* 검색 결과 드롭다운 */}
             {searchOpen && searchQuery.length > 0 && (
               <div
-                className="absolute right-0 top-9 w-80 overflow-hidden rounded-lg border shadow-xl"
+                className="absolute right-0 top-9 w-80 overflow-hidden rounded-xl border shadow-xl"
                 style={{
                   backgroundColor: "var(--card-bg)",
-                  borderColor: "var(--gray-200)",
+                  borderColor: "var(--hairline-strong)",
                 }}
               >
                 {isSearching ? (
                   <div className="flex items-center justify-center py-8">
                     <div
-                      className="size-4 animate-spin rounded-full border-2 border-t-transparent"
-                      style={{ borderColor: "var(--brand-500)" }}
+                      role="status"
+                      aria-label="검색 중"
+                      className="size-4 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
                     />
                   </div>
                 ) : results.length === 0 ? (
                   <div
                     className="px-4 py-8 text-center text-[13px]"
-                    style={{ color: "var(--gray-400)" }}
+                    style={{ color: "var(--text-muted)" }}
                   >
                     검색 결과가 없습니다
                   </div>
@@ -246,7 +248,7 @@ export default function GNB() {
                       <>
                         <div
                           className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
-                          style={{ color: "var(--gray-400)" }}
+                          style={{ color: "var(--text-muted)" }}
                         >
                           스타트업
                         </div>
@@ -259,25 +261,22 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition "
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
-                                style={{
-                                  backgroundColor: "var(--brand-50)",
-                                  color: "var(--brand-600)",
-                                }}
+                                aria-hidden="true"
+                                className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-(--hairline) bg-white/[0.04] text-xs sm:text-[11px] font-medium text-(--text-muted)"
                               >
                                 S
                               </span>
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-100)" }}
+                                  style={{ color: "var(--text-primary)" }}
                                 >
                                   {r.name}
                                 </p>
                                 {r.subtitle && (
                                   <p
                                     className="truncate text-xs sm:text-[11px]"
-                                    style={{ color: "var(--gray-400)" }}
+                                    style={{ color: "var(--text-muted)" }}
                                   >
                                     {r.subtitle}
                                   </p>
@@ -292,7 +291,7 @@ export default function GNB() {
                       <>
                         <div
                           className="px-3 py-1.5 text-xs sm:text-[11px] font-medium"
-                          style={{ color: "var(--gray-400)" }}
+                          style={{ color: "var(--text-muted)" }}
                         >
                           투자자
                         </div>
@@ -305,25 +304,22 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition"
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[10px] font-bold"
-                                style={{
-                                  backgroundColor: "#ecfdf5",
-                                  color: "var(--accent-emerald)",
-                                }}
+                                aria-hidden="true"
+                                className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-(--hairline) bg-white/[0.04] text-xs sm:text-[11px] font-medium text-(--text-muted)"
                               >
                                 V
                               </span>
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="truncate font-medium"
-                                  style={{ color: "var(--gray-100)" }}
+                                  style={{ color: "var(--text-primary)" }}
                                 >
                                   {r.name}
                                 </p>
                                 {r.subtitle && (
                                   <p
                                     className="truncate text-xs sm:text-[11px]"
-                                    style={{ color: "var(--gray-400)" }}
+                                    style={{ color: "var(--text-muted)" }}
                                   >
                                     {r.subtitle}
                                   </p>
@@ -341,13 +337,13 @@ export default function GNB() {
           {isOrgAdmin && (
             <Link
               href="/dashboard"
-              className="flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
               style={{
                 backgroundColor: "var(--brand-500)",
                 color: "#fff",
               }}
             >
-              <DashboardIcon />
+              <LayoutGrid size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
               대시보드
             </Link>
           )}
@@ -355,7 +351,7 @@ export default function GNB() {
             <button
               onClick={handleLogout}
               className="rounded-md px-3 py-1 text-[12px] font-medium transition"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               로그아웃
             </button>
@@ -363,7 +359,7 @@ export default function GNB() {
             <Link
               href="/login"
               className="rounded-md px-3 py-1 text-[12px] font-medium transition"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-muted)" }}
             >
               로그인
             </Link>
@@ -374,11 +370,15 @@ export default function GNB() {
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex size-8 items-center justify-center rounded md:hidden"
-          style={{ color: "var(--gray-400)" }}
+          className="flex size-8 items-center justify-center rounded-md md:hidden"
+          style={{ color: "var(--text-muted)" }}
           aria-label="메뉴"
         >
-          {mobileOpen ? <XIcon /> : <MenuIcon />}
+          {mobileOpen ? (
+            <X size={16} strokeWidth={1.5} aria-hidden="true" />
+          ) : (
+            <Menu size={16} strokeWidth={1.5} aria-hidden="true" />
+          )}
         </button>
       </nav>
 
@@ -396,8 +396,8 @@ export default function GNB() {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchInput(e.target.value)}
-              placeholder="기업, 투자자 검색..."
-              className="w-full rounded-md px-3 py-2 text-[13px] text-white outline-none placeholder:text-gray-500"
+              placeholder="기업, 투자자 검색"
+              className="w-full rounded-md px-3 py-2 text-[13px] text-(--text-primary) outline-none placeholder:text-(--text-muted)"
               style={{
                 backgroundColor: "var(--navy-800)",
                 border: "1px solid var(--navy-700)",
@@ -412,12 +412,12 @@ export default function GNB() {
                       handleResultClick(r);
                       setMobileOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px]"
-                    style={{ color: "var(--gray-300)" }}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px]"
+                    style={{ color: "var(--text-secondary)" }}
                   >
                     <span
-                      className="text-xs sm:text-[10px]"
-                      style={{ color: "var(--gray-500)" }}
+                      className="text-xs sm:text-[11px]"
+                      style={{ color: "var(--text-muted)" }}
                     >
                       {r.type === "company" ? "기업" : "투자"}
                     </span>
@@ -436,7 +436,7 @@ export default function GNB() {
                   onClick={() => setMobileOpen(false)}
                   className="block rounded-md px-3 py-2 text-[13px] font-medium transition-colors"
                   style={{
-                    color: isActive(href) ? "#ffffff" : "var(--gray-400)",
+                    color: isActive(href) ? "var(--text-primary)" : "var(--text-muted)",
                     backgroundColor: isActive(href)
                       ? "var(--navy-800)"
                       : "transparent",
@@ -457,7 +457,7 @@ export default function GNB() {
                     backgroundColor: "var(--brand-500)",
                   }}
                 >
-                  <DashboardIcon />
+                  <LayoutGrid size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
                   대시보드
                 </Link>
               </li>
@@ -466,73 +466,5 @@ export default function GNB() {
         </div>
       )}
     </header>
-  );
-}
-
-function DashboardIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
-    </svg>
-  );
-}
-
-function SearchIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
-
-function MenuIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
   );
 }

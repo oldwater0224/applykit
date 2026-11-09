@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useProgramReviews } from "@/src/hooks/useReviews";
 import {
   REVIEW_RESULT_LABEL,
-  REVIEW_RESULT_STYLE,
+  REVIEW_RESULT_TONE,
 } from "@/src/types/review";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
+import { FilterChip } from "@/src/components/layout/filterChip";
 import type { ReviewResult } from "@/src/types/review";
 
 interface ReviewResultsListProps {
@@ -44,10 +46,10 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
   if (isLoading) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
-        <p className="text-sm text-center" style={{ color: "var(--gray-400)" }}>
+        <p className="text-sm text-center" style={{ color: "var(--text-muted)" }}>
           심사 결과 로딩 중...
         </p>
       </section>
@@ -57,13 +59,13 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
   if (error) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm text-center" style={{ color: "var(--accent-rose)" }}>
           {error instanceof Error
             ? error.message
-            : "심사 결과를 불러오지 못했습니다."}
+            : "심사 결과를 불러오지 못했습니다"}
         </p>
       </section>
     );
@@ -71,31 +73,28 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
 
   return (
     <section
-      className="rounded-lg border p-6 space-y-4"
+      className="rounded-xl border p-6 space-y-4"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {/* 헤더 */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-lg font-semibold" style={{ color: "var(--gray-100)" }}>
+        <h2 className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>
           심사 결과
         </h2>
 
         {/* 필터 버튼 그룹 */}
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {FILTERS.map((f) => (
-            <button
+            <FilterChip
               key={f.id}
-              type="button"
+              active={filter === f.id}
               onClick={() => setFilter(f.id)}
-              className="px-3 py-1.5 text-sm border rounded-md transition"
-              style={{
-                backgroundColor: filter === f.id ? "var(--brand-600)" : "transparent",
-                color: filter === f.id ? "#fff" : "var(--gray-400)",
-                borderColor: filter === f.id ? "var(--brand-600)" : "var(--navy-600)",
-              }}
             >
-              {f.label} ({counts[f.id]})
-            </button>
+              {f.label}{" "}
+              <span className="tabular-nums" style={{ color: "var(--text-muted)" }}>
+                ({counts[f.id]})
+              </span>
+            </FilterChip>
           ))}
         </div>
       </div>
@@ -104,16 +103,16 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
       {results.length === 0 ? (
         <div
           className="p-8 border border-dashed rounded-md text-sm text-center"
-          style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
+          style={{ borderColor: "var(--navy-600)", color: "var(--text-muted)" }}
         >
-          아직 심사한 지원서가 없습니다.
+          아직 심사한 지원서가 없습니다
         </div>
       ) : filtered.length === 0 ? (
         <div
           className="p-8 border border-dashed rounded-md text-sm text-center"
-          style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
+          style={{ borderColor: "var(--navy-600)", color: "var(--text-muted)" }}
         >
-          해당하는 결과가 없습니다.
+          해당하는 결과가 없습니다
         </div>
       ) : (
         <ReviewResultsTable results={filtered} programId={programId} />
@@ -134,16 +133,16 @@ function ReviewResultsTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b" style={{ borderColor: "var(--navy-700)" }}>
-            <th className="text-left px-3 py-2 font-medium" style={{ color: "var(--gray-300)" }}>
+            <th className="text-left px-3 py-2 font-medium" style={{ color: "var(--text-secondary)" }}>
               회사명
             </th>
-            <th className="text-right px-3 py-2 font-medium" style={{ color: "var(--gray-300)" }}>
+            <th className="text-right px-3 py-2 font-medium" style={{ color: "var(--text-secondary)" }}>
               총점
             </th>
-            <th className="text-center px-3 py-2 font-medium" style={{ color: "var(--gray-300)" }}>
+            <th className="text-center px-3 py-2 font-medium" style={{ color: "var(--text-secondary)" }}>
               판정
             </th>
-            <th className="text-right px-3 py-2 font-medium" style={{ color: "var(--gray-300)" }}>
+            <th className="text-right px-3 py-2 font-medium" style={{ color: "var(--text-secondary)" }}>
               심사일
             </th>
           </tr>
@@ -179,12 +178,12 @@ function ReviewResultRow({
         <Link
           href={href}
           className={linkCell}
-          style={{ color: "var(--gray-200)" }}
+          style={{ color: "var(--text-primary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
           {result.company_name ?? (
-            <span style={{ color: "var(--gray-500)" }}>(이름 없음)</span>
+            <span style={{ color: "var(--text-muted)" }}>(이름 없음)</span>
           )}
         </Link>
       </td>
@@ -192,7 +191,7 @@ function ReviewResultRow({
         <Link
           href={href}
           className={linkCell}
-          style={{ color: "var(--gray-200)" }}
+          style={{ color: "var(--text-primary)" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
@@ -206,11 +205,9 @@ function ReviewResultRow({
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <span
-            className={`inline-block px-2 py-0.5 text-xs border rounded-full ${REVIEW_RESULT_STYLE[resultKey]}`}
-          >
+          <StatusBadge tone={REVIEW_RESULT_TONE[resultKey]}>
             {REVIEW_RESULT_LABEL[resultKey]}
-          </span>
+          </StatusBadge>
         </Link>
       </td>
       <td className="p-0 text-right">
@@ -220,7 +217,7 @@ function ReviewResultRow({
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <span className="text-xs" style={{ color: "var(--gray-400)" }}>
+          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
             {new Date(result.reviewed_at).toLocaleDateString("ko-KR")}
           </span>
         </Link>

@@ -6,7 +6,7 @@ import { FormField } from '@/src/types/form'
 const previewInputStyle: React.CSSProperties = {
   backgroundColor: 'var(--navy-800)',
   borderColor: 'var(--navy-600)',
-  color: 'var(--gray-100)',
+  color: 'var(--text-primary)',
 }
 
 export function FormPreview() {
@@ -14,13 +14,13 @@ export function FormPreview() {
 
   return (
     <div
-      className="rounded-lg border p-6"
+      className="rounded-xl border p-6"
       style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
     >
       <form className="space-y-4">
         {schema.fields.length === 0 ? (
-          <p className="text-center py-8" style={{ color: 'var(--gray-500)' }}>
-            왼쪽에서 필드를 추가하면 여기에 미리보기가 표시됩니다.
+          <p className="text-center py-8" style={{ color: 'var(--text-muted)' }}>
+            왼쪽에서 필드를 추가하면 여기에 미리보기가 표시됩니다
           </p>
         ) : (
           schema.fields.map((field) => (
@@ -47,7 +47,7 @@ function PreviewField({ field }: { field: FormField }) {
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--gray-300)' }}>
+      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
         {field.label}
         {field.required && <span className="ml-1" style={{ color: 'var(--accent-rose)' }}>*</span>}
       </label>
@@ -125,7 +125,7 @@ function PreviewField({ field }: { field: FormField }) {
           {field.options?.map((opt, i) => (
             <label key={i} className="flex items-center gap-2">
               <input type="radio" name={field.id} disabled />
-              <span className="text-sm" style={{ color: 'var(--gray-200)' }}>{opt}</span>
+              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{opt}</span>
             </label>
           ))}
         </div>
@@ -136,7 +136,7 @@ function PreviewField({ field }: { field: FormField }) {
           {field.options?.map((opt, i) => (
             <label key={i} className="flex items-center gap-2">
               <input type="checkbox" disabled />
-              <span className="text-sm" style={{ color: 'var(--gray-200)' }}>{opt}</span>
+              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{opt}</span>
             </label>
           ))}
         </div>

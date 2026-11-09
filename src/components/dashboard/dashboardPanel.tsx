@@ -37,7 +37,7 @@ export function DashboardPanel({
       id={id}
       aria-labelledby={headingId}
       className={cn(
-        "flex min-w-0 scroll-mt-4 flex-col overflow-hidden rounded-lg border border-(--dash-border-subtle) bg-(--dash-panel-bg)",
+        "flex min-w-0 scroll-mt-4 flex-col overflow-hidden rounded-xl border border-(--dash-border-subtle) bg-(--dash-panel-bg)",
         className
       )}
     >

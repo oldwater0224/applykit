@@ -53,7 +53,7 @@ export function DashboardTopbar({
         aria-label="메뉴 열기"
         aria-expanded={mobileOpen}
       >
-        <Menu className="size-5" aria-hidden />
+        <Menu size={16} strokeWidth={1.5} aria-hidden="true" />
       </button>
 
       {/* 현재 위치 */}
@@ -70,8 +70,10 @@ export function DashboardTopbar({
               <Fragment key={`${crumb.label}-${i}`}>
                 {i > 0 && (
                   <ChevronRight
-                    className="size-3.5 shrink-0 text-(--dash-text-subtle)"
-                    aria-hidden
+                    size={14}
+                    strokeWidth={1.5}
+                    className="shrink-0 text-(--dash-text-subtle)"
+                    aria-hidden="true"
                   />
                 )}
                 <li className="min-w-0 truncate">
@@ -111,7 +113,7 @@ export function DashboardTopbar({
         aria-label="서비스 홈으로 이동"
       >
         <span className="hidden sm:inline">서비스 홈</span>
-        <ArrowUpRight className="size-3.5" aria-hidden />
+        <ArrowUpRight size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
       </Link>
 
       {/* 기관 / 사용자 */}
@@ -197,8 +199,10 @@ function ArchiveSearchForm({
       <label className="relative block">
         <span className="sr-only">심사 아카이브 회사 검색</span>
         <Search
-          className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-(--dash-text-subtle)"
-          aria-hidden
+          size={14}
+          strokeWidth={1.5}
+          className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-(--dash-text-subtle)"
+          aria-hidden="true"
         />
         <input
           type="search"

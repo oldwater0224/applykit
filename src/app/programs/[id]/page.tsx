@@ -5,16 +5,19 @@
 
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
 import {
-  AVAILABILITY_BADGE_STYLE,
-  DDAY_BADGE_STYLE,
+  AVAILABILITY_BADGE_TONE,
+  getDdayBadgeTone,
   getProgramDisplay,
   type ProgramAvailabilityView,
 } from "@/src/components/programs/programAvailability";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 export default function ProgramPublicDetailPage() {
   const params = useParams();
@@ -37,8 +40,9 @@ export default function ProgramPublicDetailPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div
-          className="size-8 animate-spin rounded-full border-2 border-t-transparent bg-blue-500" 
-          
+          role="status"
+          aria-label="불러오는 중"
+          className="size-8 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
         />
       </div>
     );
@@ -47,8 +51,8 @@ export default function ProgramPublicDetailPage() {
   if (programError || !program) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <p className="mb-4" style={{ color: "var(--gray-500)" }}>
-          공고를 찾을 수 없습니다.
+        <p className="mb-4" style={{ color: "var(--text-secondary)" }}>
+          공고를 찾을 수 없습니다
         </p>
         <Link
           href="/programs"
@@ -63,6 +67,7 @@ export default function ProgramPublicDetailPage() {
 
   // 목록 카드와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
   const display = getProgramDisplay(program, new Date());
+  const ddayTone = getDdayBadgeTone(display);
   const availability = display.view;
 
   // 지원 페이지로 이동 (company 파라미터 전달)
@@ -78,51 +83,46 @@ export default function ProgramPublicDetailPage() {
       {/* 뒤로가기 */}
       <Link
         href="/programs"
-        className="mb-6 inline-flex items-center text-sm transition"
-        style={{ color: "var(--gray-400)" }}
+        className="mb-6 inline-flex items-center gap-1 text-sm transition"
+        style={{ color: "var(--text-muted)" }}
       >
-        ← 공고 목록
+        <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+        공고 목록
       </Link>
 
       <div
-        className="rounded-xl border p-8"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         {/* 상태 뱃지 */}
         <div className="mb-4 flex items-center gap-2">
-          <span
-            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-            style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
-          >
+          <StatusBadge tone={AVAILABILITY_BADGE_TONE[display.statusTone]}>
             {display.statusLabel}
-          </span>
-          {display.dDayLabel && (
-            <span
-              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
-            >
+          </StatusBadge>
+          {ddayTone && (
+            <StatusBadge tone={ddayTone} className="tabular-nums">
               {display.dDayLabel}
-            </span>
+            </StatusBadge>
           )}
         </div>
 
         {/* 기관명 */}
         {program.organizations && (
-          <p className="mb-1 text-sm" style={{ color: "var(--gray-500)" }}>
+          <p className="mb-1 text-sm" style={{ color: "var(--text-muted)" }}>
             {program.organizations.name}
           </p>
         )}
 
         {/* 제목 */}
-        <h1 className="text-2xl font-bold" style={{ color: "var(--gray-100)" }}>
+        <h1 className={PAGE_TITLE_CLASS}>
           {program.title}
         </h1>
 
         {/* 마감 정보 */}
         {display.deadlineLabel && (
           <div className="mt-4 flex items-center gap-3 text-sm">
-            <span style={{ color: "var(--gray-500)" }}>접수 마감:</span>
-            <span style={{ color: "var(--gray-100)" }}>
+            <span style={{ color: "var(--text-muted)" }}>접수 마감:</span>
+            <span style={{ color: "var(--text-primary)" }}>
               {display.deadlineLabel}
             </span>
           </div>
@@ -134,12 +134,12 @@ export default function ProgramPublicDetailPage() {
             className="mt-6 border-t pt-6"
             style={{ borderColor: "var(--navy-700)" }}
           >
-            <h2 className="mb-2 text-sm font-medium" style={{ color: "var(--gray-300)" }}>
+            <h2 className="mb-2 text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               공고 내용
             </h2>
             <p
               className="whitespace-pre-wrap wrap-break-word text-sm"
-              style={{ color: "var(--gray-400)" }}
+              style={{ color: "var(--text-secondary)" }}
             >
               {program.description}
             </p>
@@ -181,11 +181,11 @@ function ApplyButton({
     return (
       <div className="space-y-3">
         <p className="text-sm" style={{ color: "var(--accent-emerald)" }}>
-          이미 이 공고에 지원서를 제출하셨습니다.
+          이미 이 공고에 지원서를 제출하셨습니다
         </p>
         <Link
           href={`/applications/${existingApplication.id}`}
-          className="inline-block rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+          className="inline-block rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
           style={{ backgroundColor: "var(--brand-600)" }}
         >
           내 지원서 보기
@@ -199,14 +199,14 @@ function ApplyButton({
     if (!canApply) {
       return (
         <div className="space-y-3">
-          <p className="text-sm" style={{ color: "var(--gray-400)" }}>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             작성 중인 지원서가 있지만 더 이상 작성할 수 없습니다.{" "}
             {!availability.availability.ok &&
               PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
           </p>
           <button
             disabled
-            className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+            className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
             style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
           >
             마감됨
@@ -217,11 +217,11 @@ function ApplyButton({
     return (
       <div className="space-y-3">
         <p className="text-sm" style={{ color: "var(--accent-amber)" }}>
-          작성 중인 지원서가 있습니다.
+          작성 중인 지원서가 있습니다
         </p>
         <button
           onClick={onApply}
-          className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+          className="rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
           style={{ backgroundColor: "var(--brand-600)" }}
         >
           이어서 작성하기
@@ -235,7 +235,7 @@ function ApplyButton({
     return (
       <button
         disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+        className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
         {availability.disabledLabel}
@@ -247,7 +247,7 @@ function ApplyButton({
     return (
       <button
         disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+        className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
         지원 양식 준비 중
@@ -258,7 +258,7 @@ function ApplyButton({
   return (
     <button
       onClick={onApply}
-      className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+      className="rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
       style={{ backgroundColor: "var(--brand-600)" }}
     >
       지원하기

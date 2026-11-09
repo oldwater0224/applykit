@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`h-full antialiased ${pretendard.className}`}
         style={{
           backgroundColor: "var(--page-bg)",
-          color: "var(--gray-900)",
+          color: "var(--text-primary)",
         }}
       >
         <QueryProvider>

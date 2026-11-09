@@ -6,6 +6,7 @@
 // failed: 불합격 (심사 결과 불합격)
 // (reviewing은 MVP에서 제거 - 심사는 review_results 테이블에서 독립 관리)
 
+import type { BadgeTone } from "./badge";
 import { FormSchema } from "./form";
 
 // union 타입으로 좁혀두면 switch/if 분기 시 누락 케이스를 컴파일 타임에 잡음
@@ -76,11 +77,11 @@ export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   passed : "합격",
   failed : "불합격",
 } as const;
-// 상태별 뱃지 스타일 - UI 전역에서 공통으로 사용
-// as const로 모든 상태 누락 시 컴파일 에러 유도
-export const APPLICATION_STATUS_STYLE: Record<ApplicationStatus, string> = {
-  draft: "bg-amber-50 text-amber-700 border-amber-200",
-  submitted: "bg-blue-50 text-blue-700 border-blue-200",
-  passed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  failed: "bg-rose-50 text-rose-700 border-rose-200",
-} as const;
+// 상태별 배지 톤 - StatusBadge의 tone으로 넘긴다
+// Record<ApplicationStatus, ...>라 상태가 추가되면 여기서 컴파일 에러가 난다
+export const APPLICATION_STATUS_TONE: Record<ApplicationStatus, BadgeTone> = {
+  draft: "muted",
+  submitted: "brand",
+  passed: "success",
+  failed: "danger",
+};

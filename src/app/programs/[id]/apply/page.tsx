@@ -20,6 +20,7 @@ import { FormSchema } from "@/src/types/form";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
 import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
 import { formatDeadlineKst } from "@/src/lib/datetime/kst";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 export default function ApplyPage() {
   const params = useParams();
@@ -164,7 +165,7 @@ export default function ApplyPage() {
       if (field.type === "file") {
         const hasFile = uploadedFiles.some((f) => f.field_key === field.id);
         if (!hasFile) {
-          newErrors[field.id] = "파일을 업로드해주세요.";
+          newErrors[field.id] = "파일을 업로드해주세요";
         }
         continue;
       }
@@ -177,7 +178,7 @@ export default function ApplyPage() {
         (Array.isArray(v) && v.length === 0);
 
       if (isEmpty) {
-        newErrors[field.id] = "필수 항목입니다.";
+        newErrors[field.id] = "필수 항목입니다";
       }
     }
 
@@ -214,7 +215,7 @@ export default function ApplyPage() {
 
   if (isProgramLoading || isApplicationLoading) {
     return (
-      <div className="p-8 text-center" style={{ color: "var(--gray-400)" }}>
+      <div className="p-8 text-center" style={{ color: "var(--text-muted)" }}>
         로딩 중...
       </div>
     );
@@ -223,7 +224,7 @@ export default function ApplyPage() {
   if (programError || !program) {
     return (
       <div className="p-8 text-center" style={{ color: "var(--accent-rose)" }}>
-        프로그램을 찾을 수 없습니다.
+        프로그램을 찾을 수 없습니다
       </div>
     );
   }
@@ -232,13 +233,13 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
-          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+          <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>
             이미 제출된 지원서입니다
           </h1>
-          <p className="mb-6" style={{ color: "var(--gray-400)" }}>
+          <p className="mb-6" style={{ color: "var(--text-muted)" }}>
             {program.title}에 이미 지원하셨습니다.<br/>
             이미 지원한 지원서는 수정이
             불가합니다.
@@ -269,15 +270,15 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
-          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+          <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>
             {availability.tone === "closed"
               ? "접수가 마감된 공고입니다"
               : "지원할 수 없는 공고입니다"}
           </h1>
-          <p className="mb-6" style={{ color: "var(--gray-400)" }}>
+          <p className="mb-6" style={{ color: "var(--text-muted)" }}>
             {PROGRAM_AVAILABILITY_ERROR[availability.availability.reason]}
             {existingApplication && (
               <>
@@ -290,7 +291,7 @@ export default function ApplyPage() {
             <Link
               href={`/programs/${programId}`}
               className="inline-block px-4 py-2 rounded-md border transition"
-              style={{ borderColor: "var(--navy-600)", color: "var(--gray-300)" }}
+              style={{ borderColor: "var(--navy-600)", color: "var(--text-secondary)" }}
             >
               공고로 돌아가기
             </Link>
@@ -311,14 +312,14 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
-          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--gray-100)" }}>
+          <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>
             아직 준비 중입니다
           </h1>
-          <p style={{ color: "var(--gray-400)" }}>
-            이 공고의 지원 양식이 아직 등록되지 않았습니다.
+          <p style={{ color: "var(--text-muted)" }}>
+            이 공고의 지원 양식이 아직 등록되지 않았습니다
           </p>
         </div>
       </div>
@@ -344,17 +345,17 @@ export default function ApplyPage() {
         style={{ backgroundColor: "var(--navy-900)", borderColor: "var(--navy-700)" }}
       >
         <div className="max-w-3xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold" style={{ color: "var(--gray-100)" }}>
+          <h1 className={PAGE_TITLE_CLASS}>
             {program.title}
           </h1>
           {program.deadline && (
-            <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
+            <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
               접수 마감:{" "}
               {formatDeadlineKst(program.deadline)}
             </p>
           )}
           <div className="mt-3">
-            <div className="flex justify-between text-xs mb-1" style={{ color: "var(--gray-400)" }}>
+            <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-muted)" }}>
               <span>작성 진행률</span>
               <span>{progress}%</span>
             </div>
@@ -401,7 +402,7 @@ export default function ApplyPage() {
             className="mt-4 p-3 border rounded-md text-sm"
             style={{ borderColor: "var(--accent-rose)", backgroundColor: "rgba(244, 63, 94, 0.1)", color: "var(--accent-rose)" }}
           >
-            필수 항목 {Object.keys(errors).length}개를 입력해주세요.
+            필수 항목 {Object.keys(errors).length}개를 입력해주세요
           </div>
         )}
 
@@ -412,7 +413,7 @@ export default function ApplyPage() {
           >
             {mutationError instanceof Error
               ? mutationError.message
-              : "저장 중 오류가 발생했습니다."}
+              : "저장 중 오류가 발생했습니다"}
           </div>
         )}
 

@@ -1,16 +1,19 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useOperatorApplication } from "@/src/hooks/useApplication";
 import { useApplicationFiles } from "@/src/hooks/useApplicationFiles";
 import { ApplicationReadOnlyView } from "@/src/components/application/applicationReadOnlyView";
 import {
   APPLICATION_STATUS_LABEL,
-  APPLICATION_STATUS_STYLE,
+  APPLICATION_STATUS_TONE,
 } from "@/src/types/applications";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import type { FormSchema } from "@/src/types/form";
 import { ReviewForm } from "@/src/components/review/reviewForm";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
 /**
  * 운영기관용 지원서 상세 페이지
@@ -33,7 +36,7 @@ export default function OperatorApplicationDetailPage() {
   if (isAppLoading || isFilesLoading) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-400)" }}>
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--text-muted)" }}>
           로딩 중...
         </div>
       </div>
@@ -46,7 +49,7 @@ export default function OperatorApplicationDetailPage() {
         <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--accent-rose)" }}>
           {appError instanceof Error
             ? appError.message
-            : "지원서를 찾을 수 없습니다."}
+            : "지원서를 찾을 수 없습니다"}
         </div>
       </div>
     );
@@ -57,8 +60,8 @@ export default function OperatorApplicationDetailPage() {
   if (!program) {
     return (
       <div className="min-h-screen p-8">
-        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--gray-500)" }}>
-          공고 정보를 찾을 수 없습니다.
+        <div className="max-w-3xl mx-auto text-center" style={{ color: "var(--text-muted)" }}>
+          공고 정보를 찾을 수 없습니다
         </div>
       </div>
     );
@@ -78,30 +81,33 @@ export default function OperatorApplicationDetailPage() {
         <div className="max-w-3xl mx-auto px-4 py-4">
           <Link
             href={`/dashboard/programs/${programId}?tab=applications`}
-            className="text-sm transition"
-            style={{ color: "var(--gray-400)" }}
+            className="inline-flex items-center gap-1 text-sm transition"
+            style={{ color: "var(--text-muted)" }}
           >
-            ← {program.title} 접수 현황
+            <ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
+            {program.title} 접수 현황
           </Link>
 
           <div className="mt-2 flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate" style={{ color: "var(--gray-100)" }}>
+              <h1 className={`${PAGE_TITLE_CLASS} truncate`}>
                 지원서 상세
               </h1>
               {application.submitted_at && (
-                <p className="text-sm mt-1" style={{ color: "var(--gray-500)" }}>
+                <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
                   제출일:{" "}
                   {new Date(application.submitted_at).toLocaleString("ko-KR")}
                 </p>
               )}
             </div>
 
-            <span
-              className={`px-3 py-1 text-sm border rounded-full shrink-0 ${APPLICATION_STATUS_STYLE[application.status]}`}
+            <StatusBadge
+              tone={APPLICATION_STATUS_TONE[application.status]}
+              srPrefix="지원 상태"
+              className="mt-1.5"
             >
               {APPLICATION_STATUS_LABEL[application.status]}
-            </span>
+            </StatusBadge>
           </div>
         </div>
       </header>

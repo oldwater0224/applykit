@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 import { signUp } from "@/src/lib/actions/auth";
 
 const initialState = { error: "" };
@@ -10,10 +12,10 @@ export default function SignUpPage() {
   const [state, formAction, pending] = useActionState(signUp, initialState);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
+    <section aria-labelledby="signup-title" className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-center mb-8">
+        <div className="rounded-xl border border-(--card-border) bg-(--card-bg) p-6 sm:p-8">
+          <h1 id="signup-title" className={cn(PAGE_TITLE_CLASS, "mb-6 text-center sm:mb-8")}>
             ApplyKit 회원가입
           </h1>
 
@@ -21,7 +23,7 @@ export default function SignUpPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block mb-1.5 text-xs sm:text-[13px] font-medium text-(--text-secondary)"
               >
                 이름
               </label>
@@ -30,7 +32,7 @@ export default function SignUpPage() {
                 name="name"
                 type="text"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-autofill-dark h-10 w-full rounded-md border border-(--hairline-strong) bg-(--navy-800) px-3 text-base sm:text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors focus-visible:border-(--brand-500) focus-visible:ring-2 focus-visible:ring-(--dash-focus-ring)"
                 placeholder="홍길동"
               />
             </div>
@@ -40,7 +42,7 @@ export default function SignUpPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block mb-1.5 text-xs sm:text-[13px] font-medium text-(--text-secondary)"
               >
                 이메일
               </label>
@@ -49,7 +51,7 @@ export default function SignUpPage() {
                 name="email"
                 type="email"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-autofill-dark h-10 w-full rounded-md border border-(--hairline-strong) bg-(--navy-800) px-3 text-base sm:text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors focus-visible:border-(--brand-500) focus-visible:ring-2 focus-visible:ring-(--dash-focus-ring)"
                 placeholder="email@example.com"
               />
             </div>
@@ -57,7 +59,7 @@ export default function SignUpPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block mb-1.5 text-xs sm:text-[13px] font-medium text-(--text-secondary)"
               >
                 비밀번호
               </label>
@@ -67,13 +69,13 @@ export default function SignUpPage() {
                 type="password"
                 required
                 minLength={8}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-autofill-dark h-10 w-full rounded-md border border-(--hairline-strong) bg-(--navy-800) px-3 text-base sm:text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors focus-visible:border-(--brand-500) focus-visible:ring-2 focus-visible:ring-(--dash-focus-ring)"
                 placeholder="8자 이상"
               />
             </div>
 
             {state?.error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
+              <div className="rounded-md border border-(--accent-rose)/30 bg-(--accent-rose)/12 p-3 text-xs sm:text-[13px] text-(--dash-negative-text)">
                 {state.error}
               </div>
             )}
@@ -81,20 +83,20 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={pending}
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-10 w-full rounded-md bg-(--brand-600) px-4 text-sm font-medium text-white transition-colors hover:bg-(--brand-700) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand-500) disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-(--brand-600)"
             >
               {pending ? "가입 중..." : "회원가입"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-xs sm:text-[13px] text-(--text-secondary)">
             이미 계정이 있으신가요?{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="font-medium text-(--brand-500) underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand-500)">
               로그인
             </Link>
           </p>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

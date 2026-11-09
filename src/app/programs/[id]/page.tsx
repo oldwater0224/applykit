@@ -10,13 +10,14 @@ import Link from "next/link";
 import { useProgram } from "@/src/hooks/usePrograms";
 import { useMyApplicationByProgram } from "@/src/hooks/useApplication";
 import {
-  AVAILABILITY_BADGE_STYLE,
-  DDAY_BADGE_STYLE,
+  AVAILABILITY_BADGE_TONE,
+  getDdayBadgeTone,
   getProgramDisplay,
   type ProgramAvailabilityView,
 } from "@/src/components/programs/programAvailability";
 import { PROGRAM_AVAILABILITY_ERROR } from "@/src/lib/application/deadline";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 export default function ProgramPublicDetailPage() {
   const params = useParams();
@@ -66,6 +67,7 @@ export default function ProgramPublicDetailPage() {
 
   // 목록 카드와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
   const display = getProgramDisplay(program, new Date());
+  const ddayTone = getDdayBadgeTone(display);
   const availability = display.view;
 
   // 지원 페이지로 이동 (company 파라미터 전달)
@@ -89,24 +91,18 @@ export default function ProgramPublicDetailPage() {
       </Link>
 
       <div
-        className="rounded-xl border p-8"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         {/* 상태 뱃지 */}
         <div className="mb-4 flex items-center gap-2">
-          <span
-            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-            style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
-          >
+          <StatusBadge tone={AVAILABILITY_BADGE_TONE[display.statusTone]}>
             {display.statusLabel}
-          </span>
-          {display.dDayLabel && (
-            <span
-              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
-              style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
-            >
+          </StatusBadge>
+          {ddayTone && (
+            <StatusBadge tone={ddayTone} className="tabular-nums">
               {display.dDayLabel}
-            </span>
+            </StatusBadge>
           )}
         </div>
 
@@ -189,7 +185,7 @@ function ApplyButton({
         </p>
         <Link
           href={`/applications/${existingApplication.id}`}
-          className="inline-block rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+          className="inline-block rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
           style={{ backgroundColor: "var(--brand-600)" }}
         >
           내 지원서 보기
@@ -210,7 +206,7 @@ function ApplyButton({
           </p>
           <button
             disabled
-            className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+            className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
             style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
           >
             마감됨
@@ -225,7 +221,7 @@ function ApplyButton({
         </p>
         <button
           onClick={onApply}
-          className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+          className="rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
           style={{ backgroundColor: "var(--brand-600)" }}
         >
           이어서 작성하기
@@ -239,7 +235,7 @@ function ApplyButton({
     return (
       <button
         disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+        className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
         {availability.disabledLabel}
@@ -251,7 +247,7 @@ function ApplyButton({
     return (
       <button
         disabled
-        className="cursor-not-allowed rounded-lg border px-6 py-2.5 text-sm"
+        className="cursor-not-allowed rounded-md border px-6 py-2.5 text-sm"
         style={{ borderColor: "var(--navy-600)", color: "var(--gray-500)" }}
       >
         지원 양식 준비 중
@@ -262,7 +258,7 @@ function ApplyButton({
   return (
     <button
       onClick={onApply}
-      className="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition"
+      className="rounded-md px-6 py-2.5 text-sm font-medium text-white transition"
       style={{ backgroundColor: "var(--brand-600)" }}
     >
       지원하기

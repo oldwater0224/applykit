@@ -57,7 +57,7 @@ export default function Pagination(props: PaginationProps) {
       <button
         onClick={() => handlePage(activePage - 1)}
         disabled={activePage <= 1}
-        className="inline-flex items-center gap-1 rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
+        className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
         style={{ color: "var(--text-muted)" }}
       >
         <ChevronLeft size={14} strokeWidth={1.5} aria-hidden="true" className="shrink-0" />
@@ -68,7 +68,7 @@ export default function Pagination(props: PaginationProps) {
         <button
           key={p}
           onClick={() => handlePage(p)}
-          className="min-w-7 rounded px-1.5 py-1 text-[12px] font-medium transition hover: cursor-pointer"
+          className="min-w-7 rounded-md px-1.5 py-1 text-[12px] font-medium transition hover: cursor-pointer"
           style={{
             backgroundColor: p === activePage ? "var(--navy-900)" : "transparent",
             color: p === activePage ? "var(--text-primary)" : "var(--text-muted)",
@@ -81,7 +81,7 @@ export default function Pagination(props: PaginationProps) {
       <button
         onClick={() => handlePage(activePage + 1)}
         disabled={activePage >= totalPages}
-        className="inline-flex items-center gap-1 rounded px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
+        className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] transition disabled:opacity-25 hover: cursor-pointer"
         style={{ color: "var(--text-muted)" }}
       >
         다음

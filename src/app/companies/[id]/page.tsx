@@ -11,6 +11,7 @@ import FundingTimeline from "@/src/components/companies/funding-timeline";
 import FinancialChart from "@/src/components/companies/financial-chart";
 import { TabList } from "@/src/components/ui/tabs";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 function formatBillion(amount: number | null): string {
   if (amount === null || amount === undefined) return "—";
@@ -108,7 +109,7 @@ export default function CompanyDetailPage() {
 
       {/* 기업 헤더 */}
       <div
-        className="mb-5 rounded-lg border p-5"
+        className="mb-5 rounded-xl border p-6"
         style={{
           backgroundColor: "var(--card-bg)",
           borderColor: "var(--card-border)",
@@ -128,27 +129,12 @@ export default function CompanyDetailPage() {
               </p>
             )}
           </div>
-          <div className="flex gap-1.5">
-            <span
-              className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs sm:text-[11px] font-medium"
-              style={{
-                color: clsColor,
-                backgroundColor: `color-mix(in srgb, ${clsColor} 10%)`,
-              }}
-            >
-              <span
-                className="inline-block size-1.5 rounded-full"
-                style={{ backgroundColor: clsColor }}
-              />
+          <div className="ml-3 mt-1 flex flex-wrap justify-end gap-1.5">
+            <StatusBadge tone="neutral" dotColor={clsColor}>
               {clsLabel}
-            </span>
+            </StatusBadge>
             {company.sector && (
-              <span
-                className="rounded px-2 py-0.5 text-xs sm:text-[11px] font-medium"
-                style={{ backgroundColor: "", color: "var(--brand-700)" }}
-              >
-                {company.sector}
-              </span>
+              <StatusBadge tone="neutral">{company.sector}</StatusBadge>
             )}
           </div>
         </div>
@@ -217,7 +203,7 @@ export default function CompanyDetailPage() {
 
       {/* 탭 콘텐츠 */}
       <div
-        className="rounded-lg border p-5"
+        className="rounded-xl border p-6"
         style={{
           backgroundColor: "var(--card-bg)",
           borderColor: "var(--card-border)",
@@ -392,7 +378,7 @@ export default function CompanyDetailPage() {
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div
-      className="rounded-lg border p-3 text-center"
+      className="rounded-xl border p-4 text-center"
       style={{
         backgroundColor: "var(--card-bg)",
         borderColor: "var(--card-border)",

@@ -10,6 +10,8 @@ import Link from "next/link";
 import type { Company } from "@/src/types/company";
 import Pagination from "@/src/components/ui/pagination";
 import { PageTitle } from "@/src/components/layout/pageTitle";
+import { FilterChip } from "@/src/components/layout/filterChip";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 const CORP_CLS_OPTIONS = [
   { value: "전체", label: "전체" },
@@ -130,7 +132,7 @@ export default function CompaniesPage() {
             setSort(e.target.value);
             resetPage();
           }}
-          className="rounded-md border px-1 py-1.5  text-[12px] outline-none"
+          className="rounded-md border px-2 py-1.5 text-[12px] focus:outline-none focus:ring-2 focus:ring-(--brand-500)"
           style={{ borderColor: "var(--hairline-strong)", color: "var(--text-secondary)" }}
         >
           {SORT_OPTIONS.map(({ value, label }) => (
@@ -144,7 +146,7 @@ export default function CompaniesPage() {
       {/* 필터 */}
       <div className="mb-5 space-y-2">
         <FilterRow label="업종">
-          <Chip
+          <FilterChip
             active={sector === "전체"}
             onClick={() => {
               setSector("전체");
@@ -152,9 +154,9 @@ export default function CompaniesPage() {
             }}
           >
             전체
-          </Chip>
+          </FilterChip>
           {sectors.map((s) => (
-            <Chip
+            <FilterChip
               key={s.name}
               active={sector === s.name}
               onClick={() => {
@@ -164,11 +166,11 @@ export default function CompaniesPage() {
             >
               {s.name}{" "}
               <span style={{ color: "var(--text-muted)" }}>({s.count})</span>
-            </Chip>
+            </FilterChip>
           ))}
         </FilterRow>
         <FilterRow label="투자 단계">
-          <Chip
+          <FilterChip
             active={fundingStage === "전체"}
             onClick={() => {
               setFundingStage("전체");
@@ -176,9 +178,9 @@ export default function CompaniesPage() {
             }}
           >
             전체
-          </Chip>
+          </FilterChip>
           {stages.map((s) => (
-            <Chip
+            <FilterChip
               key={s.name}
               active={fundingStage === s.name}
               onClick={() => {
@@ -187,12 +189,12 @@ export default function CompaniesPage() {
               }}
             >
               {s.name}
-            </Chip>
+            </FilterChip>
           ))}
         </FilterRow>
         <FilterRow label="상장">
           {CORP_CLS_OPTIONS.map(({ value, label }) => (
-            <Chip
+            <FilterChip
               key={value}
               active={corpCls === value}
               onClick={() => {
@@ -201,7 +203,7 @@ export default function CompaniesPage() {
               }}
             >
               {label}
-            </Chip>
+            </FilterChip>
           ))}
         </FilterRow>
       </div>
@@ -226,7 +228,7 @@ export default function CompaniesPage() {
         <>
           {companies.length === 0 ? (
             <div
-              className="flex h-48 items-center justify-center rounded-lg border border-dashed"
+              className="flex h-48 items-center justify-center rounded-xl border border-dashed"
               style={{ borderColor: "var(--hairline-strong)" }}
             >
               <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
@@ -277,7 +279,7 @@ function CompanyCard({ company }: { company: Company }) {
   return (
     <Link
       href={`/companies/${company.id}`}
-      className="block rounded-lg border p-4 transition-all hover:shadow-md"
+      className="block rounded-xl border p-5 transition-all hover:shadow-md"
       style={{
         backgroundColor: "var(--card-bg)",
         borderColor: "var(--card-border)",
@@ -301,12 +303,9 @@ function CompanyCard({ company }: { company: Company }) {
           )}
         </div>
         {company.sector && (
-          <span
-            className="ml-2 shrink-0 rounded px-2 py-0.5 text-xs sm:text-[11px] font-medium"
-            style={{ backgroundColor: "", color: "var(--brand-700)" }}
-          >
+          <StatusBadge tone="neutral" className="ml-2">
             {company.sector}
-          </span>
+          </StatusBadge>
         )}
       </div>
 
@@ -344,9 +343,10 @@ function CompanyCard({ company }: { company: Company }) {
       >
         <span
           className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-medium"
-          style={{ color: clsColor }}
+          style={{ color: "var(--text-secondary)" }}
         >
           <span
+            aria-hidden="true"
             className="inline-block size-1.5 rounded-full"
             style={{ backgroundColor: clsColor }}
           />
@@ -367,38 +367,12 @@ function FilterRow({
   return (
     <div className="flex items-start gap-2">
       <span
-        className="mt-1 w-14 shrink-0 text-xs sm:text-[11px] font-medium"
+        className="mt-2.5 w-14 shrink-0 text-xs sm:mt-1.5 sm:text-[11px] font-medium"
         style={{ color: "var(--text-muted)" }}
       >
         {label}
       </span>
-      <div className="flex flex-wrap gap-1">{children}</div>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
     </div>
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="min-h-9 rounded-md px-3 py-1 text-xs font-medium transition-all sm:min-h-0 sm:px-2.5 sm:text-[11px]"
-      style={{
-        backgroundColor: active ? "var(--navy-900)" : "transparent",
-        border: active
-          ? "1px solid var(--brand-500)"
-          : "1px solid var(--hairline-strong)",
-        color: active ? "var(--text-primary)" : "var(--text-muted)",
-      }}
-    >
-      {children}
-    </button>
   );
 }

@@ -99,7 +99,7 @@ export function ChecklistEditor({ programId }: ChecklistEditorProps) {
 
   return (
     <div
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <header>

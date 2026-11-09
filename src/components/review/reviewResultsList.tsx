@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useProgramReviews } from "@/src/hooks/useReviews";
 import {
   REVIEW_RESULT_LABEL,
-  REVIEW_RESULT_STYLE,
+  REVIEW_RESULT_TONE,
 } from "@/src/types/review";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
+import { FilterChip } from "@/src/components/layout/filterChip";
 import type { ReviewResult } from "@/src/types/review";
 
 interface ReviewResultsListProps {
@@ -44,7 +46,7 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
   if (isLoading) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm text-center" style={{ color: "var(--text-muted)" }}>
@@ -57,7 +59,7 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
   if (error) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm text-center" style={{ color: "var(--accent-rose)" }}>
@@ -71,7 +73,7 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
 
   return (
     <section
-      className="rounded-lg border p-6 space-y-4"
+      className="rounded-xl border p-6 space-y-4"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {/* 헤더 */}
@@ -81,21 +83,18 @@ export function ReviewResultsList({ programId }: ReviewResultsListProps) {
         </h2>
 
         {/* 필터 버튼 그룹 */}
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {FILTERS.map((f) => (
-            <button
+            <FilterChip
               key={f.id}
-              type="button"
+              active={filter === f.id}
               onClick={() => setFilter(f.id)}
-              className="px-3 py-1.5 text-sm border rounded-md transition"
-              style={{
-                backgroundColor: filter === f.id ? "var(--brand-600)" : "transparent",
-                color: filter === f.id ? "#fff" : "var(--text-muted)",
-                borderColor: filter === f.id ? "var(--brand-600)" : "var(--navy-600)",
-              }}
             >
-              {f.label} ({counts[f.id]})
-            </button>
+              {f.label}{" "}
+              <span className="tabular-nums" style={{ color: "var(--text-muted)" }}>
+                ({counts[f.id]})
+              </span>
+            </FilterChip>
           ))}
         </div>
       </div>
@@ -206,11 +205,9 @@ function ReviewResultRow({
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <span
-            className={`inline-block px-2 py-0.5 text-xs border rounded-full ${REVIEW_RESULT_STYLE[resultKey]}`}
-          >
+          <StatusBadge tone={REVIEW_RESULT_TONE[resultKey]}>
             {REVIEW_RESULT_LABEL[resultKey]}
-          </span>
+          </StatusBadge>
         </Link>
       </td>
       <td className="p-0 text-right">

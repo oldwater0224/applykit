@@ -47,8 +47,8 @@ export function TabList({
           )}
           {activeTab === tab.id && (
             <span
-              className="absolute inset-x-0 -bottom-px h-0.5"
-              
+              aria-hidden="true"
+              className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-(--brand-500)"
             />
           )}
         </button>

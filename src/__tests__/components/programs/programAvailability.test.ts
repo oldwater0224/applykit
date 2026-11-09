@@ -1,5 +1,7 @@
 import {
-  AVAILABILITY_BADGE_STYLE,
+  AVAILABILITY_BADGE_TONE,
+  DDAY_BADGE_TONE,
+  getDdayBadgeTone,
   getProgramAvailabilityView,
   getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
@@ -121,18 +123,6 @@ describe("getProgramAvailabilityView", () => {
       }
     }
   });
-
-  it("모든 tone에 뱃지 스타일이 있음", () => {
-    for (const tone of ["open", "closed", "muted", "pending"] as const) {
-      expect(AVAILABILITY_BADGE_STYLE[tone]).toEqual(
-        expect.objectContaining({
-          borderColor: expect.any(String),
-          color: expect.any(String),
-          backgroundColor: expect.any(String),
-        }),
-      );
-    }
-  });
 });
 
 describe("getProgramDisplay (목록·상세 공통)", () => {
@@ -242,5 +232,36 @@ describe("getProgramDisplay (목록·상세 공통)", () => {
       getProgramDisplay({ status: "active", deadline: null, form_schema: null }, BEFORE)
         .deadlineLabel,
     ).toBeNull();
+  });
+});
+
+describe("배지 톤 (#67 4단계)", () => {
+  const FORM = { fields: [{ id: "f1" }] };
+
+  it("상태 톤: 접수 중 success, 양식 준비 중 warning, 마감 neutral, 비활성 muted", () => {
+    const cases = [
+      [{ status: "active", deadline: DEADLINE_ISO, form_schema: FORM }, BEFORE, "success"],
+      [{ status: "active", deadline: DEADLINE_ISO, form_schema: null }, BEFORE, "warning"],
+      [{ status: "active", deadline: DEADLINE_ISO, form_schema: FORM }, AFTER, "neutral"],
+      [{ status: "closed", deadline: null, form_schema: FORM }, BEFORE, "neutral"],
+      [{ status: "draft", deadline: null, form_schema: FORM }, BEFORE, "muted"],
+      [{ status: null, deadline: null, form_schema: FORM }, BEFORE, "muted"],
+    ] as const;
+    for (const [program, now, tone] of cases) {
+      const d = getProgramDisplay(program, now);
+      expect(AVAILABILITY_BADGE_TONE[d.statusTone]).toBe(tone);
+    }
+  });
+
+  it("D-day 톤: 7일 이내 warning, 그 외 neutral, D-day 없으면 null", () => {
+    const at = (now: number) =>
+      getDdayBadgeTone(
+        getProgramDisplay({ status: "active", deadline: DEADLINE_ISO, form_schema: FORM }, now),
+      );
+    expect(at(BEFORE)).toBe("warning"); // 오늘 마감
+    expect(at(Date.parse("2026-10-13T00:00:00Z"))).toBe("warning"); // D-7
+    expect(at(Date.parse("2026-10-12T00:00:00Z"))).toBe("neutral"); // D-8
+    expect(at(AFTER)).toBeNull();
+    expect(DDAY_BADGE_TONE).toEqual({ urgent: "warning", normal: "neutral" });
   });
 });

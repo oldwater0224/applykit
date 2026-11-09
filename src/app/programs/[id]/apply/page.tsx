@@ -233,7 +233,7 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
           <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>
@@ -270,7 +270,7 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
           <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>
@@ -312,7 +312,7 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen p-8" style={{ backgroundColor: "var(--page-bg)" }}>
         <div
-          className="max-w-2xl mx-auto rounded-lg border p-8 text-center"
+          className="max-w-2xl mx-auto rounded-xl border p-8 text-center"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
           <h1 className={`${PAGE_TITLE_CLASS} mb-2`}>

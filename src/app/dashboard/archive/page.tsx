@@ -65,7 +65,7 @@ function ArchiveSearch({ initialQuery }: { initialQuery: string }) {
       {error ? (
         <div
           role="alert"
-          className="rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
+          className="rounded-xl border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
         >
           {error instanceof Error ? error.message : "검색에 실패했습니다"}
         </div>
@@ -172,7 +172,7 @@ function ArchiveFallback() {
         <SkeletonBlock className="h-3 w-16" />
         <SkeletonBlock className="h-9 w-full max-w-xl" />
       </div>
-      <SkeletonBlock className="h-64 w-full rounded-lg" />
+      <SkeletonBlock className="h-64 w-full rounded-xl" />
     </div>
   );
 }

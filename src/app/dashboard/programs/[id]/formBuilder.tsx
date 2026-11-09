@@ -4,6 +4,8 @@ import { ALLOWED_FILES_LABEL } from "@/src/lib/file/allowedTypes";
 import { useFormBuilderStore } from "@/src/stores/formbuilderstore";
 import { FormField, FieldType, FIELD_TYPE_LABELS } from "@/src/types/form";
 import { useId } from "react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 const inputStyle: React.CSSProperties = {
   backgroundColor: "var(--navy-800)",
@@ -56,7 +58,7 @@ export function FormBuilder() {
     <div className="space-y-4">
       {/* 필드 목록 */}
       <div
-        className="rounded-lg border p-4 space-y-2"
+        className="rounded-xl border p-6 space-y-2"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         {schema.fields.length === 0 ? (
@@ -84,7 +86,7 @@ export function FormBuilder() {
       {selectedFieldId && <FieldEditor fieldId={selectedFieldId} />}
       {/* 필드 추가 버튼들 */}
       <div
-        className="rounded-lg border p-4"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm font-medium mb-3" style={{ color: "var(--text-secondary)" }}>
@@ -95,7 +97,7 @@ export function FormBuilder() {
             <button
               key={type}
               onClick={() => handleAddField(type)}
-              className="px-3 py-2 text-sm border rounded text-left transition"
+              className="px-3 py-2 text-sm border rounded-md text-left transition"
               style={{ borderColor: "var(--navy-600)", color: "var(--text-secondary)" }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
@@ -133,7 +135,7 @@ function FieldItem({
   return (
     <div
       onClick={onSelect}
-      className="p-3 border rounded cursor-pointer transition"
+      className="p-3 border rounded-md cursor-pointer transition"
       style={{
         borderColor: isSelected ? "var(--brand-500)" : "var(--navy-600)",
         backgroundColor: isSelected ? "rgba(59, 130, 246, 0.1)" : "transparent",
@@ -141,12 +143,7 @@ function FieldItem({
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span
-            className="text-xs px-2 py-0.5 rounded"
-            style={{ backgroundColor: "var(--navy-800)", color: "var(--text-muted)" }}
-          >
-            {FIELD_TYPE_LABELS[field.type]}
-          </span>
+          <StatusBadge tone="neutral">{FIELD_TYPE_LABELS[field.type]}</StatusBadge>
           <span className="font-medium" style={{ color: "var(--text-primary)" }}>
             {field.label}
           </span>
@@ -154,12 +151,7 @@ function FieldItem({
             <span className="text-xs" style={{ color: "var(--accent-rose)" }}>필수</span>
           )}
           {field.isCompanyName && (
-            <span
-              className="text-xs px-2 py-0.5 border rounded"
-              style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)" }}
-            >
-              회사명
-            </span>
+            <StatusBadge tone="brand">회사명</StatusBadge>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -169,10 +161,11 @@ function FieldItem({
               onMoveUp();
             }}
             disabled={isFirst}
-            className="p-1 disabled:opacity-30"
+            aria-label="위로 이동"
+            className="rounded-md p-1 disabled:opacity-30"
             style={{ color: "var(--text-muted)" }}
           >
-            ↑
+            <ChevronUp size={14} strokeWidth={1.5} aria-hidden="true" />
           </button>
           <button
             onClick={(e) => {
@@ -180,20 +173,22 @@ function FieldItem({
               onMoveDown();
             }}
             disabled={isLast}
-            className="p-1 disabled:opacity-30"
+            aria-label="아래로 이동"
+            className="rounded-md p-1 disabled:opacity-30"
             style={{ color: "var(--text-muted)" }}
           >
-            ↓
+            <ChevronDown size={14} strokeWidth={1.5} aria-hidden="true" />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onRemove();
             }}
-            className="p-1"
+            aria-label="필드 삭제"
+            className="rounded-md p-1"
             style={{ color: "var(--accent-rose)" }}
           >
-            ×
+            <X size={14} strokeWidth={1.5} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -213,7 +208,7 @@ function FieldEditor({ fieldId }: { fieldId: string }) {
 
   return (
     <div
-      className="rounded-lg border p-4 space-y-4"
+      className="rounded-xl border p-6 space-y-4"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <h3 className="font-medium" style={{ color: "var(--text-primary)" }}>필드 설정</h3>
@@ -336,10 +331,11 @@ function OptionsEditor({
             />
             <button
               onClick={() => handleRemove(index)}
-              className="px-2"
+              aria-label="옵션 삭제"
+              className="rounded-md px-2"
               style={{ color: "var(--accent-rose)" }}
             >
-              ×
+              <X size={14} strokeWidth={1.5} aria-hidden="true" />
             </button>
           </div>
         ))}

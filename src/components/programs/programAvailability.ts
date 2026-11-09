@@ -3,7 +3,7 @@
 // 판정 자체는 서버와 같은 checkProgramAcceptingApplications를 그대로 쓴다.
 // 여기서는 판정 결과를 화면 문구와 뱃지 스타일로 바꾸는 일만 한다.
 
-import type { CSSProperties } from "react";
+import type { BadgeTone } from "@/src/types/badge";
 import {
   checkProgramAcceptingApplications,
   type ProgramAvailability,
@@ -150,42 +150,28 @@ export function getProgramDisplay(
   };
 }
 
-export const DDAY_BADGE_STYLE: Record<"urgent" | "normal", CSSProperties> = {
-  urgent: {
-    borderColor: "var(--accent-rose)",
-    color: "var(--accent-rose)",
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
-  },
-  normal: {
-    borderColor: "var(--brand-500)",
-    color: "var(--brand-500)",
-    backgroundColor: "rgba(59, 130, 246, 0.1)",
-  },
+// ============================================
+// 배지 톤 (#67 4단계) - StatusBadge의 tone으로 넘긴다
+// ============================================
+
+/** 상태 배지 톤. display.statusTone으로 찾는다 */
+export const AVAILABILITY_BADGE_TONE: Record<ProgramStatusTone, BadgeTone> = {
+  open: "success",
+  pending: "warning",
+  closed: "neutral",
+  muted: "muted",
 };
 
-// 기존 뱃지 인라인 스타일과 같은 값
-export const AVAILABILITY_BADGE_STYLE: Record<
-  ProgramStatusTone,
-  CSSProperties
-> = {
-  pending: {
-    borderColor: "var(--accent-amber)",
-    color: "var(--accent-amber)",
-    backgroundColor: "rgba(245, 158, 11, 0.1)",
-  },
-  open: {
-    borderColor: "var(--accent-emerald)",
-    color: "var(--accent-emerald)",
-    backgroundColor: "rgba(16, 185, 129, 0.1)",
-  },
-  closed: {
-    borderColor: "var(--accent-rose)",
-    color: "var(--accent-rose)",
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
-  },
-  muted: {
-    borderColor: "var(--navy-600)",
-    color: "var(--gray-400)",
-    backgroundColor: "var(--navy-800)",
-  },
+/** D-day 배지 톤. 마감 7일 이내(dDayUrgent)는 warning, 그 외는 neutral */
+export const DDAY_BADGE_TONE: Record<"urgent" | "normal", BadgeTone> = {
+  urgent: "warning",
+  normal: "neutral",
 };
+
+/** D-day 배지 톤. D-day가 없으면(접수 중 아님, 마감일 없음) null */
+export function getDdayBadgeTone(
+  display: Pick<ProgramDisplay, "dDayLabel" | "dDayUrgent">,
+): BadgeTone | null {
+  if (display.dDayLabel === null) return null;
+  return DDAY_BADGE_TONE[display.dDayUrgent ? "urgent" : "normal"];
+}

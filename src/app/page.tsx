@@ -99,7 +99,7 @@ export default async function HomePage() {
                   <Link
                     key={`${roundName}-${i}`}
                     href={`/investments?round=${encodeURIComponent(roundName)}`}
-                    className="group mx-1 w-40 shrink-0 rounded-lg border px-3 py-3 transition-all hover:shadow-md"
+                    className="group mx-1 w-40 shrink-0 rounded-xl border p-3 transition-all hover:shadow-md"
                     style={{
                       backgroundColor: "var(--card-bg)",
                       borderColor: "var(--card-border)",
@@ -147,7 +147,7 @@ export default async function HomePage() {
             투자 분야 TOP 6
           </h2>
           <div
-            className="rounded-lg border p-4"
+            className="rounded-xl border p-6"
             style={{
               backgroundColor: "var(--card-bg)",
               borderColor: "var(--card-border)",
@@ -215,7 +215,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <div
-            className="overflow-hidden rounded-lg border"
+            className="overflow-hidden rounded-xl border"
             style={{
               backgroundColor: "var(--card-bg)",
               borderColor: "var(--card-border)",
@@ -364,6 +364,7 @@ function RoundBadge({ name, small }: { name: string; small?: boolean }) {
       style={{ color: "var(--text-primary)" }}
     >
       <span
+        aria-hidden="true"
         className="inline-block size-1.5 rounded-full"
         style={{ backgroundColor: dotColor }}
       />
@@ -375,7 +376,7 @@ function RoundBadge({ name, small }: { name: string; small?: boolean }) {
 function EmptyBlock() {
   return (
     <div
-      className="flex h-32 items-center justify-center rounded-lg border border-dashed"
+      className="flex h-32 items-center justify-center rounded-xl border border-dashed"
       style={{ borderColor: "var(--hairline-strong)" }}
     >
       <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>

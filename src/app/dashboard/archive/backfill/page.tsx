@@ -66,7 +66,7 @@ export default function BackfillPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
         <div
-          className="rounded-lg border p-6 space-y-4"
+          className="rounded-xl border p-6 space-y-4"
           style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
         >
           <div className="space-y-2 text-sm" style={{ color: "var(--text-secondary)" }}>
@@ -98,7 +98,7 @@ export default function BackfillPage() {
 
         {result && (
           <div
-            className="rounded-lg border p-6 space-y-2 text-sm"
+            className="rounded-xl border p-6 space-y-2 text-sm"
             style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-secondary)" }}
           >
             <p>
@@ -116,7 +116,7 @@ export default function BackfillPage() {
 
         {error && (
           <div
-            className="rounded-lg border p-6 text-sm"
+            className="rounded-xl border p-6 text-sm"
             style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--accent-rose)", color: "var(--accent-rose)" }}
           >
             {error}

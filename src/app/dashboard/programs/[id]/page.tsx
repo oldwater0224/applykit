@@ -200,7 +200,7 @@ function ApplicationsTab({ programId }: { programId: string }) {
   if (isLoading) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>로딩 중...</p>
@@ -211,7 +211,7 @@ function ApplicationsTab({ programId }: { programId: string }) {
   if (error) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm" style={{ color: "var(--accent-rose)" }}>

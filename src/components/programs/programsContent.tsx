@@ -11,10 +11,11 @@ import { useSearchParams } from "next/navigation";
 import { usePublicPrograms } from "@/src/hooks/usePrograms";
 import type { Program } from "@/src/types/program";
 import {
-  AVAILABILITY_BADGE_STYLE,
-  DDAY_BADGE_STYLE,
+  AVAILABILITY_BADGE_TONE,
+  getDdayBadgeTone,
   getProgramDisplay,
 } from "@/src/components/programs/programAvailability";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import { PageTitle } from "@/src/components/layout/pageTitle";
 
 export default function ProgramsContent() {
@@ -45,7 +46,7 @@ export default function ProgramsContent() {
       {/* 기업 상세에서 진입한 경우 안내 */}
       {companyParam && (
         <div
-          className="mb-6 rounded-lg border px-4 py-3"
+          className="mb-6 rounded-xl border px-4 py-3"
           style={{
             borderColor: "var(--brand-500)",
             backgroundColor: "rgba(59, 130, 246, 0.1)",
@@ -65,7 +66,7 @@ export default function ProgramsContent() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="프로그램명, 기관명으로 검색"
-          className="w-full rounded-lg border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
+          className="w-full rounded-md border px-4 py-2.5 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-(--brand-500) sm:max-w-md"
           style={{
             backgroundColor: "var(--navy-800)",
             borderColor: "var(--navy-600)",
@@ -98,7 +99,7 @@ export default function ProgramsContent() {
         <>
           {filtered.length === 0 ? (
             <div
-              className="flex h-48 items-center justify-center rounded-lg border border-dashed"
+              className="flex h-48 items-center justify-center rounded-xl border border-dashed"
               style={{ borderColor: "var(--navy-600)" }}
             >
               <div className="text-center">
@@ -135,6 +136,7 @@ function ProgramCard({
 }) {
   // 상세 페이지와 같은 함수로 상태·D-day를 정한다 (서버 접수 판정 + 양식 여부)
   const display = getProgramDisplay(program, new Date());
+  const ddayTone = getDdayBadgeTone(display);
 
   const href = companyId
     ? `/programs/${program.id}?company=${companyId}`
@@ -143,8 +145,8 @@ function ProgramCard({
   return (
     <Link
       href={href}
-      className="block rounded-xl border p-6 transition-all"
-      style={{ borderColor: "var(--card-border)" }}
+      className="block rounded-xl border p-5 transition-all"
+      style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.borderColor = "var(--brand-500)")
       }
@@ -154,19 +156,13 @@ function ProgramCard({
     >
       {/* 뱃지 */}
       <div className="mb-3 flex items-center gap-2">
-        <span
-          className="rounded-full border px-2 py-0.5 text-xs"
-          style={AVAILABILITY_BADGE_STYLE[display.statusTone]}
-        >
+        <StatusBadge tone={AVAILABILITY_BADGE_TONE[display.statusTone]}>
           {display.statusLabel}
-        </span>
-        {display.dDayLabel && (
-          <span
-            className="rounded-full border px-2 py-0.5 text-xs"
-            style={DDAY_BADGE_STYLE[display.dDayUrgent ? "urgent" : "normal"]}
-          >
+        </StatusBadge>
+        {ddayTone && (
+          <StatusBadge tone={ddayTone} className="tabular-nums">
             {display.dDayLabel}
-          </span>
+          </StatusBadge>
         )}
       </div>
 

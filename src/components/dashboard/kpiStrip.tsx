@@ -64,7 +64,7 @@ export function KpiStrip({
         } as React.CSSProperties
       }
       className={cn(
-        "grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-(--dash-border-subtle) bg-(--dash-border-subtle) lg:grid-cols-(--kpi-cols)",
+        "grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-(--dash-border-subtle) bg-(--dash-border-subtle) lg:grid-cols-(--kpi-cols)",
         "[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1",
         className
       )}

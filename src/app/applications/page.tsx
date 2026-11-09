@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useMyApplications } from "@/src/hooks/useApplication";
 import {
   APPLICATION_STATUS_LABEL,
-  APPLICATION_STATUS_STYLE,
+  APPLICATION_STATUS_TONE,
   ApplicationWithProgram,
 } from "@/src/types/applications";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import { getProgramAvailabilityView } from "@/src/components/programs/programAvailability";
 import { formatDeadlineKst } from "@/src/lib/datetime/kst";
 import { PageTitle } from "@/src/components/layout/pageTitle";
@@ -70,7 +71,7 @@ function ApplicationCard({
   if (!program) {
     return (
       <li
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-5"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
@@ -100,7 +101,7 @@ function ApplicationCard({
   return (
     <li
       onClick={handleClick}
-      className="rounded-lg border p-6 cursor-pointer transition"
+      className="rounded-xl border p-5 cursor-pointer transition"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--brand-500)")}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--card-border)")}
@@ -124,23 +125,13 @@ function ApplicationCard({
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <span
-            className={`px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
+          <StatusBadge
+            tone={APPLICATION_STATUS_TONE[application.status]}
+            srPrefix="지원 상태"
           >
             {APPLICATION_STATUS_LABEL[application.status]}
-          </span>
-          {isDraftLocked && (
-            <span
-              className="px-2 py-0.5 text-xs border rounded-full"
-              style={{
-                borderColor: "var(--navy-600)",
-                color: "var(--text-muted)",
-                backgroundColor: "var(--navy-800)",
-              }}
-            >
-              마감됨
-            </span>
-          )}
+          </StatusBadge>
+          {isDraftLocked && <StatusBadge tone="muted">마감됨</StatusBadge>}
         </div>
       </div>
     </li>
@@ -150,7 +141,7 @@ function ApplicationCard({
 function EmptyState() {
   return (
     <div
-      className="rounded-lg border p-12 text-center"
+      className="rounded-xl border p-12 text-center"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <h2 className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>

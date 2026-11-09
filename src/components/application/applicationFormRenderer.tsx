@@ -32,7 +32,7 @@ export function ApplicationFormRenderer({
   if (schema.fields.length === 0) {
     return (
       <div
-        className="rounded-lg border p-8 text-center"
+        className="rounded-xl border p-8 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-muted)" }}
       >
         이 공고에는 아직 양식이 등록되지 않았습니다
@@ -42,7 +42,7 @@ export function ApplicationFormRenderer({
 
   return (
     <div
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {schema.fields.map((field) => (
@@ -299,7 +299,7 @@ function FileFieldRenderer({
               <button
                 type="button"
                 onClick={() => onDelete(file.id)}
-                className="ml-3 px-2 py-1 text-sm border rounded"
+                className="ml-3 px-2 py-1 text-sm border rounded-md"
                 style={{ color: "var(--accent-rose)", borderColor: "var(--accent-rose)" }}
               >
                 삭제

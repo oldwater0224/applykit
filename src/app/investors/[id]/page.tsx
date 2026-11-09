@@ -6,21 +6,12 @@ import { useInvestorDetail } from "@/src/hooks/useInvestor";
 import Link from "next/link";
 import { normalizeRoundName } from "@/src/types/funding";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 
 const TYPE_LABELS: Record<string, string> = {
   VC: "벤처캐피탈", CVC: "기업벤처캐피탈", PE: "사모펀드",
   Accelerator: "액셀러레이터", Angel: "엔젤", Government: "정부/공공",
-};
-
-// app/investors/page.tsx의 TYPE_COLORS(text-*-700)에 대응하는 색상 값
-const TYPE_COLORS: Record<string, string> = {
-  VC: "#1d4ed8", // text-blue-700
-  CVC: "#7e22ce", // text-purple-700
-  PE: "#b45309", // text-amber-700
-  Accelerator: "#047857", // text-emerald-700
-  Angel: "#be185d", // text-pink-700
-  Government: "#6b7280", // text-gray-500
 };
 
 const ROUND_DOT_COLORS: Record<string, string> = {
@@ -86,7 +77,7 @@ export default function InvestorDetailPage() {
       </Link>
 
       {/* 헤더 */}
-      <div className="mb-5 rounded-lg border p-5" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
+      <div className="mb-5 rounded-xl border p-6" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
         <div className="flex items-start justify-between">
           <div>
             <h1 className={PAGE_TITLE_CLASS}>{investor.name}</h1>
@@ -95,9 +86,9 @@ export default function InvestorDetailPage() {
             )}
           </div>
           {investor.investor_type && (
-            <span className="shrink-0 rounded px-2 py-0.5 text-xs sm:text-[11px] font-medium" style={{ color: TYPE_COLORS[investor.investor_type] ?? "var(--gray-500)" }}>
+            <StatusBadge tone="neutral" className="ml-3 mt-1">
               {TYPE_LABELS[investor.investor_type] ?? investor.investor_type}
-            </span>
+            </StatusBadge>
           )}
         </div>
         {investor.homepage_url && (
@@ -118,7 +109,7 @@ export default function InvestorDetailPage() {
       </div>
 
       {/* 투자 이력 테이블 */}
-      <div className="rounded-lg border p-5" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
+      <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
         <h2 className="mb-3 text-[13px] font-medium" style={{ color: "var(--text-primary)" }}>투자 이력</h2>
 
         {portfolio.length === 0 ? (
@@ -150,9 +141,9 @@ export default function InvestorDetailPage() {
                             {p.companyName}
                           </Link>
                           {p.isLead && (
-                            <span className="ml-1 rounded px-1 py-0.5 text-xs sm:text-[11px] font-medium" style={{ backgroundColor: "var(--accent-amber)", color: "#ffffff" }}>
+                            <StatusBadge tone="warning" className="ml-1.5 align-middle">
                               리드
-                            </span>
+                            </StatusBadge>
                           )}
                         </td>
                         <td className="hidden px-3 py-2 sm:table-cell" style={{ color: "var(--text-secondary)" }}>
@@ -160,7 +151,7 @@ export default function InvestorDetailPage() {
                         </td>
                         <td className="px-3 py-2">
                           <span className="inline-flex items-center gap-1 text-xs sm:text-[11px] font-medium" style={{ color: "var(--text-primary)" }}>
-                            <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                            <span aria-hidden="true" className="inline-block size-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
                             {roundName}
                           </span>
                         </td>
@@ -184,7 +175,7 @@ export default function InvestorDetailPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border p-3 text-center" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
+    <div className="rounded-xl border p-4 text-center" style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}>
       <p className="text-xs sm:text-[11px]" style={{ color: "var(--text-muted)" }}>{label}</p>
       <p className="mt-1 text-[15px] font-semibold tabular-nums" style={{ color: "var(--text-primary)" }}>{value}</p>
     </div>

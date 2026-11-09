@@ -4,8 +4,9 @@ import Link from "next/link";
 import {
   Application,
   APPLICATION_STATUS_LABEL,
-  APPLICATION_STATUS_STYLE,
+  APPLICATION_STATUS_TONE,
 } from "@/src/types/applications";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 import type { FormSchema } from "@/src/types/form";
 import { extractCompanyName } from "@/src/lib/review/extractCompanyName";
 
@@ -27,7 +28,7 @@ export function ApplicationsTable({
   if (applications.length === 0) {
     return (
       <div
-        className="rounded-lg border p-12 text-center"
+        className="rounded-xl border p-12 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
@@ -39,7 +40,7 @@ export function ApplicationsTable({
 
   return (
     <div
-      className="rounded-lg border overflow-hidden"
+      className="rounded-xl border overflow-hidden"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <div className="overflow-x-auto">
@@ -123,11 +124,9 @@ function ApplicationRow({
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--navy-800)")}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <span
-            className={`inline-block px-2 py-0.5 text-xs border rounded-full ${APPLICATION_STATUS_STYLE[application.status]}`}
-          >
+          <StatusBadge tone={APPLICATION_STATUS_TONE[application.status]}>
             {APPLICATION_STATUS_LABEL[application.status]}
-          </span>
+          </StatusBadge>
         </Link>
       </td>
       <td className="p-0">

@@ -1,6 +1,8 @@
 // 심사 관련 타입 - DB의 review_checklists, review_results와 1:1 매칭
 // 패턴은 applications.ts와 동일 (Row 타입 + Input 타입 + 표시용 상수)
 
+import type { BadgeTone } from "./badge";
+
 // ============================================
 // 체크리스트 항목 (JSONB items 배열의 한 요소)
 // ============================================
@@ -103,9 +105,12 @@ export const REVIEW_RESULT_LABEL = {
   failed: "불합격",
 } as const;
 
-// 합격/불합격 뱃지 스타일
-// APPLICATION_STATUS_STYLE의 passed/failed와 동일 색상 (의미가 같으니 색도 같음)
-export const REVIEW_RESULT_STYLE = {
-  passed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  failed: "bg-rose-50 text-rose-700 border-rose-200",
-} as const;
+// 합격/불합격 배지 톤 - StatusBadge의 tone으로 넘긴다
+// APPLICATION_STATUS_TONE의 passed/failed, 관리자 VERDICT_META와 같은 톤
+export const REVIEW_RESULT_TONE: Record<
+  keyof typeof REVIEW_RESULT_LABEL,
+  BadgeTone
+> = {
+  passed: "success",
+  failed: "danger",
+};

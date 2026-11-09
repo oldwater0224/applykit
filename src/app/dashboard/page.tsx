@@ -144,7 +144,7 @@ function ErrorState({
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-3 rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-12 text-center"
+      className="flex flex-col items-center gap-3 rounded-xl border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-12 text-center"
     >
       <p className="text-[14px] font-semibold text-(--dash-text)">
         대시보드 데이터를 불러오지 못했습니다

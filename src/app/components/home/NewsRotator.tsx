@@ -112,7 +112,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
   );
 
   const pagerButtonClass =
-    "inline-flex min-h-11 items-center gap-1 rounded px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
+    "inline-flex min-h-11 items-center gap-1 rounded-md px-2.5 py-1 text-xs sm:min-h-0 sm:text-[12px] transition disabled:opacity-25 cursor-pointer disabled:cursor-default";
 
   return (
     <>
@@ -182,7 +182,7 @@ export default function NewsRotator({ news }: { news: StartupNews[] }) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block rounded-lg border px-4 py-3 transition-all hover:-translate-y-0.5"
+            className="group block rounded-xl border px-4 py-3 transition-all hover:-translate-y-0.5"
             style={{
               backgroundColor: "var(--navy-800)",
               borderColor: "var(--navy-700)",

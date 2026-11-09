@@ -10,8 +10,9 @@ import {
 import type { ChecklistItem  } from "@/src/types/review";
 import {
   REVIEW_RESULT_LABEL,
-  REVIEW_RESULT_STYLE,
+  REVIEW_RESULT_TONE,
 } from "@/src/types/review";
+import { StatusBadge } from "@/src/components/dashboard/statusBadge";
 
 interface ReviewFormProps {
   programId: string;
@@ -135,7 +136,7 @@ export function ReviewForm({ programId, applicationId }: ReviewFormProps) {
   if (isChecklistLoading || isReviewLoading) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <p className="text-sm text-center" style={{ color: "var(--text-muted)" }}>
@@ -148,7 +149,7 @@ export function ReviewForm({ programId, applicationId }: ReviewFormProps) {
   if (!checklist) {
     return (
       <section
-        className="rounded-lg border p-6"
+        className="rounded-xl border p-6"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <h2 className="text-lg font-medium mb-2" style={{ color: "var(--text-primary)" }}>심사</h2>
@@ -171,7 +172,7 @@ export function ReviewForm({ programId, applicationId }: ReviewFormProps) {
 
   return (
     <section
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <header>
@@ -239,13 +240,9 @@ export function ReviewForm({ programId, applicationId }: ReviewFormProps) {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>판정</span>
-          <span
-            className={`px-3 py-1 text-sm border rounded-full ${
-              REVIEW_RESULT_STYLE[isPassed ? "passed" : "failed"]
-            }`}
-          >
+          <StatusBadge tone={REVIEW_RESULT_TONE[isPassed ? "passed" : "failed"]}>
             {REVIEW_RESULT_LABEL[isPassed ? "passed" : "failed"]}
-          </span>
+          </StatusBadge>
         </div>
       </div>
 

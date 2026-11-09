@@ -26,7 +26,7 @@ export function ApplicationReadOnlyView({
   if (schema.fields.length === 0) {
     return (
       <div
-        className="rounded-lg border p-8 text-center"
+        className="rounded-xl border p-8 text-center"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)", color: "var(--text-muted)" }}
       >
         양식 정보가 없습니다
@@ -36,7 +36,7 @@ export function ApplicationReadOnlyView({
 
   return (
     <div
-      className="rounded-lg border p-6 space-y-6"
+      className="rounded-xl border p-6 space-y-6"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       {schema.fields.map((field) => (
@@ -153,7 +153,7 @@ function FileFieldReadOnly({ files }: { files: ApplicationFile[] }) {
             type="button"
             onClick={() => handleDownload(file.id)}
             disabled={signedUrlMutation.isPending}
-            className="ml-3 px-3 py-1 text-sm border rounded disabled:opacity-50"
+            className="ml-3 px-3 py-1 text-sm border rounded-md disabled:opacity-50"
             style={{ borderColor: "var(--brand-500)", color: "var(--brand-500)" }}
           >
             {signedUrlMutation.isPending ? '준비 중...' : '다운로드'}

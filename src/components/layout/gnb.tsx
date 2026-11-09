@@ -221,7 +221,7 @@ export default function GNB() {
             {/* 검색 결과 드롭다운 */}
             {searchOpen && searchQuery.length > 0 && (
               <div
-                className="absolute right-0 top-9 w-80 overflow-hidden rounded-lg border shadow-xl"
+                className="absolute right-0 top-9 w-80 overflow-hidden rounded-xl border shadow-xl"
                 style={{
                   backgroundColor: "var(--card-bg)",
                   borderColor: "var(--hairline-strong)",
@@ -261,11 +261,8 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition "
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[11px] font-semibold"
-                                style={{
-                                  backgroundColor: "var(--brand-50)",
-                                  color: "var(--brand-600)",
-                                }}
+                                aria-hidden="true"
+                                className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-(--hairline) bg-white/[0.04] text-xs sm:text-[11px] font-medium text-(--text-muted)"
                               >
                                 S
                               </span>
@@ -307,11 +304,8 @@ export default function GNB() {
                               className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] transition"
                             >
                               <span
-                                className="flex size-6 shrink-0 items-center justify-center rounded text-xs sm:text-[11px] font-semibold"
-                                style={{
-                                  backgroundColor: "#ecfdf5",
-                                  color: "var(--accent-emerald)",
-                                }}
+                                aria-hidden="true"
+                                className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-(--hairline) bg-white/[0.04] text-xs sm:text-[11px] font-medium text-(--text-muted)"
                               >
                                 V
                               </span>
@@ -376,7 +370,7 @@ export default function GNB() {
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex size-8 items-center justify-center rounded md:hidden"
+          className="flex size-8 items-center justify-center rounded-md md:hidden"
           style={{ color: "var(--text-muted)" }}
           aria-label="메뉴"
         >
@@ -418,7 +412,7 @@ export default function GNB() {
                       handleResultClick(r);
                       setMobileOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px]"
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px]"
                     style={{ color: "var(--text-secondary)" }}
                   >
                     <span

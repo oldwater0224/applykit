@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useApplication } from '@/src/hooks/useApplication';
 import { useApplicationFiles } from '@/src/hooks/useApplicationFiles';
 import { ApplicationReadOnlyView } from '@/src/components/application/applicationReadOnlyView';
-import { APPLICATION_STATUS_LABEL, APPLICATION_STATUS_STYLE } from '@/src/types/applications';
+import { APPLICATION_STATUS_LABEL, APPLICATION_STATUS_TONE } from '@/src/types/applications';
+import { StatusBadge } from '@/src/components/dashboard/statusBadge';
 import { FormSchema } from '@/src/types/form';
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 
@@ -84,11 +85,13 @@ export default function ApplicationDetailPage() {
                 </p>
               )}
             </div>
-            <span
-              className={`px-3 py-1 text-sm border rounded-full shrink-0 ${APPLICATION_STATUS_STYLE[application.status]}`}
+            <StatusBadge
+              tone={APPLICATION_STATUS_TONE[application.status]}
+              srPrefix="지원 상태"
+              className="mt-1.5"
             >
               {APPLICATION_STATUS_LABEL[application.status]}
-            </span>
+            </StatusBadge>
           </div>
         </div>
       </header>

@@ -23,7 +23,7 @@ export function DeleteProgramModal() {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div
-        className="rounded-lg w-full max-w-sm p-6 border"
+        className="rounded-2xl w-full max-w-sm p-6 border"
         style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
       >
         <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>

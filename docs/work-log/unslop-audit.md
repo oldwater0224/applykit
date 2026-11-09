@@ -177,3 +177,42 @@
 **남긴 것**
 - formBuilder 175행, 186행의 ↑/↓ 순서 버튼: 글자로 되어 있고 aria-label이 없다. 기존부터 있던 상태다. 4단계에서 함께 고친다
 - 입력칸 안 Search 아이콘과 브레드크럼 구분자는 subtle 색으로 둔다. placeholder·장식 역할이기 때문이다
+
+## 4단계: 배지와 반경 통일 (검증 완료)
+
+순서는 logic-builder(톤 상수) → ui-builder(화면) → logic-builder(deprecated 정리) → debugger였다. 두 에이전트가 같은 파일을 건드리지 않게 하려고 이 순서로 진행했다.
+
+| 담당 | 결과 |
+|---|---|
+| logic-builder | `src/types/badge.ts`의 `BadgeTone`을 statusBadge TONE_CLASS 키와 똑같이 맞췄다(neutral/brand/success/warning/danger/muted). 추가: `APPLICATION_STATUS_TONE`, `REVIEW_RESULT_TONE`, `AVAILABILITY_BADGE_TONE`, `DDAY_BADGE_TONE`, `getDdayBadgeTone`. 기존 `*_STYLE` 상수 4개와 관련 테스트 1개는 지웠다. 톤 테스트를 추가했다 |
+| ui-builder | 배지 사용처 10곳을 `StatusBadge`와 `*_TONE`으로 바꿨다. `FilterChip`을 새로 만들었다. 반경과 패딩을 통일했다. 그 밖의 수정은 아래에 있다 |
+| debugger | tsc 통과, lint는 기존 경고 1개, test 264/264, build 26/26. 마감 판정 계산은 바뀌지 않았다. 필터 값과 표 셀 태그, NewsRotator 구조도 그대로다. 수정한 파일 없음 |
+| 메인 | 브라우저로 `/programs`(접수 마감이 neutral 배지로 나옴), `/companies`(칩 활성/비활성이 구분됨), `/dashboard/programs`를 확인했다 |
+
+**메인 결정 (색 의미만 바꿨다. 판정 로직은 그대로다)**
+- draft는 warning에서 muted로 바꿨다. 관리자 화면과 맞추기 위해서다
+- 지원자 화면의 closed는 danger에서 neutral로 바꿨다. 지원 불가는 비활성 버튼 문구가 알린다
+- D-day는 urgent를 warning, normal을 neutral로 바꿨다. 7일 기준은 그대로다
+
+**규칙**
+- 배지: 높이 20, 좌우 패딩 6, 반경 4, 글자 12/11px, 굵기 500, ring 테두리. 모든 톤의 대비가 6:1 이상이다. muted는 gray-400 글자에 채움 없음
+- 반경: 배지 4, 작은 타일 6, 컨트롤 8(`rounded-md`), 카드와 드롭다운 14(`rounded-xl`), 모달 18(`rounded-2xl`)
+- 패딩: 목록 카드 p-5, 섹션 카드 p-6, 통계 카드 p-4
+- 범주 색은 점에만 쓴다(`StatusBadge dotColor`). 글자는 중립색이다
+
+**그 밖의 수정**
+- 리드 배지: amber 바탕에 흰 글자(대비 2.15:1)였던 것을 warning 배지로 바꿨다
+- GNB S/V 타일: 밝은 타일을 조용한 어두운 타일로 바꿨다
+- formBuilder: ↑/↓/× 버튼을 lucide 아이콘으로 바꾸고 aria-label을 달았다
+- tabs.tsx: 활성 밑줄이 보이지 않던 기존 버그를 고쳤다
+- programs와 investors 카드에 `--card-bg`를 넣었다
+
+**남긴 것**
+- 5단계(모션): JS hover, `transition-all`, hover 그림자와 translate, `hover:border-blue-300`
+- 빈 상태 패딩(p-8, p-12)이 섞여 있다
+- investors 검색 버튼(blue-600)과 에러 문구(`text-red-500`)
+- pagination의 의미 없는 클래스 `hover: cursor-pointer` (원래 있던 것)
+
+**#58 관련 (이번 확인 중에 같이 본 것)**
+- 관리자 공고 관리에서 "2026 게임 스타트업 지원" 마감이 06.18 09:21로 나오는 것을 확인했다
+- 지원자 `/programs`에서 두 공고 모두 "접수 마감" 배지가 나오는 것을 확인했다

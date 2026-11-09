@@ -33,7 +33,7 @@ export default function InvestmentTable({
   if (items.length === 0) {
     return (
       <div
-        className="flex h-48 items-center justify-center rounded-lg border border-dashed"
+        className="flex h-48 items-center justify-center rounded-xl border border-dashed"
         style={{ borderColor: "var(--hairline-strong)" }}
       >
         <p className="text-[12px]" style={{ color: "var(--text-muted)" }}>
@@ -47,7 +47,7 @@ export default function InvestmentTable({
     <>
       {/* 데스크탑 테이블 */}
       <div
-        className="hidden overflow-hidden rounded-lg border sm:block"
+        className="hidden overflow-hidden rounded-xl border sm:block"
         style={{
           backgroundColor: "var(--card-bg)",
           borderColor: "var(--card-border)",
@@ -124,6 +124,7 @@ export default function InvestmentTable({
                       style={{ color: "var(--text-primary)" }}
                     >
                       <span
+                        aria-hidden="true"
                         className="inline-block size-1.5 rounded-full"
                         style={{
                           backgroundColor: dotColor,
@@ -154,7 +155,7 @@ export default function InvestmentTable({
             <Link
               key={item.id}
               href={`/companies/${item.companyId}`}
-              className="block rounded-lg border p-3.5 transition hover:shadow-sm"
+              className="block rounded-xl border p-5 transition hover:shadow-sm"
               style={{
                 backgroundColor: "var(--card-bg)",
                 borderColor: "var(--card-border)",
@@ -180,6 +181,7 @@ export default function InvestmentTable({
                   style={{ color: "var(--text-primary)" }}
                 >
                   <span
+                    aria-hidden="true"
                     className="inline-block size-1.5 rounded-full"
                     style={{ backgroundColor: dotColor }}
                   />

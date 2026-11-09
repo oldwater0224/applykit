@@ -49,7 +49,7 @@ function StatCard({
 
   return (
     <div
-      className="rounded-lg border p-4"
+      className="rounded-xl border p-4"
       style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
     >
       <p className="text-sm" style={{ color: "var(--text-muted)" }}>{label}</p>

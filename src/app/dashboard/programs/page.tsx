@@ -139,7 +139,7 @@ export default function ProgramsPage() {
         {error ? (
           <div
             role="alert"
-            className="rounded-lg border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
+            className="rounded-xl border border-(--accent-rose)/30 bg-(--accent-rose)/[0.06] px-6 py-10 text-center text-[13px] text-(--dash-negative-text)"
           >
             에러: {error.message}
           </div>

@@ -37,8 +37,9 @@ export default function ProgramPublicDetailPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div
-          className="size-8 animate-spin rounded-full border-2 border-t-transparent bg-blue-500" 
-          
+          role="status"
+          aria-label="불러오는 중"
+          className="size-8 animate-spin rounded-full border-2 border-transparent border-t-(--brand-500)"
         />
       </div>
     );

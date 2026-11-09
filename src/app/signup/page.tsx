@@ -10,10 +10,10 @@ export default function SignUpPage() {
   const [state, formAction, pending] = useActionState(signUp, initialState);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
+    <section aria-labelledby="signup-title" className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-center mb-8">
+        <div className="bg-white rounded-lg p-8 text-gray-900">
+          <h1 id="signup-title" className="text-2xl font-bold text-center mb-8">
             ApplyKit 회원가입
           </h1>
 
@@ -95,6 +95,6 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

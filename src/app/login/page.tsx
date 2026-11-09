@@ -21,10 +21,10 @@ function LoginForm() {
   const redirectTo = searchParams.get("redirect") ?? "";
 
   return (
-    <main className=" min-h-screen flex items-center justify-center px-4">
+    <section aria-labelledby="login-title" className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg  p-8">
-          <h1 className="text-2xl font-bold text-center mb-8">
+        <div className="bg-white rounded-lg p-8 text-gray-900">
+          <h1 id="login-title" className="text-2xl font-bold text-center mb-8">
             ApplyKit 로그인
           </h1>
 
@@ -87,6 +87,6 @@ function LoginForm() {
           </p>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

@@ -37,7 +37,7 @@ export default function ProgramsContent() {
       {/* 헤더 */}
       <div className="mb-6">
         <h1
-          className="text-2xl font-bold tracking-high"
+          className="text-2xl font-bold"
           style={{ color: "var(--gray-100)" }}
         >
           지원하기

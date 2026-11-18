@@ -4,6 +4,8 @@ import "./globals.css";
 import "../styles/designToken.css";
 import QueryProvider from "../providers/query-provider";
 import GNB from "@/src/components/layout/gnb";
+import { SiteFooter } from "@/src/components/layout/siteFooter";
+import { SiteFooterGate } from "@/src/components/layout/siteFooterGate";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -35,6 +37,9 @@ export default function RootLayout({
         <QueryProvider>
           <GNB />
           <main>{children}</main>
+          <SiteFooterGate>
+            <SiteFooter />
+          </SiteFooterGate>
         </QueryProvider>
       </body>
     </html>

@@ -50,3 +50,6 @@ politics.md
 *.tsbuildinfo
 next-env.d.ts
 .vscode/settings.json
+
+# Supabase CLI 임시 파일
+supabase/.temp/

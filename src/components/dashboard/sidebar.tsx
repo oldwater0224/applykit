@@ -145,6 +145,30 @@ export function DashboardOrgFooter({
           </p>
         </div>
       </div>
+
+      {/* 루트 푸터가 대시보드에서는 숨겨지므로 여기에 정책 링크를 둔다 (#69) */}
+      <nav aria-label="약관 및 정책" className="mt-2 px-2.5">
+        <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-[11px]">
+          <li>
+            <Link
+              href="/privacy"
+              onClick={onNavigate}
+              className="rounded-sm font-semibold text-(--brand-500) underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+            >
+              개인정보 처리방침
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/terms"
+              onClick={onNavigate}
+              className="rounded-sm text-(--dash-text-muted) underline-offset-2 hover:text-(--dash-text) hover:underline focus-visible:outline-2 focus-visible:outline-(--brand-500)"
+            >
+              이용약관
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PAGE_TITLE_CLASS } from "@/src/components/layout/pageTitle";
 import { signUp } from "@/src/lib/actions/auth";
+import { ConsentCheckboxes } from "@/src/components/auth/consentCheckboxes";
 
 const initialState = { error: "" };
 
@@ -69,10 +70,17 @@ export default function SignUpPage() {
                 type="password"
                 required
                 minLength={8}
+                autoComplete="new-password"
+                aria-describedby="password-hint"
                 className="input-autofill-dark h-10 w-full rounded-md border border-(--hairline-strong) bg-(--navy-800) px-3 text-base sm:text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors focus-visible:border-(--brand-500) focus-visible:ring-2 focus-visible:ring-(--dash-focus-ring)"
                 placeholder="8자 이상"
               />
+              <p id="password-hint" className="mt-1.5 text-xs sm:text-[12px] text-(--text-muted)">
+                비밀번호는 8자 이상으로 입력해주세요.
+              </p>
             </div>
+
+            <ConsentCheckboxes />
 
             {state?.error && (
               <div className="rounded-md border border-(--accent-rose)/30 bg-(--accent-rose)/12 p-3 text-xs sm:text-[13px] text-(--dash-negative-text)">

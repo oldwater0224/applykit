@@ -9,12 +9,17 @@
 //   (현재 MVP는 단일 운영기관, 운영진은 SQL로 직접 등록)
 
 import { createClient } from "@/src/lib/supabase/server";
+import { parseConsentForm } from "@/src/lib/consent/policy";
+import { safeRedirectPath } from "@/src/lib/safeRedirect";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 interface AuthState {
   error: string;
 }
+
+// 가입 화면의 minLength와 맞춘다
+const MIN_PASSWORD_LENGTH = 8;
 
 export async function signUp(
   prevState: AuthState,
@@ -30,16 +35,25 @@ export async function signUp(
     return { error: "모든 필드를 입력해주세요." };
   }
 
-  if (password.length < 6) {
-    return { error: "비밀번호는 6자 이상이어야 합니다." };
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return { error: `비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다.` };
+  }
+
+  // 필수 동의(만 14세 이상, 이용약관, 개인정보 처리방침) 확인 (#69)
+  const consent = parseConsentForm(formData);
+  if (!consent.ok) {
+    return { error: consent.error };
   }
 
   // Supabase Auth 회원가입만 - 운영기관 멤버십은 별도 절차
+  // consents는 auth.users.raw_user_meta_data에 저장되고,
+  // DB 트리거 record_signup_consents()가 user_consents 행으로 기록한다.
+  // (이메일 확인 ON이면 가입 직후 세션이 없어 앱에서 직접 insert할 수 없기 때문)
   const { error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { name },
+      data: { name, consents: consent.consents },
     },
   });
 
@@ -74,7 +88,11 @@ export async function signIn(
     return { error: "이메일 또는 비밀번호가 올바르지 않습니다." };
   }
 
-  const redirectTo = (formData.get("redirect") as string) || "";
+  // 외부 사이트로 보내는 값("//evil.com" 등)은 버리고 기본 이동 규칙을 따른다
+  const redirectTo = safeRedirectPath(
+    formData.get("redirect") as string | null,
+    "",
+  );
 
   // 운영기관 멤버 확인
   const {data : orgMember} = await supabase
@@ -85,7 +103,7 @@ export async function signIn(
 
   revalidatePath("/", "layout");
 
-  if (redirectTo && redirectTo.startsWith("/")) {
+  if (redirectTo) {
     redirect(redirectTo);
   } else if (orgMember) {
     redirect("/dashboard");

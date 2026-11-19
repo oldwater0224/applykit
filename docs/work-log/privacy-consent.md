@@ -1,6 +1,6 @@
 # 개인정보 처리방침·이용약관·가입 동의
 
-상태: 계획 수립 (2026-11-18), 사용자 승인 대기. 코드 변경 없음.
+상태: 운영 반영 완료 (2026-11-19). 남은 일은 맨 아래 "운영 반영" 참고.
 
 ## 사전 조사 결과 (서브에이전트 3개, 읽기 전용)
 
@@ -108,3 +108,12 @@ Supabase 리전, Confirm email, Custom SMTP, Vercel Functions 리전, 원격 FK�
 - logic-builder: policy.ts `LEGAL_EFFECTIVE_DATE`, 마이그레이션 `effective_at` 주석을 "제정일, 게시일부터 적용" 의미로(값 변경 없음)
 - debugger: tsc 0 / lint 0 error / test 315 / build 성공. 앵커 깨짐 0, 중복 id 0, 번호 연속, 삭제 대상 문구 0건, 클라이언트 import 체인 문제 없음, 본문과 코드 새 모순 없음
 - 남은 것: 첨부파일 실제 삭제·제출 지원서 자동 파기 미구현(운영 절차로 보장 필요), applications FK on delete 확인 불가, placeholder
+
+## 운영 반영 (2026-11-19)
+
+- PR #70 master 머지(03036c0, 사용자 직접 실행)
+- 운영 DB 마이그레이션 `20261118000000_user_consents.sql` 사용자가 SQL Editor로 적용
+  - 사전 확인: legal_documents·user_consents 없음(NULL), auth.users 트리거 없음
+  - 사후 확인: legal_documents terms·privacy 2행(2026-11-01, is_current), 트리거 `on_auth_user_created_record_consents`, 함수 `has_current_consents`·`record_signup_consents` 존재
+  - 기존 계정은 운영자 1명뿐이라 재동의 영향 없음. 로그인 → `/consent` → 동의 → 원래 화면 복귀 확인
+- 남은 것: placeholder 값, 첨부파일 삭제·보유기간 파기 구현, 운영기관 draft 열람 정책, 지원서 제출 시 제3자 제공 동의, 제공 vs 위탁 법률 검토

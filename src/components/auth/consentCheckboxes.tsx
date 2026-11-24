@@ -8,7 +8,6 @@
 import { useId, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Placeholder } from "@/src/components/legal/legalDoc";
 import { CONSENT_FIELDS } from "@/src/lib/consent/policy";
 
 type ConsentKey = keyof typeof CONSENT_FIELDS;
@@ -164,8 +163,7 @@ function PrivacySummary({
         <dt className="inline font-semibold text-(--text-primary)">보유 기간: </dt>
         <dd className="inline font-semibold text-(--text-primary)">
           회원 정보는 탈퇴 시까지, 작성 중인 지원서는 삭제하거나 탈퇴 시까지,
-          제출된 지원서·첨부파일은 모집 마감일로부터{" "}
-          <Placeholder>보유기간</Placeholder>
+          제출된 지원서·첨부파일은 모집 마감일로부터 1년
         </dd>
       </div>
       <div>

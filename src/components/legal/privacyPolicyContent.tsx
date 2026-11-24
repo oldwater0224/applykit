@@ -22,7 +22,7 @@ import {
   type LegalSection,
 } from "@/src/components/legal/legalDoc";
 
-const OPERATOR = <Placeholder>운영자명</Placeholder>;
+const OPERATOR = "정헌수";
 
 const NUMBER_LABEL = (n: number) => `${n}.`;
 
@@ -130,12 +130,12 @@ const SECTIONS: LegalSection[] = [
             작성 중인 지원서(임시저장 포함): 이용자가 삭제하거나 회원 탈퇴 시까지
           </li>
           <li>
-            제출된 지원서 및 첨부파일: 해당 공고의 모집 마감일로부터{" "}
-            <Placeholder>보유기간</Placeholder> 보관 후 파기
+            제출된 지원서 및 첨부파일: 해당 공고의 모집 마감일로부터 1년 보관 후
+            파기
           </li>
           <li>
             접속 기록 등 자동 수집 정보: 수탁자(Supabase, Vercel)의 로그 보존
-            정책에 따라 <Placeholder>보존 기간</Placeholder> 보관 후 삭제
+            정책에 따른 기간 동안 보관 후 자동 삭제
           </li>
           <li>
             다만, 관계 법령 위반에 따른 수사·조사 등이 진행 중인 경우에는 해당
@@ -170,8 +170,8 @@ const SECTIONS: LegalSection[] = [
               "지원자 심사·선정, 결과 안내 및 사업 운영",
               "지원서 기재 항목(이름, 이메일, 연락처, 운영기관이 정한 항목), 첨부파일",
               <>
-                제출된 지원서·첨부파일: 해당 공고의 모집 마감일로부터{" "}
-                <Placeholder>보유기간</Placeholder> 보관 후 파기
+                제출된 지원서·첨부파일: 해당 공고의 모집 마감일로부터 1년 보관 후
+                파기
                 <br />
                 작성 중인 지원서: 이용자가 삭제하거나 회원 탈퇴 시까지
               </>,
@@ -204,8 +204,7 @@ const SECTIONS: LegalSection[] = [
           ]}
         />
         <p className={LEGAL_P_CLASS}>
-          ※ 인증 메일 발송:{" "}
-          <Placeholder>별도 메일 발송 업체 사용 시 추가</Placeholder>
+          ※ 인증 메일 발송: Supabase 기본 메일 발송 기능을 이용합니다.
         </p>
         <p className={LEGAL_P_CLASS}>
           위탁업무의 내용이나 수탁자가 바뀌는 경우 지체 없이 이 처리방침을 통하여
@@ -237,7 +236,7 @@ const SECTIONS: LegalSection[] = [
             [
               <>
                 Supabase Inc.
-                <br />(<Placeholder>개인정보 담당 연락처</Placeholder>)
+                <br />(privacy@supabase.com)
               </>,
               <Placeholder key="c">리전 확인 필요</Placeholder>,
               <>
@@ -254,7 +253,7 @@ const SECTIONS: LegalSection[] = [
             [
               <>
                 Vercel Inc.
-                <br />(<Placeholder>개인정보 담당 연락처</Placeholder>)
+                <br />(privacy@vercel.com)
               </>,
               <Placeholder key="c">리전 확인 필요</Placeholder>,
               "서비스 이용 과정에서 전송되는 정보(접속 기록, IP 주소 등)",
@@ -399,10 +398,16 @@ const SECTIONS: LegalSection[] = [
         </p>
         <ul className={LEGAL_UL_CLASS}>
           <li>
-            성명: <Placeholder>성명</Placeholder>
+            성명: 정헌수
           </li>
           <li>
-            이메일: <Placeholder>이메일</Placeholder>
+            이메일:{" "}
+            <a
+              href="mailto:oldwater0224@gmail.com"
+              className={LEGAL_LINK_CLASS}
+            >
+              oldwater0224@gmail.com
+            </a>
           </li>
         </ul>
         <p className={LEGAL_P_CLASS}>

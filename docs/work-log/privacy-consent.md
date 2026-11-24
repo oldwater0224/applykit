@@ -117,3 +117,16 @@ Supabase 리전, Confirm email, Custom SMTP, Vercel Functions 리전, 원격 FK�
   - 사후 확인: legal_documents terms·privacy 2행(2026-11-01, is_current), 트리거 `on_auth_user_created_record_consents`, 함수 `has_current_consents`·`record_signup_consents` 존재
   - 기존 계정은 운영자 1명뿐이라 재동의 영향 없음. 로그인 → `/consent` → 동의 → 원래 화면 복귀 확인
 - 남은 것: placeholder 값, 첨부파일 삭제·보유기간 파기 구현, 운영기관 draft 열람 정책, 지원서 제출 시 제3자 제공 동의, 제공 vs 위탁 법률 검토
+
+## placeholder 채우기 (2026-11-24, 미커밋)
+
+- 사용자 값: 운영자명·보호책임자 정헌수, 이메일 oldwater0224@gmail.com(mailto), 무료 플랜(Custom SMTP 미사용)
+- ui-builder: privacyPolicyContent·termsContent·consentCheckboxes 수정
+  - 확정: 운영자명, 보호책임자 성명·이메일, 수탁자 연락처 privacy@supabase.com·privacy@vercel.com, 인증 메일 "Supabase 기본 메일 발송 기능"
+  - 임시: 제출 지원서 보유기간 "모집 마감일로부터 1년"(4곳 동일), 접속기록 "수탁자 로그 보존 정책에 따른 기간 동안 보관 후 자동 삭제"(무료 플랜 보존 일수 미확인이라 일수 미기재)
+  - 남김: 리전 Placeholder 2곳(사용자가 건너뜀)
+  - terms·consentCheckboxes의 쓰지 않는 Placeholder import 삭제
+- logic-builder: 변경 없음. policy.ts·legal_documents 시드는 본문을 참조하지 않고, 테스트에도 본문 assert나 스냅샷이 없음. 버전은 2026-11-01 유지 권고(동의자가 운영자 1명이면 재동의 실익 없음). 단 운영자 외 동의자가 있으면 버전 올리기 권고
+- debugger: tsc 0 / lint 0 error(기존 경고 1) / test 20 suites 315 / build 성공. next start에서 /privacy·/terms·/signup 200, 남은 placeholder는 리전 2곳뿐
+- 결정 대기: 버전 유지 여부(운영 DB 동의자 수 확인), 보유기간 1년 확정, 리전
+- 결정(2026-11-24): 가입자는 운영자 본인 1명뿐(사용자 확인) → 문서 버전 2026-11-01 유지, 재동의 없음

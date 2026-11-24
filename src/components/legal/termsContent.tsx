@@ -12,12 +12,11 @@ import {
   LEGAL_P_CLASS,
   LegalSectionRef,
   LegalSections,
-  Placeholder,
   formatLegalDate,
   type LegalSection,
 } from "@/src/components/legal/legalDoc";
 
-const OPERATOR = <Placeholder>운영자명</Placeholder>;
+const OPERATOR = "정헌수";
 
 const NUMBER_LABEL = (n: number) => `제${n}조`;
 
@@ -230,7 +229,7 @@ const SECTIONS: LegalSection[] = [
         <li>
           탈퇴 시 회원 정보와 작성 중인 지원서(임시저장 포함)는 지체 없이
           파기합니다. 다만 제출된 지원서와 첨부파일은 해당 공고의 모집
-          마감일로부터 <Placeholder>보유기간</Placeholder> 보관 후 파기합니다.
+          마감일로부터 1년 보관 후 파기합니다.
           자세한 내용은 {PRIVACY_LINK}을 따릅니다.
         </li>
         <li>

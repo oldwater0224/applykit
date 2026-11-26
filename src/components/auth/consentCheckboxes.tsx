@@ -163,7 +163,7 @@ function PrivacySummary({
         <dt className="inline font-semibold text-(--text-primary)">보유 기간: </dt>
         <dd className="inline font-semibold text-(--text-primary)">
           회원 정보는 탈퇴 시까지, 작성 중인 지원서는 삭제하거나 탈퇴 시까지,
-          제출된 지원서·첨부파일은 모집 마감일로부터 1년
+          제출된 지원서·첨부파일은 모집 마감일로부터 6개월
         </dd>
       </div>
       <div>

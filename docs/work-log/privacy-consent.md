@@ -130,3 +130,20 @@ Supabase 리전, Confirm email, Custom SMTP, Vercel Functions 리전, 원격 FK�
 - debugger: tsc 0 / lint 0 error(기존 경고 1) / test 20 suites 315 / build 성공. next start에서 /privacy·/terms·/signup 200, 남은 placeholder는 리전 2곳뿐
 - 결정 대기: 버전 유지 여부(운영 DB 동의자 수 확인), 보유기간 1년 확정, 리전
 - 결정(2026-11-24): 가입자는 운영자 본인 1명뿐(사용자 확인) → 문서 버전 2026-11-01 유지, 재동의 없음
+
+## 리전·보유기간 확정 (2026-11-26, 미커밋)
+
+- 사용자 값: Supabase ap-northeast-2, Vercel도 서울(icn1), 제출 지원서 보유기간 6개월(앞의 임시 1년 대체)
+- ui-builder: 리전 2곳 채움, 국외 이전 절을 "저장은 서울, 수탁자(미국 법인)의 운영·지원 과정에서 국외 접근 가능"으로 재작성(단정 금지), 표 캡션·열 제목 조정, 보유기간 4곳 6개월, Placeholder import·낡은 주석 정리
+- debugger: tsc 0 / lint 0 error / test 315 / build 성공, /privacy·/terms·/signup 200, 남은 Placeholder 0, 보유기간 "1년" 0, 앵커 정상. legalDoc.tsx Placeholder export 미사용(경고 없음)
+- 버전: 가입자 운영자 1명 → 2026-11-01 유지
+
+## 자동 파기 아키텍처 조사 (logic-builder, 읽기 전용)
+
+- 현황: deleteApplication·deleteProgram이 Storage를 지우지 않음(고아 파일 누적 가능), review_results는 applications ON DELETE CASCADE, application_files·applications.user_id·program_id FK는 확인 불가, 기존 크론 isAuthorizedCron은 secret 없으면 fail-open
+- 기존 제출 후 삭제 금지 트리거는 service_role·postgres·cascade를 통과 → 트리거 변경 불필요
+- 권장 (C) 혼합: application_files AFTER DELETE 트리거로 storage_deletion_queue 적재 + Vercel 크론 /api/cron/retention(매일, service role)이 ① 만료 제출 지원서 파기(Storage 먼저 → DB 삭제) ② 대기열 Storage 정리. 파기 기록 data_destruction_logs(개인정보 미포함), 실행 요약 sync_logs
+- 만료 판정: 마감일 KST 달력 + 6개월(월말 클램프), TS 순수 함수로 테스트
+- 운영: 확인 SQL → 마이그레이션 → dryRun 며칠 → RETENTION_PURGE_ENABLED로 실제 실행
+- 열린 결정 11개: 마감일 없는 공고, 마감 후 draft, review_results cascade, 탈퇴 시 FK, 파기 기록 범위, "책임자 확인 후 파기" 문구, 크론 개수 한도, deleteProgram, 백업·PITR, 크론 fail-open 수정 등
+- 후속 이슈: #73 제출 지원서·첨부파일 보유기간 자동 파기

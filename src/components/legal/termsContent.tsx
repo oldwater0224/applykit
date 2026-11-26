@@ -1,5 +1,5 @@
 // 서비스 이용약관 본문 (#69)
-// 대괄호 placeholder는 확인되지 않은 값이다. 운영 전 실제 값으로 바꿔야 한다.
+// 운영자·보유 기간 등은 확정값이다. 바뀌면 개인정보 처리방침(privacyPolicyContent.tsx)과 함께 갱신한다.
 
 import Link from "next/link";
 import {
@@ -229,7 +229,7 @@ const SECTIONS: LegalSection[] = [
         <li>
           탈퇴 시 회원 정보와 작성 중인 지원서(임시저장 포함)는 지체 없이
           파기합니다. 다만 제출된 지원서와 첨부파일은 해당 공고의 모집
-          마감일로부터 1년 보관 후 파기합니다.
+          마감일로부터 6개월 보관 후 파기합니다.
           자세한 내용은 {PRIVACY_LINK}을 따릅니다.
         </li>
         <li>
